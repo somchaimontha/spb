@@ -1,0 +1,1111 @@
+<!DOCTYPE html><html lang="th"><head>
+
+
+<meta charset="utf-8">
+<title>แผนพัฒนาระบบงานแผน · วก.แม่สะเรียง</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="styles.css">
+<style>
+  body { background: var(--paper); }
+  .doc { max-width: 920px; margin: 0 auto; padding: 64px 56px 120px; }
+  .cover {
+    display: grid; grid-template-columns: 1fr auto; gap: 24px;
+    align-items: end;
+    border-bottom: 1px solid var(--ink-200);
+    padding-bottom: 28px; margin-bottom: 36px;
+  }
+  .cover h1 {
+    font-size: 38px; font-weight: 800; letter-spacing: -0.01em;
+    margin: 6px 0 8px; line-height: 1.15;
+  }
+  .cover .eyebrow {
+    font-size: 12px; font-weight: 700; letter-spacing: .14em;
+    color: var(--gold-600); text-transform: uppercase;
+  }
+  .cover .meta {
+    text-align: right; font-size: 12.5px; color: var(--ink-500);
+    line-height: 1.7;
+  }
+  .crest {
+    width: 64px; height: 64px; border-radius: 50%;
+    background: var(--navy-700); color: var(--gold-500);
+    display: grid; place-items: center;
+    font-weight: 800; font-size: 22px;
+    border: 3px solid var(--gold-500);
+  }
+  .toc {
+    background: white; border: 1px solid var(--ink-100);
+    border-radius: var(--radius);
+    padding: 20px 24px;
+    margin-bottom: 48px;
+    columns: 2; column-gap: 32px;
+  }
+  .toc h3 { margin: 0 0 8px; font-size: 13px; letter-spacing: .12em;
+    color: var(--ink-500); text-transform: uppercase; column-span: all; }
+  .toc ol { margin: 0; padding-left: 22px; font-size: 14px; }
+  .toc li { margin-bottom: 6px; break-inside: avoid; }
+  .toc a { color: var(--ink-700); text-decoration: none; }
+  .toc a:hover { color: var(--navy-700); }
+
+  h2 {
+    font-size: 24px; font-weight: 700;
+    margin: 56px 0 16px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--navy-700);
+    display: flex; align-items: baseline; gap: 14px;
+  }
+  h2 .num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px; color: var(--gold-600);
+    font-weight: 600; letter-spacing: .1em;
+  }
+  h3 { font-size: 17px; font-weight: 700; margin: 28px 0 8px; }
+  h4 { font-size: 14.5px; font-weight: 700; margin: 18px 0 6px; color: var(--ink-700); }
+  p { margin: 8px 0; }
+
+  .lede {
+    font-size: 17px; line-height: 1.65; color: var(--ink-700);
+    border-left: 3px solid var(--gold-500);
+    padding-left: 18px; margin: 24px 0 32px;
+  }
+
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+
+  .pill-row { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+
+  .module {
+    background: white; border: 1px solid var(--ink-100); border-radius: var(--radius);
+    padding: 16px 18px;
+  }
+  .module .head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+  .module .name { font-weight: 700; font-size: 15.5px; }
+  .module .who { font-size: 11.5px; color: var(--ink-500); font-family: 'JetBrains Mono', monospace; }
+  .module ul { font-size: 13.5px; color: var(--ink-700); padding-left: 18px; margin: 8px 0 0; }
+
+  table {
+    width: 100%; border-collapse: collapse;
+    font-size: 13.5px; margin: 12px 0;
+  }
+  th, td {
+    padding: 9px 12px; text-align: left;
+    border-bottom: 1px solid var(--ink-100);
+    vertical-align: top;
+  }
+  th {
+    background: var(--ink-50);
+    font-weight: 700; font-size: 12px;
+    text-transform: uppercase; letter-spacing: .06em;
+    color: var(--ink-500);
+  }
+  td.mono { font-family: 'JetBrains Mono', monospace; font-size: 12.5px; }
+  td.num { text-align: right; font-variant-numeric: tabular-nums; }
+
+  .schema-sheet {
+    background: white;
+    border: 1px solid var(--ink-100);
+    border-radius: var(--radius);
+    overflow: hidden;
+    margin: 14px 0;
+  }
+  .schema-sheet .tab {
+    background: var(--navy-700); color: white;
+    padding: 8px 16px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12.5px;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .schema-sheet .tab .desc { color: rgba(255,255,255,.7); font-size: 11.5px; }
+  .schema-sheet table { margin: 0; }
+  .schema-sheet th { background: var(--ink-50); }
+  .schema-sheet code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px; background: var(--ink-50);
+    padding: 1px 5px; border-radius: 3px;
+    color: var(--navy-700);
+  }
+
+  pre {
+    background: var(--ink-900); color: #cbd5e1;
+    padding: 16px 20px; border-radius: var(--radius);
+    font-family: 'JetBrains Mono', monospace; font-size: 12.5px;
+    line-height: 1.6; overflow-x: auto;
+    margin: 12px 0;
+  }
+  pre .k { color: #fbbf24; }
+  pre .s { color: #86efac; }
+  pre .c { color: #64748b; font-style: italic; }
+  pre .v { color: #93c5fd; }
+
+  .arch {
+    background: white; border: 1px solid var(--ink-100); border-radius: var(--radius);
+    padding: 24px; margin: 16px 0;
+  }
+  .arch-row {
+    display: grid; grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px; align-items: stretch;
+  }
+  .arch-box {
+    border: 1.5px solid var(--ink-200);
+    border-radius: 8px; padding: 14px 16px;
+    background: var(--ink-50);
+    position: relative;
+  }
+  .arch-box.client { background: white; border-color: var(--navy-500); }
+  .arch-box.api { background: var(--gold-100); border-color: var(--gold-500); }
+  .arch-box.data { background: var(--navy-100); border-color: var(--navy-500); }
+  .arch-box .lbl {
+    font-size: 10.5px; letter-spacing: .12em; text-transform: uppercase;
+    color: var(--ink-500); font-weight: 700;
+  }
+  .arch-box .name { font-weight: 700; font-size: 15px; margin: 4px 0 6px; }
+  .arch-box ul { font-size: 12px; padding-left: 16px; margin: 0; color: var(--ink-700); }
+  .arch-arrow {
+    text-align: center; padding: 4px 0;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--ink-300); font-size: 18px;
+  }
+  .arch-spans { font-size: 11.5px; color: var(--ink-500); margin-top: 8px; }
+
+  .timeline { display: grid; gap: 8px; margin: 14px 0; }
+  .ph {
+    display: grid; grid-template-columns: 60px 1fr;
+    gap: 14px; align-items: start;
+    padding: 12px 14px;
+    border-left: 3px solid var(--ink-200);
+    background: white;
+    border-radius: 0 var(--radius) var(--radius) 0;
+  }
+  .ph .wk {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; color: var(--ink-500);
+    background: var(--ink-50);
+    padding: 2px 6px; border-radius: 4px;
+    text-align: center; align-self: start;
+  }
+  .ph .name { font-weight: 700; font-size: 14.5px; }
+  .ph .desc { font-size: 13px; color: var(--ink-700); margin-top: 2px; }
+  .ph.p1 { border-left-color: var(--gold-500); }
+  .ph.p2 { border-left-color: var(--navy-500); }
+  .ph.p3 { border-left-color: var(--teal-600); }
+  .ph.p4 { border-left-color: var(--green-600); }
+
+  .role-card {
+    background: white; border: 1px solid var(--ink-100); border-radius: var(--radius);
+    padding: 14px 16px;
+  }
+  .role-card .ttl { font-weight: 700; font-size: 14.5px; }
+  .role-card .who { font-size: 11.5px; color: var(--gold-600); font-family: 'JetBrains Mono', monospace; letter-spacing: .08em; }
+  .role-card ul { font-size: 13px; padding-left: 18px; margin: 8px 0 0; color: var(--ink-700); }
+
+  .flow {
+    display: flex; align-items: stretch; gap: 0;
+    margin: 14px 0;
+    overflow-x: auto;
+  }
+  .flow .step {
+    flex: 1; min-width: 130px;
+    background: white;
+    border: 1px solid var(--ink-100);
+    border-left-width: 4px;
+    padding: 10px 12px;
+    font-size: 12.5px;
+    position: relative;
+  }
+  .flow .step + .step { margin-left: 14px; }
+  .flow .step::before {
+    content: ''; position: absolute;
+    left: -14px; top: 50%; width: 14px; height: 1px;
+    background: var(--ink-300);
+  }
+  .flow .step:first-child::before { display: none; }
+  .flow .step .who { color: var(--ink-500); font-size: 10.5px; letter-spacing: .08em; text-transform: uppercase; }
+  .flow .step .what { font-weight: 700; margin-top: 2px; }
+  .flow .step.s1 { border-left-color: var(--gold-500); }
+  .flow .step.s2 { border-left-color: var(--navy-500); }
+  .flow .step.s3 { border-left-color: var(--teal-600); }
+  .flow .step.s4 { border-left-color: var(--green-600); }
+  .flow .step.s5 { border-left-color: var(--rose-600); }
+
+  .callout {
+    background: var(--navy-100); border: 1px solid var(--navy-500);
+    border-radius: var(--radius);
+    padding: 14px 18px; margin: 16px 0;
+    font-size: 13.5px;
+  }
+  .callout strong { color: var(--navy-700); }
+  .callout.gold { background: var(--gold-100); border-color: var(--gold-500); }
+  .callout.gold strong { color: var(--gold-600); }
+
+  .footer {
+    margin-top: 80px; padding-top: 24px;
+    border-top: 1px solid var(--ink-200);
+    color: var(--ink-500); font-size: 12px;
+    display: flex; justify-content: space-between;
+  }
+
+  .key-list { font-size: 13.5px; }
+  .key-list li { margin-bottom: 6px; }
+  .key-list code { font-family: 'JetBrains Mono', monospace; font-size: 12px; background: var(--ink-50); padding: 1px 5px; border-radius: 3px; }
+
+  .nav-link-row {
+    display: flex; gap: 10px; flex-wrap: wrap; margin: 16px 0 0;
+  }
+
+  .scenario {
+    border-left: 2px solid var(--ink-200); padding: 4px 0 4px 14px; margin: 8px 0 14px;
+  }
+  .scenario .title { font-weight: 700; font-size: 14px; }
+  .scenario ol { font-size: 13px; padding-left: 22px; margin: 6px 0 0; color: var(--ink-700); }
+  .scenario ol li { margin-bottom: 3px; }
+</style>
+</head>
+<body style="">
+<div class="doc">
+
+  <!-- Cover -->
+  <header class="cover">
+    <div>
+      <div class="eyebrow">เอกสารแผนพัฒนาระบบ · ฉบับเริ่มต้น</div>
+      <h1>ระบบงานแผนและงบประมาณ<br>วิทยาลัยการอาชีพแม่สะเรียง</h1>
+      <div class="pill-row">
+        <span class="tag navy">Web App</span>
+        <span class="tag gold">Google Sheets · DB</span>
+        <span class="tag teal">Google Drive · Files</span>
+        <span class="tag">GitHub Pages · Host</span>
+      </div>
+    </div>
+    <div>
+      <div class="crest">วก</div>
+      <div class="meta">
+        ฉบับ 0.1 · ๖ พ.ค. ๒๕๖๙<br>
+        จัดทำโดย: งานแผนและงบประมาณ<br>
+        สถานะ: รอพิจารณา
+      </div>
+    </div>
+  </header>
+
+  <p class="lede">
+    เอกสารฉบับนี้สรุปแนวทางพัฒนาเว็บแอปพลิเคชัน “ระบบงานแผน”
+    โดยใช้ไฟล์ต้นแบบ <span class="mono">budget&nbsp;2565&nbsp;ของนวมินทร์.xlsx</span>
+    (108 ชีต · 9 หมวดงบ · 14 ประเภทเงิน · ทะเบียนรายจ่ายรายรหัส 101–920)
+    มาออกแบบเป็นเว็บแอปที่ <strong>โครงสร้างข้อมูลเหมือนเดิมทุกประการ</strong>
+    แต่ทำงานพร้อมกันได้หลายคน เห็นยอดคงเหลือ real-time
+    และเก็บประวัติการอนุมัติเป็นดิจิทัล
+    โดยยังคงใช้ <strong>Google Sheets เป็นฐานข้อมูล</strong>
+    เพื่อให้เจ้าหน้าที่การเงินที่คุ้นเคยกับสเปรดชีตยังตรวจสอบและแก้ไขได้ตามปกติ
+  </p>
+
+  <!-- TOC -->
+  <nav class="toc">
+    <h3>สารบัญ</h3>
+    <ol>
+      <li><a href="#problem">สถานการณ์ปัจจุบันและปัญหา</a></li>
+      <li><a href="#goals">วัตถุประสงค์และตัวชี้วัด</a></li>
+      <li><a href="#users">ผู้ใช้งานและสิทธิ์</a></li>
+      <li><a href="#scope">ขอบเขตและโมดูล</a></li>
+      <li><a href="#arch">สถาปัตยกรรมระบบ</a></li>
+      <li><a href="#schema">โครงสร้างฐานข้อมูล (Google Sheets)</a></li>
+      <li><a href="#api">Apps Script API</a></li>
+      <li><a href="#workflow">กระบวนการอนุมัติเบิกจ่าย</a></li>
+      <li><a href="#screens">หน้าจอและ Mockup</a></li>
+      <li><a href="#repo">โครงสร้าง GitHub Repository</a></li>
+      <li><a href="#deploy">การติดตั้งและ Deploy</a></li>
+      <li><a href="#security">ความปลอดภัยและสำรองข้อมูล</a></li>
+      <li><a href="#roadmap">แผนงาน (Roadmap)</a></li>
+      <li><a href="#risks">ความเสี่ยงและทางเลือก</a></li>
+    </ol>
+  </nav>
+
+  <!-- 1. Problem -->
+  <section id="problem">
+    <h2><span class="num">01</span> สถานการณ์ปัจจุบันและปัญหา</h2>
+    <p>
+      จากการวิเคราะห์ไฟล์ที่ใช้งานจริง พบว่าปัจจุบันงานแผนและงบประมาณของวิทยาลัย
+      ดำเนินการผ่านไฟล์ Excel จำนวนหลายไฟล์ ซึ่งทำงานแยกจากกัน:
+    </p>
+    <table>
+      <thead><tr><th style="width:32%">ไฟล์</th><th>หน้าที่ปัจจุบัน</th><th style="width:24%">ประเด็น</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="mono">budget&nbsp;2565&nbsp;ของนวมินทร์.xlsx <span class="tag gold" style="font-size:9px">ต้นแบบ</span></td>
+          <td>ระบบบัญชีงบประมาณครบวงจร 108 ชีต — Note · งปม.เข้า · จัดสรรงปม. · รายการจัดสรร + ชีตทะเบียนรายจ่ายรายรหัส (101–920) แต่ละชีตเก็บรายการเบิก 30+ บรรทัด</td>
+          <td>คนเดียวเปิดได้ทีละคน, สูตรอาจพังเมื่อแก้, ไม่มีประวัติอนุมัติ</td>
+        </tr>
+        <tr>
+          <td class="mono">รายชื่อโครงการใหม่ 2569.xlsx</td>
+          <td>เก็บโครงการ ~140 โครงการ แยกตามฝ่าย/แผนก พร้อมแหล่งงบ</td>
+          <td>ติดตามสถานะอนุมัติยาก ไม่ผูกกับการเบิกจริง</td>
+        </tr>
+        <tr>
+          <td class="mono">budgetControl.xlsx</td>
+          <td>บัญชีคุมงบเวอร์ชันถัดมา — ใช้แนวเดียวกับ budget 2565</td>
+          <td>หน้าตาเดียวกัน เสี่ยงคีย์ผิด</td>
+        </tr>
+        <tr>
+          <td class="mono">สรุป-คชจ 2569.xlsx</td>
+          <td>สรุปจัดสรร/ใช้จริง/คงเหลือรายไตรมาส แยกแหล่งงบ</td>
+          <td>ต้องคีย์ซ้ำจาก budgetControl ทุกครั้ง</td>
+        </tr>
+        <tr>
+          <td class="mono">การบริหารงบประมาณ.pptx</td>
+          <td>สไลด์ประกอบการประชุมงบประมาณ</td>
+          <td>ข้อมูลล้าสมัยทันทีหลังประชุม</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h4>โครงสร้างไฟล์ต้นแบบ (budget&nbsp;2565)</h4>
+    <p style="font-size:13.5px">ผมวิเคราะห์ไฟล์นี้แล้ว แบ่งชีตเป็น 5 กลุ่มหลัก ทั้งหมดจะถูกย้ายมาเป็นเว็บแอปแบบ 1:1 :</p>
+    <table>
+      <thead><tr><th style="width:24%">กลุ่มชีต</th><th>เนื้อหา</th><th style="width:22%">เทียบในระบบใหม่</th></tr></thead>
+      <tbody>
+        <tr><td class="mono">Note</td><td>ชื่อสถานศึกษา + ปีงบประมาณ</td><td>หน้า Settings</td></tr>
+        <tr><td class="mono">งปม.เข้า</td><td>ทะเบียนรับเงิน — วันที่, ชื่อเอกสารจัดสรร, รหัสเอกสาร, แยก 14 ประเภทเงิน</td><td>โมดูล “รับงบ”</td></tr>
+        <tr><td class="mono">จัดสรร&nbsp;งปม.</td><td>Master sheet จัดสรรงบไปแต่ละรหัส 101–920 พร้อม % ใช้ไป + คงเหลือ</td><td>หน้า Dashboard + บัญชีคุมงบ</td></tr>
+        <tr><td class="mono">รายการจัดสรร</td><td>สรุปรายการ + แยกตามเดือน (พ.ย.–ก.ย.)</td><td>รายงานรายเดือน</td></tr>
+        <tr><td class="mono">101 — 920</td><td>100 ชีต — 1 ชีตต่อ 1 รหัสรายจ่าย เก็บทะเบียนเบิก รหัส/วันที่/ผู้ขอใช้/แผนก/ยอดแยก 14 ประเภท/รวม</td><td>โมดูล “ใบขอเบิก”</td></tr>
+      </tbody>
+    </table>
+    <h4>ปัญหาหลัก</h4>
+    <ul class="key-list">
+      <li><strong>เปิดพร้อมกันไม่ได้</strong> — ไฟล์ Excel ในเครื่อง, คนคีย์ต้องรอกัน</li>
+      <li><strong>108 ชีตหน้าตาเดียวกัน</strong> — เสี่ยงคีย์ผิดช่อง สูตรหลุด ลำบากตรวจ</li>
+      <li><strong>ผู้ขอใช้งบไม่เห็นยอดคงเหลือ</strong> — ต้องโทรถาม/เดินไปถามงานแผนทุกครั้ง</li>
+      <li><strong>การอนุมัติยังเป็นกระดาษ</strong> — ไม่มี audit log ค้นย้อนยาก</li>
+      <li><strong>รายงานสำหรับผู้บริหารทำมือ</strong> — ใช้เวลามาก ตัวเลขอาจล้าสมัย</li>
+    </ul>
+  </section>
+
+  <!-- 2. Goals -->
+  <section id="goals">
+    <h2><span class="num">02</span> วัตถุประสงค์และตัวชี้วัด</h2>
+    <div class="grid-2">
+      <div class="card" style="padding:14px 16px">
+        <h4 style="margin-top:0">วัตถุประสงค์</h4>
+        <ul class="key-list">
+          <li>รวมทะเบียนโครงการ + บัญชีคุมงบ + ใบขอเบิก เป็นระบบเดียว</li>
+          <li>ผู้รับผิดชอบโครงการเห็นยอดคงเหลือของตนเอง real-time</li>
+          <li>ผู้บริหารดูภาพรวมการใช้งบประมาณรายเดือน/รายไตรมาสได้ทันที</li>
+          <li>เก็บไฟล์เอกสารประกอบ (โครงการ, ใบเสร็จ) ไว้ใน Drive โยงกลับมาที่รายการเบิก</li>
+        </ul>
+      </div>
+      <div class="card" style="padding:14px 16px">
+        <h4 style="margin-top:0">ตัวชี้วัด</h4>
+        <ul class="key-list">
+          <li>เวลาทำรายงานสรุปงบประมาณรายเดือน &lt; 5 นาที (จากเดิม &gt;1 วัน)</li>
+          <li>ผู้รับผิดชอบโครงการเข้าใช้ระบบ &gt; 80% ในไตรมาสแรก</li>
+          <li>ใบขอเบิก 100% ผ่านระบบภายในปีงบฯ 2570</li>
+          <li>ความผิดพลาดยอดคงเหลือ = 0 (มีการ sync จาก Sheet หลักเสมอ)</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. Users -->
+  <section id="users">
+    <h2><span class="num">03</span> ผู้ใช้งานและสิทธิ์</h2>
+    <div class="grid-3">
+      <div class="role-card">
+        <div class="who">ROLE · admin</div>
+        <div class="ttl">งานแผนฯ / การเงิน</div>
+        <ul>
+          <li>ตั้งค่าปีงบประมาณ + จัดสรรงบ</li>
+          <li>อนุมัติขั้นสุดท้าย / บันทึกยอดเบิกจริง</li>
+          <li>แก้ไขข้อมูลทุกฝ่าย</li>
+          <li>Export รายงานทางการ</li>
+        </ul>
+      </div>
+      <div class="role-card">
+        <div class="who">ROLE · head</div>
+        <div class="ttl">หัวหน้างาน / หัวหน้าแผนก</div>
+        <ul>
+          <li>ดูเฉพาะโครงการของฝ่าย/แผนกตน</li>
+          <li>กลั่นกรองใบขอเบิกก่อนส่ง</li>
+          <li>เห็นยอดคงเหลือของแผนก</li>
+        </ul>
+      </div>
+      <div class="role-card">
+        <div class="who">ROLE · staff</div>
+        <div class="ttl">ผู้รับผิดชอบโครงการ</div>
+        <ul>
+          <li>สร้างใบขอเบิก แนบไฟล์ใน Drive</li>
+          <li>ดูสถานะคำขอของตน</li>
+          <li>เห็นยอดคงเหลือเฉพาะโครงการของตน</li>
+        </ul>
+      </div>
+      <div class="role-card">
+        <div class="who">ROLE · executive</div>
+        <div class="ttl">ผู้บริหาร (ผอ./รอง)</div>
+        <ul>
+          <li>Dashboard ภาพรวมทั้งวิทยาลัย</li>
+          <li>กราฟแนวโน้มรายไตรมาส</li>
+          <li>อนุมัติรายการเกิน 50,000 บาท</li>
+        </ul>
+      </div>
+      <div class="role-card">
+        <div class="who">ROLE · viewer</div>
+        <div class="ttl">ผู้สังเกตการณ์ (อ่านอย่างเดียว)</div>
+        <ul>
+          <li>เปิดได้เฉพาะหน้า Dashboard สาธารณะ</li>
+          <li>เหมาะกับนำเสนอที่ประชุมต่าง ๆ</li>
+        </ul>
+      </div>
+      <div class="role-card" style="background:var(--ink-50); border-style:dashed">
+        <div class="who">ROLE · external (อนาคต)</div>
+        <div class="ttl">ส่วนกลาง สอศ. / สตง.</div>
+        <ul>
+          <li>เปิดให้เข้าดูข้อมูลในรูปแบบที่กำหนด เมื่อเชื่อมต่อระบบในอนาคต</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. Scope -->
+  <section id="scope">
+    <h2><span class="num">04</span> ขอบเขตและโมดูล</h2>
+    <p>ระบบประกอบด้วย 6 โมดูลหลัก แยกตามภารกิจของงานแผน:</p>
+    <div class="grid-2">
+      <div class="module">
+        <div class="head"><div class="name">M1 · ทะเบียนโครงการ (Plan)</div><div class="who">staff · head · admin</div></div>
+        <ul>
+          <li>เพิ่ม/แก้ไขโครงการประจำปี อ้างอิงตามฟอร์มเดิม</li>
+          <li>ระบุแหล่งงบ: เรียนฟรี / บกศ. / รายจ่ายอื่น / ส่วนกลาง สอศ.</li>
+          <li>ผูกกับฝ่าย+แผนก+ผู้รับผิดชอบ</li>
+          <li>สถานะ: ร่าง · เสนอ · อนุมัติ · ยกเลิก</li>
+        </ul>
+      </div>
+      <div class="module">
+        <div class="head"><div class="name">M2 · บัญชีคุมงบ (Budget Ledger)</div><div class="who">admin</div></div>
+        <ul>
+          <li>หมวดเงิน 101–414 (4 หมวดหลัก, 30+ รายการย่อย)</li>
+          <li>×&nbsp;13 ช่องประเภทเงิน (ปวช./ปวส./ระยะสั้น/อุดหนุน/บกศ. ฯลฯ)</li>
+          <li>คำนวณ ได้รับ − ใช้ไป → คงเหลือ อัตโนมัติ</li>
+        </ul>
+      </div>
+      <div class="module">
+        <div class="head"><div class="name">M3 · ใบขอเบิก (Disbursement)</div><div class="who">staff → head → admin</div></div>
+        <ul>
+          <li>ฟอร์มขอเบิกจากโครงการที่ได้รับอนุมัติแล้ว</li>
+          <li>แนบไฟล์ใบเสร็จ/รายงาน ใน Drive</li>
+          <li>มี workflow อนุมัติ + ประวัติการกระทำ</li>
+          <li>ออกเลขที่ชุดเบิกอัตโนมัติ</li>
+        </ul>
+      </div>
+      <div class="module">
+        <div class="head"><div class="name">M4 · Dashboard</div><div class="who">ทุกบทบาท</div></div>
+        <ul>
+          <li>ยอดได้รับ · ใช้ไป · คงเหลือ ทั้งวิทยาลัย</li>
+          <li>กราฟใช้จ่ายรายไตรมาส แยกแหล่งงบ</li>
+          <li>Top 10 โครงการที่ใช้งบมากสุด</li>
+          <li>Alert: หมวดที่งบใกล้หมด (&lt;10%)</li>
+        </ul>
+      </div>
+      <div class="module">
+        <div class="head"><div class="name">M5 · รายงาน (Reports)</div><div class="who">admin · executive</div></div>
+        <ul>
+          <li>สรุปรายไตรมาส (ตามแบบ “สรุป-คชจ”)</li>
+          <li>รายงานรายโครงการ + Export PDF</li>
+          <li>Export Excel ในรูปแบบเดิมเพื่อส่งต่อ สอศ.</li>
+        </ul>
+      </div>
+      <div class="module">
+        <div class="head"><div class="name">M6 · ตั้งค่า (Settings)</div><div class="who">admin</div></div>
+        <ul>
+          <li>เปิดปีงบประมาณใหม่ (clone หมวด)</li>
+          <li>จัดการผู้ใช้ + บทบาท</li>
+          <li>ตั้งค่าฝ่าย/แผนก/หมวดเงิน</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. Architecture -->
+  <section id="arch">
+    <h2><span class="num">05</span> สถาปัตยกรรมระบบ</h2>
+    <p>
+      ใช้รูปแบบ <strong>Sheets-as-Database</strong>: ผู้ใช้เข้าผ่านเว็บ Static (GitHub Pages)
+      เรียก API ที่เขียนด้วย Google Apps Script — โดย Apps Script
+      จะติดต่อ Sheets และ Drive ในโดเมนของวิทยาลัยโดยตรง
+      ข้อดีคือ <em>ไม่มี Server ต้องดูแล</em>, <em>ฟรี</em>,
+      และเจ้าหน้าที่ยังเปิด Sheet ขึ้นมาตรวจ/แก้ตอนฉุกเฉินได้
+    </p>
+
+    <div class="arch">
+      <div class="arch-row">
+        <div class="arch-box client">
+          <div class="lbl">CLIENT (BROWSER)</div>
+          <div class="name">Static Web App</div>
+          <ul>
+            <li>HTML + CSS + Alpine.js</li>
+            <li>Chart.js สำหรับกราฟ</li>
+            <li>Tailwind CSS via CDN</li>
+            <li>Hosted: GitHub Pages</li>
+          </ul>
+        </div>
+        <div class="arch-box api">
+          <div class="lbl">API LAYER</div>
+          <div class="name">Apps Script Web App</div>
+          <ul>
+            <li>doGet / doPost</li>
+            <li>Verify Google ID Token</li>
+            <li>RBAC ตามตาราง Users</li>
+            <li>Endpoint: /exec?action=…</li>
+          </ul>
+        </div>
+        <div class="arch-box data">
+          <div class="lbl">DATA</div>
+          <div class="name">Google Workspace</div>
+          <ul>
+            <li>Spreadsheet หลัก 1 ไฟล์</li>
+            <li>Drive folder ตามปีงบฯ</li>
+            <li>เก็บประวัติด้วย Sheet&nbsp;Logs</li>
+          </ul>
+        </div>
+      </div>
+      <div class="arch-arrow">↓ &nbsp; HTTPS · Google ID Token &nbsp; ↓</div>
+      <div class="arch-spans">
+        การยืนยันตัวตน: Google Identity Services (One Tap) — รับเฉพาะอีเมลโดเมนวิทยาลัย<br>
+        การจำกัดสิทธิ์: Apps Script ตรวจ <span class="mono">email</span> ใน Sheet <span class="mono">Users</span> ทุก request
+      </div>
+    </div>
+
+    <div class="callout">
+      <strong>ทำไมไม่ใช้ Cloud Functions / Firebase?</strong>
+      เพราะเจ้าหน้าที่งานแผนต้องสามารถเปิด Sheet ได้ตามปกติเพื่อตรวจ/แก้
+      หากย้ายไปฐานข้อมูลอื่นจะกลายเป็น “กล่องดำ”
+      ที่ต้องพึ่งโปรแกรมเมอร์ทุกครั้ง
+    </div>
+  </section>
+
+  <!-- 6. Schema -->
+  <section id="schema">
+    <h2><span class="num">06</span> โครงสร้างฐานข้อมูล (Google Sheets)</h2>
+    <p>
+      Spreadsheet หลักชื่อ <code>PlanWork_DB</code> มี 9 ชีต ดังนี้
+      (แถวที่ 1 เป็น header ใช้ชื่อภาษาอังกฤษ snake_case เพื่อให้เขียนสูตรง่าย):
+    </p>
+
+    <div class="schema-sheet">
+      <div class="tab">Users <span class="desc">รายชื่อผู้ใช้และบทบาท</span></div>
+      <table>
+        <thead><tr><th>คอลัมน์</th><th>ชนิด</th><th>หมายเหตุ</th></tr></thead>
+        <tbody>
+          <tr><td><code>email</code></td><td>string · PK</td><td>อีเมลในโดเมนวิทยาลัย</td></tr>
+          <tr><td><code>name</code></td><td>string</td><td>ชื่อ-สกุล</td></tr>
+          <tr><td><code>role</code></td><td>enum</td><td>admin · head · staff · executive · viewer</td></tr>
+          <tr><td><code>dept</code></td><td>string</td><td>FK → Departments.code</td></tr>
+          <tr><td><code>active</code></td><td>bool</td><td>FALSE = ปิดการใช้งาน</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="schema-sheet">
+      <div class="tab">Departments <span class="desc">ฝ่าย/แผนก/งาน</span></div>
+      <table>
+        <thead><tr><th>คอลัมน์</th><th>ชนิด</th><th>หมายเหตุ</th></tr></thead>
+        <tbody>
+          <tr><td><code>code</code></td><td>string · PK</td><td>เช่น <code>ELEC</code>, <code>IT</code>, <code>ADMIN</code></td></tr>
+          <tr><td><code>name_th</code></td><td>string</td><td>เช่น แผนกวิชาช่างไฟฟ้า</td></tr>
+          <tr><td><code>division</code></td><td>enum</td><td>บริหารทรัพยากร · วิชาการ · พัฒนา · แผน</td></tr>
+          <tr><td><code>head_email</code></td><td>string</td><td>หัวหน้างาน/แผนก</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="schema-sheet">
+      <div class="tab">FundSources <span class="desc">แหล่งงบ 13 ประเภท</span></div>
+      <table>
+        <thead><tr><th>คอลัมน์</th><th>ชนิด</th><th>หมายเหตุ</th></tr></thead>
+        <tbody>
+          <tr><td><code>code</code></td><td>string · PK</td><td><code>WC</code>=ปวช., <code>HC</code>=ปวส., <code>SH</code>=ระยะสั้น, <code>SUB</code>=อุดหนุน, <code>BOOK</code>=หนังสือ ฯลฯ</td></tr>
+          <tr><td><code>name_th</code></td><td>string</td><td>ชื่อเต็ม</td></tr>
+          <tr><td><code>category</code></td><td>enum</td><td>เงินงบประมาณ · บกศ. · เงินรับฝาก</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="schema-sheet">
+      <div class="tab">BudgetCategories <span class="desc">หมวดเงิน 101–414</span></div>
+      <table>
+        <thead><tr><th>คอลัมน์</th><th>ชนิด</th><th>หมายเหตุ</th></tr></thead>
+        <tbody>
+          <tr><td><code>code</code></td><td>string · PK</td><td>3 หลัก เช่น <code>101</code>, <code>305</code></td></tr>
+          <tr><td><code>group</code></td><td>enum</td><td>บุคลากร (1xx) · ค่าตอบแทน (2xx) · ใช้สอย (3xx) · วัสดุ (4xx)</td></tr>
+          <tr><td><code>name_th</code></td><td>string</td><td>เช่น “ค่าจ้างซ่อมครุภัณฑ์…”</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="schema-sheet">
+      <div class="tab">Allocations <span class="desc">ยอดจัดสรรต่อปีงบฯ</span></div>
+      <table>
+        <thead><tr><th>คอลัมน์</th><th>ชนิด</th><th>หมายเหตุ</th></tr></thead>
+        <tbody>
+          <tr><td><code>fy</code></td><td>int · PK</td><td>ปีงบประมาณ พ.ศ. เช่น 2569</td></tr>
+          <tr><td><code>category_code</code></td><td>string · PK</td><td>FK → BudgetCategories</td></tr>
+          <tr><td><code>fund_code</code></td><td>string · PK</td><td>FK → FundSources</td></tr>
+          <tr><td><code>amount</code></td><td>number</td><td>ยอดได้รับจัดสรร</td></tr>
+          <tr><td><code>q1, q2, q3, q4</code></td><td>number</td><td>แยกรายงวด (ถ้ามี)</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="schema-sheet">
+      <div class="tab">Projects <span class="desc">ทะเบียนโครงการ (~140 / ปี)</span></div>
+      <table>
+        <thead><tr><th>คอลัมน์</th><th>ชนิด</th><th>หมายเหตุ</th></tr></thead>
+        <tbody>
+          <tr><td><code>id</code></td><td>string · PK</td><td>เช่น <code>P-2569-001</code></td></tr>
+          <tr><td><code>fy</code></td><td>int</td><td>ปีงบฯ</td></tr>
+          <tr><td><code>title</code></td><td>string</td><td>ชื่อโครงการ</td></tr>
+          <tr><td><code>dept_code</code></td><td>string</td><td>FK → Departments</td></tr>
+          <tr><td><code>owner_email</code></td><td>string</td><td>ผู้รับผิดชอบ</td></tr>
+          <tr><td><code>amount_total</code></td><td>number</td><td>งบประมาณที่ขอ</td></tr>
+          <tr><td><code>fund_breakdown</code></td><td>JSON</td><td>{ “WC”: 5000, “BKS”: 2000 } (สรุปจากรายการเบิก)</td></tr>
+          <tr><td><code>category_code</code></td><td>string</td><td>หมวดหลัก</td></tr>
+          <tr><td><code>status</code></td><td>enum</td><td>draft · proposed · approved · closed · cancelled</td></tr>
+          <tr><td><code>period</code></td><td>string</td><td>ระยะเวลาดำเนินการ</td></tr>
+          <tr><td><code>drive_folder</code></td><td>url</td><td>ลิงก์ Drive folder ของโครงการ</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="schema-sheet">
+      <div class="tab">Disbursements <span class="desc">ใบขอเบิก / รายการเบิกจริง</span></div>
+      <table>
+        <thead><tr><th>คอลัมน์</th><th>ชนิด</th><th>หมายเหตุ</th></tr></thead>
+        <tbody>
+          <tr><td><code>id</code></td><td>string · PK</td><td><code>D-2569-0123</code></td></tr>
+          <tr><td><code>doc_no</code></td><td>string</td><td>เลขที่ชุดเบิก (auto-increment)</td></tr>
+          <tr><td><code>project_id</code></td><td>string</td><td>FK → Projects (nullable)</td></tr>
+          <tr><td><code>category_code</code></td><td>string</td><td>หมวด 101–414</td></tr>
+          <tr><td><code>fund_code</code></td><td>string</td><td>แหล่งงบ</td></tr>
+          <tr><td><code>amount</code></td><td>number</td><td>ยอดเบิก</td></tr>
+          <tr><td><code>requester</code></td><td>string</td><td>email ผู้ขอ</td></tr>
+          <tr><td><code>request_date</code></td><td>date</td><td>วันที่ขอ</td></tr>
+          <tr><td><code>status</code></td><td>enum</td><td>draft · pending_head · pending_admin · approved · paid · rejected</td></tr>
+          <tr><td><code>note</code></td><td>string</td><td>หมายเหตุ</td></tr>
+          <tr><td><code>files</code></td><td>JSON</td><td>[ {name, drive_id, url} ]</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="schema-sheet">
+      <div class="tab">ApprovalLogs <span class="desc">ประวัติการอนุมัติ (audit trail)</span></div>
+      <table>
+        <thead><tr><th>คอลัมน์</th><th>ชนิด</th><th>หมายเหตุ</th></tr></thead>
+        <tbody>
+          <tr><td><code>ts</code></td><td>datetime</td><td>เวลาที่บันทึก</td></tr>
+          <tr><td><code>disbursement_id</code></td><td>string</td><td>FK → Disbursements</td></tr>
+          <tr><td><code>actor_email</code></td><td>string</td><td>ผู้กระทำ</td></tr>
+          <tr><td><code>action</code></td><td>enum</td><td>submit · approve · reject · pay · revise</td></tr>
+          <tr><td><code>note</code></td><td>string</td><td>เหตุผล (โดยเฉพาะกรณี reject)</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="schema-sheet">
+      <div class="tab">SystemLogs <span class="desc">log การใช้งาน (อ่าน/เขียน)</span></div>
+      <table>
+        <thead><tr><th>คอลัมน์</th><th>ชนิด</th><th>หมายเหตุ</th></tr></thead>
+        <tbody>
+          <tr><td><code>ts</code></td><td>datetime</td><td>&nbsp;</td></tr>
+          <tr><td><code>actor</code></td><td>string</td><td>email</td></tr>
+          <tr><td><code>action</code></td><td>string</td><td>เช่น <code>create_project</code></td></tr>
+          <tr><td><code>target</code></td><td>string</td><td>id ของรายการที่ถูกแก้ไข</td></tr>
+          <tr><td><code>diff</code></td><td>JSON</td><td>เก็บ field ก่อน/หลัง</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout gold">
+      <strong>ความสัมพันธ์สำคัญ</strong> —
+      ยอดคงเหลือคำนวณ <em>ทันที</em> โดยสูตรในชีต <code>BudgetSummary</code>
+      ที่ใช้ <code>SUMIFS</code> ดึงจาก <code>Disbursements</code> เทียบกับ <code>Allocations</code>
+      ทำให้ Apps Script ไม่ต้องคำนวณเอง — เปลี่ยนแปลงแค่ Sheet เดียว ตัวเลขก็ตรง
+    </div>
+  </section>
+
+  <!-- 7. API -->
+  <section id="api">
+    <h2><span class="num">07</span> Apps Script API</h2>
+    <p>
+      Apps Script Web App หนึ่งตัว publish เป็น <span class="mono">Anyone with link</span>
+      แต่ตรวจ Google ID Token ที่ส่งมาทุก request เพื่อยืนยันตัวตน
+    </p>
+
+    <h4>Endpoints (ทั้งหมดผ่าน <code>POST /exec</code> body JSON)</h4>
+    <table>
+      <thead><tr><th>action</th><th>ใครเรียก</th><th>หน้าที่</th></tr></thead>
+      <tbody>
+        <tr><td class="mono">me</td><td>ทุกคน</td><td>ตรวจ token, คืน user + role + permission</td></tr>
+        <tr><td class="mono">list_projects</td><td>ตามสิทธิ์</td><td>คืนโครงการ filter ตาม dept/owner</td></tr>
+        <tr><td class="mono">create_project</td><td>head, admin</td><td>เพิ่มโครงการใหม่</td></tr>
+        <tr><td class="mono">update_project</td><td>head, admin</td><td>แก้สถานะ/รายละเอียด</td></tr>
+        <tr><td class="mono">list_budget</td><td>ตามสิทธิ์</td><td>ดึงตารางหมวด × แหล่งงบ + คงเหลือ</td></tr>
+        <tr><td class="mono">create_disbursement</td><td>staff+</td><td>ส่งใบขอเบิก</td></tr>
+        <tr><td class="mono">approve_disbursement</td><td>head, admin</td><td>อนุมัติ/ปฏิเสธ + เขียน ApprovalLogs</td></tr>
+        <tr><td class="mono">upload_file</td><td>staff+</td><td>รับไฟล์ base64 → บันทึกลง Drive folder ของโครงการ</td></tr>
+        <tr><td class="mono">dashboard</td><td>ทุกคน</td><td>คืนตัวเลขสรุปหน้า home</td></tr>
+        <tr><td class="mono">export_report</td><td>admin, executive</td><td>สร้าง PDF/Excel ใน Drive แล้วคืนลิงก์</td></tr>
+      </tbody>
+    </table>
+
+    <h4>ตัวอย่าง <code>doPost</code></h4>
+<pre><span class="k">function</span> <span class="v">doPost</span>(e) {
+  <span class="k">const</span> body = <span class="v">JSON</span>.parse(e.postData.contents);
+  <span class="k">const</span> user = verifyToken(body.id_token);     <span class="c">// ตรวจกับ Google</span>
+  <span class="k">if</span> (!user) <span class="k">return</span> json({ ok: <span class="v">false</span>, err: <span class="s">'unauthorized'</span> });
+
+  <span class="k">const</span> me = lookupUser(user.email);                <span class="c">// อ่าน Sheet Users</span>
+  <span class="k">if</span> (!me || !me.active) <span class="k">return</span> json({ ok: <span class="v">false</span>, err: <span class="s">'forbidden'</span> });
+
+  <span class="k">const</span> handler = ROUTES[body.action];
+  <span class="k">if</span> (!handler) <span class="k">return</span> json({ ok: <span class="v">false</span>, err: <span class="s">'unknown_action'</span> });
+
+  <span class="k">if</span> (!can(me, body.action)) <span class="k">return</span> json({ ok: <span class="v">false</span>, err: <span class="s">'forbidden'</span> });
+
+  log_(me.email, body.action, body.payload);
+  <span class="k">return</span> json(handler(me, body.payload));
+}</pre>
+
+    <p style="font-size:13px; color: var(--ink-500)">
+      ฟังก์ชันทั้งหมดใช้ <code>LockService.getScriptLock()</code> ครอบช่วงเขียน Sheet
+      เพื่อกันสองคนเขียนทับกัน
+    </p>
+  </section>
+
+  <!-- 8. Workflow -->
+  <section id="workflow">
+    <h2><span class="num">08</span> กระบวนการอนุมัติเบิกจ่าย</h2>
+    <p>
+      Workflow มาตรฐาน 3 ขั้น ปรับลดได้ตามจำนวนเงิน
+      (เช่น &lt; 5,000 บาท ข้ามขั้นหัวหน้างาน)
+    </p>
+    <div class="flow">
+      <div class="step s1">
+        <div class="who">staff</div>
+        <div class="what">สร้างใบขอเบิก</div>
+        <div>กรอกฟอร์ม + แนบไฟล์ → status=<span class="mono">draft</span> หรือ <span class="mono">pending_head</span></div>
+      </div>
+      <div class="step s2">
+        <div class="who">head</div>
+        <div class="what">หัวหน้ากลั่นกรอง</div>
+        <div>ตรวจความถูกต้อง → ส่งต่อ status=<span class="mono">pending_admin</span></div>
+      </div>
+      <div class="step s3">
+        <div class="who">admin (งานแผน)</div>
+        <div class="what">ตรวจยอดงบ</div>
+        <div>ตรวจหมวด+แหล่งงบ ยอดคงเหลือพอ → <span class="mono">approved</span></div>
+      </div>
+      <div class="step s4">
+        <div class="who">admin (การเงิน)</div>
+        <div class="what">บันทึกจ่ายจริง</div>
+        <div>ออกเลขที่ชุดเบิก → <span class="mono">paid</span></div>
+      </div>
+      <div class="step s5">
+        <div class="who">staff</div>
+        <div class="what">รับเงิน + ปิดเอกสาร</div>
+        <div>อัปโหลดใบเสร็จเข้า Drive → ปิดรายการ</div>
+      </div>
+    </div>
+
+    <h4>กรณีพิเศษ</h4>
+    <ul class="key-list">
+      <li><strong>ปฏิเสธ (reject):</strong> ใส่เหตุผล → status=<code>rejected</code> → ผู้ขอแก้แล้วส่งใหม่</li>
+      <li><strong>ยกเลิก:</strong> เฉพาะ admin ทำได้ก่อนสถานะ paid</li>
+      <li><strong>เกิน 50,000 บาท:</strong> ต้องผ่านการอนุมัติของ executive (ผอ./รอง) เพิ่มอีกขั้น</li>
+    </ul>
+  </section>
+
+  <!-- 9. Screens -->
+  <section id="screens">
+    <h2><span class="num">09</span> หน้าจอและ Mockup</h2>
+    <p>
+      ดูภาพประกอบที่ <a href="Mockup.html"><strong>Mockup.html</strong></a> —
+      เป็น Hi-fi mockup ใน design canvas เปิดได้รายหน้าจอ มีทั้งหมด 8 หน้า:
+    </p>
+    <div class="grid-2">
+      <div class="card" style="padding:12px 14px"><strong>1. Sign In</strong><br><span style="font-size:12.5px;color:var(--ink-500)">หน้าเข้าระบบด้วย Google — กรองโดเมนวิทยาลัย</span></div>
+      <div class="card" style="padding:12px 14px"><strong>2. Dashboard</strong><br><span style="font-size:12.5px;color:var(--ink-500)">ภาพรวม: ได้รับ · ใช้ไป · คงเหลือ + กราฟไตรมาส + alert</span></div>
+      <div class="card" style="padding:12px 14px"><strong>3. ทะเบียนโครงการ</strong><br><span style="font-size:12.5px;color:var(--ink-500)">ตารางโครงการ filter ตามฝ่าย/แหล่งงบ + เพิ่มโครงการ</span></div>
+      <div class="card" style="padding:12px 14px"><strong>4. รายละเอียดโครงการ</strong><br><span style="font-size:12.5px;color:var(--ink-500)">งบที่ขอ vs ใช้จริง · รายการเบิกย่อย · ไฟล์แนบ</span></div>
+      <div class="card" style="padding:12px 14px"><strong>5. บัญชีคุมงบ</strong><br><span style="font-size:12.5px;color:var(--ink-500)">ตาราง heatmap หมวด × แหล่งงบ · ดูคงเหลือเร็ว</span></div>
+      <div class="card" style="padding:12px 14px"><strong>6. ใบขอเบิก</strong><br><span style="font-size:12.5px;color:var(--ink-500)">ฟอร์มขอเบิก + แนบไฟล์ + แสดงยอดคงเหลือก่อนกด</span></div>
+      <div class="card" style="padding:12px 14px"><strong>7. กล่องอนุมัติ</strong><br><span style="font-size:12.5px;color:var(--ink-500)">รายการที่รออนุมัติ พร้อมปุ่มอนุมัติ/ปฏิเสธ</span></div>
+      <div class="card" style="padding:12px 14px"><strong>8. รายงาน</strong><br><span style="font-size:12.5px;color:var(--ink-500)">เลือกประเภทรายงาน + ตัวอย่างก่อน Export</span></div>
+    </div>
+  </section>
+
+  <!-- 10. Repo -->
+  <section id="repo">
+    <h2><span class="num">10</span> โครงสร้าง GitHub Repository</h2>
+    <p>repo เดียว ชื่อแนะนำ <code>msc-planwork</code></p>
+<pre style=""><span class="c">msc-planwork/</span>
+├── <span class="v">index.html</span>             <span class="c"># shell + Alpine + router</span>
+├── <span class="v">styles.css</span>             <span class="c"># global tokens</span>
+├── <span class="v">app.js</span>                 <span class="c"># bootstrap + state store</span>
+├── <span class="v">api.js</span>                 <span class="c"># wrapper เรียก Apps Script</span>
+├── pages/
+│   ├── <span class="v">dashboard.html</span>
+│   ├── <span class="v">projects.html</span>
+│   ├── <span class="v">budget.html</span>
+│   ├── <span class="v">disbursement.html</span>
+│   ├── <span class="v">approval.html</span>
+│   └── <span class="v">reports.html</span>
+├── components/
+│   ├── <span class="v">app-shell.js</span>       <span class="c"># sidebar + topbar</span>
+│   ├── <span class="v">budget-table.js</span>
+│   └── <span class="v">file-uploader.js</span>
+├── assets/
+│   └── crest.svg
+├── apps-script/            <span class="c"># mirrored ของ Apps Script project — เหลือ 2 ไฟล์</span>
+│   ├── <span class="v">Code.gs</span>            <span class="c"># ⚡ อัปเดตบ่อย — routes + logic ทั้งหมด (Projects/Budget/Disburse/Reports เป็น namespace)</span>
+│   ├── <span class="v">Config.gs</span>          <span class="c"># 🔒 อัปเดตน้อย — constants, schema, RBAC, fund codes, feature flags</span>
+│   └── <span class="v">appsscript.json</span>
+├── docs/
+│   ├── <span class="v">Plan.html</span>           <span class="c"># เอกสารฉบับนี้</span>
+│   ├── <span class="v">Mockup.html</span>
+│   └── <span class="v">DEPLOY.md</span>
+└── <span class="v">README.md</span></pre>
+
+    <h4>การ Sync ระหว่าง Apps Script ↔ Git</h4>
+    <p style="font-size:13.5px">
+      ใช้ <a href="https://github.com/google/clasp"><code>clasp</code></a> push/pull
+      จากเครื่องผู้พัฒนา — โค้ดเดียวกับที่ run ใน Apps Script Editor
+      ทุกคนใน repo เห็นได้ และ revert ได้ผ่าน Git
+    </p>
+
+    <h4>ทำไมเหลือ 2 ไฟล์ <span class="mono">.gs</span></h4>
+    <p style="font-size:13.5px">
+      เดิมแบ่ง 6 ไฟล์ตามโดเมน (Auth/Projects/Budget/Disbursement/Reports/Code) ฟังดูเป็นระเบียบ
+      แต่ทำให้ deploy เปราะ — ถ้า push ไม่ครบไฟล์ใดไฟล์หนึ่งจะ
+      <code>ReferenceError</code> ทันที, และต้องระวัง global ทับกันเพราะ
+      Apps Script ไม่มี module/import จริง ๆ ทุกไฟล์ <code>.gs</code> ใช้ scope เดียวกัน
+    </p>
+    <p style="font-size:13.5px">
+      จึงเหลือแค่ 2 ไฟล์ แยกตาม <strong>ความถี่ในการเปลี่ยน</strong> ไม่ใช่โดเมน:
+    </p>
+    <table>
+      <thead><tr><th style="width:18%">ไฟล์</th><th style="width:18%">บทบาท</th><th>สิ่งที่อยู่ในนั้น</th><th style="width:16%">ความถี่อัปเดต</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="mono">Code.gs</td>
+          <td>⚡ Hot path</td>
+          <td>
+            <code>doPost</code>, <code>verifyToken</code>, <code>can()</code>, <code>log_()</code>,
+            namespace <code>Projects</code>, <code>Budget</code>, <code>Disburse</code>, <code>Reports</code>,
+            <code>ROUTES</code> map
+          </td>
+          <td>บ่อย — ทุก feature ใหม่</td>
+        </tr>
+        <tr>
+          <td class="mono">Config.gs</td>
+          <td>🔒 Cold path</td>
+          <td>
+            <code>SHEET_IDS</code>, <code>FUND_CODES</code> (14 ประเภทเงิน),
+            <code>BUDGET_CATEGORIES</code> (1xx–9xx), <code>ROLE_PERMISSIONS</code>,
+            <code>WORKFLOW_THRESHOLDS</code> (เกิน 50,000 ต้องผ่าน executive),
+            <code>FEATURE_FLAGS</code>, โดเมนอีเมลที่อนุญาต
+          </td>
+          <td>นาน ๆ ครั้ง — เฉพาะตอนเพิ่มหมวด/แก้ policy</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h4>Layout ภายใน <span class="mono">Code.gs</span></h4>
+    <p style="font-size:13.5px">
+      ใช้ <strong>namespace pattern</strong> แทนการแยกไฟล์ — ฟังก์ชันยังจัดเป็นโดเมน
+      แต่ไม่มีปัญหา file order ตอน push:
+    </p>
+<pre><span class="c">// ─── Code.gs ───────────────────────────────────────</span>
+<span class="k">function</span> <span class="v">doPost</span>(e) { <span class="c">/* route + verify + dispatch */</span> }
+
+<span class="k">const</span> Projects = {
+  list(me, p)   { <span class="c">/* ... */</span> },
+  create(me, p) { <span class="c">/* ... */</span> },
+  update(me, p) { <span class="c">/* ... */</span> },
+};
+
+<span class="k">const</span> Budget = {
+  ledger(me, p)    { <span class="c">/* ... */</span> },
+  available(cat, fund) { <span class="c">/* ... */</span> },
+};
+
+<span class="k">const</span> Disburse = {
+  create(me, p)  { <span class="c">/* ... */</span> },
+  approve(me, p) { <span class="c">/* ... */</span> },
+  pay(me, p)     { <span class="c">/* ... */</span> },
+};
+
+<span class="k">const</span> Reports = {
+  quarterly(me, p) { <span class="c">/* ... */</span> },
+  byProject(me, p) { <span class="c">/* ... */</span> },
+};
+
+<span class="k">const</span> ROUTES = {
+  <span class="s">'list_projects'</span>:        Projects.list,
+  <span class="s">'create_project'</span>:       Projects.create,
+  <span class="s">'list_budget'</span>:          Budget.ledger,
+  <span class="s">'create_disbursement'</span>:  Disburse.create,
+  <span class="s">'approve_disbursement'</span>: Disburse.approve,
+  <span class="s">'export_report'</span>:        Reports.quarterly,
+  <span class="c">// ...</span>
+};</pre>
+
+    <h4>กลยุทธ์ป้องกันงานพังตอน deploy</h4>
+    <ul class="key-list">
+      <li><strong>Apps Script Versions</strong> — ทุกครั้งที่ deploy production ให้กด <code>Deploy → New version</code> เก็บไว้ — ถ้าพัง <code>Manage deployments</code> เลือก version เดิมได้ทันทีใน 10 วินาที</li>
+      <li><strong>2 deployments คู่ขนาน</strong> — <code>prod</code> (frontend ชี้) และ <code>staging</code> (test URL) — push ขึ้น staging ก่อน, ทดสอบเสร็จค่อย promote</li>
+      <li><strong>Feature flag ใน Config.gs</strong> — เปิด/ปิด feature ใหม่โดยไม่ต้องแก้ Code.gs (เช่น <code>FEATURE_FLAGS.executive_approval = false</code>)</li>
+      <li><strong>clasp push --watch บน branch dev</strong> เท่านั้น — branch <code>main</code> push ด้วยมือหลัง review</li>
+      <li><strong>Backup Spreadsheet ก่อนเปลี่ยน schema</strong> — ตั้ง trigger รายวัน + manual copy ก่อน migration ทุกครั้ง</li>
+      <li><strong>Smoke test 3 endpoint</strong> หลัง deploy — <code>me</code>, <code>list_projects</code>, <code>dashboard</code> — ถ้าใดอันหนึ่งล้ม revert ทันที</li>
+    </ul>
+
+    <p style="font-size:13px; color: var(--ink-500); margin-top:10px">
+      <strong>กฎเหล็ก:</strong> ถ้าวันใดต้องแก้ทั้ง Code.gs และ Config.gs พร้อมกัน
+      = น่าจะมี migration ใหญ่ → ทำใน staging ก่อนเสมอ ห้าม push ตรง production
+    </p>
+  </section>
+
+  <!-- 11. Deploy -->
+  <section id="deploy">
+    <h2><span class="num">11</span> การติดตั้งและ Deploy</h2>
+    <ol class="key-list">
+      <li><strong>เตรียม Spreadsheet</strong> — copy จาก template <code>PlanWork_DB.template</code> เปลี่ยนชื่อ + ใส่ปีงบฯ ปัจจุบัน</li>
+      <li><strong>เตรียม Drive folder</strong> — โครงสร้าง <code>/PlanWork/{fy}/{project_id}/</code></li>
+      <li><strong>สร้าง Apps Script project</strong> — ผูกกับ Spreadsheet (Container-bound)</li>
+      <li><strong><code>clasp push</code></strong> โค้ดจาก <code>apps-script/</code> — เปิด Web App → Deploy → New deployment → <code>Anyone</code></li>
+      <li><strong>ใส่ Web App URL ใน <code>api.js</code></strong> ของ frontend</li>
+      <li><strong>Push frontend ไป GitHub</strong> — เปิด GitHub Pages branch <code>main</code> /docs หรือ <code>gh-pages</code></li>
+      <li><strong>ตั้ง Custom domain</strong> (ถ้ามี): <code>plan.msc.ac.th</code></li>
+      <li><strong>ทดสอบกับผู้ใช้นำร่อง</strong> 2-3 คนใน 1 ฝ่าย ก่อนเปิดทั้งวิทยาลัย</li>
+    </ol>
+  </section>
+
+  <!-- 12. Security -->
+  <section id="security">
+    <h2><span class="num">12</span> ความปลอดภัยและสำรองข้อมูล</h2>
+    <ul class="key-list">
+      <li><strong>Auth:</strong> Google ID Token + ตรวจโดเมน (เช่น <code>@msc.ac.th</code>)</li>
+      <li><strong>RBAC:</strong> ตรวจในทุก action โดยอ้างอิง Sheet <code>Users.role</code></li>
+      <li><strong>Audit:</strong> ทุกการสร้าง/แก้/ลบ — เขียน <code>SystemLogs</code> และ <code>ApprovalLogs</code></li>
+      <li><strong>Backup:</strong> Apps Script trigger รายวัน — copy Spreadsheet เก็บใน folder <code>/PlanWork/_backup/{yyyy-mm-dd}.xlsx</code></li>
+      <li><strong>Version control:</strong> Sheet ใช้ Version history ของ Google ได้อยู่แล้ว</li>
+      <li><strong>Drive:</strong> share folder ระดับ “เฉพาะคนในโดเมน” ไฟล์โครงการ inherit สิทธิ์</li>
+    </ul>
+  </section>
+
+  <!-- 13. Roadmap -->
+  <section id="roadmap">
+    <h2><span class="num">13</span> แผนงาน (Roadmap)</h2>
+    <div class="timeline">
+      <div class="ph p1">
+        <div class="wk">W 1-2</div>
+        <div>
+          <div class="name">Phase 0 · เตรียมข้อมูล</div>
+          <div class="desc">Clean ไฟล์ Excel ที่มี → import เข้า Sheet template, สร้าง Users, Departments, FundSources, BudgetCategories</div>
+        </div>
+      </div>
+      <div class="ph p1">
+        <div class="wk">W 3-4</div>
+        <div>
+          <div class="name">Phase 1 · MVP — อ่านอย่างเดียว</div>
+          <div class="desc">Dashboard + ทะเบียนโครงการ + บัญชีคุมงบ (read only) เปิดให้ทุกคนเห็นข้อมูลก่อน เพื่อทดแทน PowerPoint รายเดือน</div>
+        </div>
+      </div>
+      <div class="ph p2">
+        <div class="wk">W 5-7</div>
+        <div>
+          <div class="name">Phase 2 · ระบบขอเบิก</div>
+          <div class="desc">ฟอร์มขอเบิก + Workflow อนุมัติ + อัปโหลดไฟล์ Drive + Notification ด้วย Email</div>
+        </div>
+      </div>
+      <div class="ph p2">
+        <div class="wk">W 8-9</div>
+        <div>
+          <div class="name">Phase 3 · เพิ่มโครงการ + รายงาน</div>
+          <div class="desc">CRUD โครงการครบ, Export PDF/Excel ตามแบบของกระทรวง, รายงานรายไตรมาส</div>
+        </div>
+      </div>
+      <div class="ph p3">
+        <div class="wk">W 10</div>
+        <div>
+          <div class="name">Phase 4 · Pilot ฝ่ายบริหารทรัพยากร</div>
+          <div class="desc">ทดลองจริง 1 ฝ่าย 1 เดือน เก็บ feedback ปรับปรุง</div>
+        </div>
+      </div>
+      <div class="ph p4">
+        <div class="wk">W 11-12</div>
+        <div>
+          <div class="name">Phase 5 · Roll-out ทั้งวิทยาลัย</div>
+          <div class="desc">อบรมผู้ใช้ทุกฝ่าย/แผนก, เปิดใช้งานเต็ม, จัดทำคู่มือ</div>
+        </div>
+      </div>
+      <div class="ph p4">
+        <div class="wk">W 13+</div>
+        <div>
+          <div class="name">Phase 6 · บำรุงรักษา + ฟีเจอร์เพิ่ม</div>
+          <div class="desc">LINE Notify, Mobile-friendly, รายงานผู้บริหารระดับลึก, เชื่อม FY ถัดไป</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 14. Risks -->
+  <section id="risks">
+    <h2><span class="num">14</span> ความเสี่ยงและทางเลือก</h2>
+    <table>
+      <thead><tr><th style="width:30%">ความเสี่ยง</th><th>ผลกระทบ</th><th>การลดความเสี่ยง</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>ขีดจำกัด Apps Script (6 นาที/run, 30 trigger/วัน)</td>
+          <td>รายงานใหญ่อาจ timeout</td>
+          <td>ทำเป็น batch, cache, สร้าง PDF แบบ async</td>
+        </tr>
+        <tr>
+          <td>เจ้าหน้าที่แก้ Sheet ตรง ๆ ทำให้ข้อมูลพัง</td>
+          <td>ยอดคลาดเคลื่อน</td>
+          <td>ใส่ data validation + lock cells, audit Sheet เห็นใครแก้</td>
+        </tr>
+        <tr>
+          <td>โดเมนอีเมลของวิทยาลัยไม่พร้อม</td>
+          <td>Login ไม่ได้</td>
+          <td>เริ่มจาก allow-list email ใน Users sheet ก่อน</td>
+        </tr>
+        <tr>
+          <td>ผู้ใช้ไม่คุ้นเว็บ</td>
+          <td>กลับไปใช้ Excel</td>
+          <td>UI ต้องดูคล้ายตารางที่ใช้อยู่ + คู่มือสั้น 1 หน้า + workshop</td>
+        </tr>
+        <tr>
+          <td>ข้อมูลย้อนหลังจาก Excel เก่าไม่ครบ</td>
+          <td>เปรียบเทียบปีก่อนไม่ได้</td>
+          <td>ตั้งต้นเฉพาะปี 2569 เป็นต้นไป — ปีก่อนเก็บเป็น read-only archive</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h4>ทางเลือก Tech อื่น (ถ้าระบบโตเกิน Sheet)</h4>
+    <ul class="key-list">
+      <li><strong>+ Supabase</strong> — ย้ายไปใช้ Postgres เมื่อข้อมูลเกิน 50,000 แถว/ชีต</li>
+      <li><strong>+ Cloudflare Workers</strong> — ทดแทน Apps Script ถ้าต้องการ latency ต่ำลง</li>
+      <li><strong>+ Looker Studio</strong> — เสริม Dashboard สาธารณะแบบไม่ต้อง login</li>
+    </ul>
+  </section>
+
+  <div class="footer">
+    <div>เอกสารฉบับ 0.1 · จัดทำเพื่อเสนอแนวทางพัฒนาระบบ</div>
+    <div class="nav-link-row">
+      <a href="Mockup.html" class="btn primary sm">ดู Mockup ↗</a>
+      <a href="README.html" class="btn sm">README ↗</a>
+    </div>
+  </div>
+
+</div>
+
+
+</body></html>

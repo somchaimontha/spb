@@ -1,0 +1,799 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<title>Mockup · ระบบงานแผน วก.แม่สะเรียง</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<style>
+  body { background: #e9ecef; }
+  .frame {
+    width: 1280px; height: 800px;
+    background: var(--paper);
+    border-radius: 12px;
+    overflow: hidden;
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    font-size: 14px;
+    color: var(--ink-900);
+  }
+  .sidebar {
+    background: var(--navy-700); color: #cbd5e1;
+    display: flex; flex-direction: column;
+    padding: 20px 14px;
+  }
+  .sb-brand { display: flex; gap: 10px; align-items: center; margin-bottom: 24px; }
+  .sb-brand .logo { width: 36px; height: 36px; border-radius: 50%; background: var(--gold-500); color: var(--navy-700); display: grid; place-items: center; font-weight: 800; }
+  .sb-brand .name { color: white; font-weight: 700; line-height: 1.2; }
+  .sb-brand .sub { font-size: 11px; color: rgba(255,255,255,.55); }
+  .sb-section { font-size: 10.5px; letter-spacing: .14em; color: rgba(255,255,255,.4); text-transform: uppercase; margin: 16px 8px 6px; }
+  .sb-item { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 6px; cursor: pointer; font-size: 13.5px; }
+  .sb-item.active { background: rgba(255,255,255,.08); color: white; border-left: 3px solid var(--gold-500); padding-left: 7px; }
+  .sb-item .ic { width: 16px; opacity: .7; }
+  .sb-spacer { flex: 1; }
+  .sb-user { border-top: 1px solid rgba(255,255,255,.1); padding-top: 12px; display: flex; gap: 10px; align-items: center; }
+  .sb-user .av { width: 32px; height: 32px; border-radius: 50%; background: var(--gold-500); color: var(--navy-700); display: grid; place-items: center; font-weight: 700; font-size: 13px; }
+  .sb-user .nm { color: white; font-size: 13px; line-height: 1.2; }
+  .sb-user .rl { font-size: 11px; color: rgba(255,255,255,.5); }
+
+  .main { display: flex; flex-direction: column; overflow: hidden; }
+  .topbar { display: flex; align-items: center; padding: 14px 24px; border-bottom: 1px solid var(--ink-100); background: white; gap: 16px; }
+  .topbar h1 { margin: 0; font-size: 19px; font-weight: 700; }
+  .topbar .crumbs { font-size: 12.5px; color: var(--ink-500); }
+  .topbar .grow { flex: 1; }
+  .topbar .search { display: flex; align-items: center; gap: 6px; padding: 6px 12px; background: var(--ink-50); border-radius: 8px; font-size: 13px; color: var(--ink-500); width: 240px; }
+  .content { flex: 1; padding: 22px 24px; overflow: auto; background: var(--paper); }
+
+  .stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 18px; }
+  .stat { background: white; border: 1px solid var(--ink-100); border-radius: 10px; padding: 14px 16px; }
+  .stat .lbl { font-size: 11.5px; color: var(--ink-500); letter-spacing: .06em; text-transform: uppercase; }
+  .stat .val { font-size: 24px; font-weight: 800; margin-top: 4px; font-variant-numeric: tabular-nums; }
+  .stat .delta { font-size: 11.5px; margin-top: 4px; color: var(--ink-500); }
+  .stat .delta.up { color: var(--green-600); }
+  .stat .delta.dn { color: var(--rose-600); }
+  .stat.accent { background: var(--navy-700); color: white; }
+  .stat.accent .lbl { color: rgba(255,255,255,.6); }
+  .stat.accent .val { color: white; }
+  .stat.accent .delta { color: rgba(255,255,255,.7); }
+
+  .row-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 14px; margin-bottom: 14px; }
+
+  .panel { background: white; border: 1px solid var(--ink-100); border-radius: 10px; padding: 16px 18px; }
+  .panel h3 { margin: 0 0 12px; font-size: 14px; font-weight: 700; display: flex; justify-content: space-between; align-items: center; }
+  .panel h3 .more { font-size: 11.5px; color: var(--ink-500); font-weight: 500; }
+
+  .bar-chart { display: grid; grid-template-rows: repeat(4, 1fr); gap: 10px; height: 200px; }
+  .bar-row { display: grid; grid-template-columns: 80px 1fr 80px; gap: 10px; align-items: center; font-size: 12px; }
+  .bar-track { background: var(--ink-50); border-radius: 4px; height: 18px; position: relative; overflow: hidden; }
+  .bar-fill { height: 100%; background: var(--navy-500); border-radius: 4px; }
+  .bar-fill.gold { background: var(--gold-500); }
+  .bar-fill.teal { background: var(--teal-600); }
+  .bar-fill.rose { background: var(--rose-600); }
+  .bar-row .num { font-variant-numeric: tabular-nums; text-align: right; font-size: 11.5px; color: var(--ink-700); }
+
+  .alert-list { display: flex; flex-direction: column; gap: 8px; }
+  .alert { display: flex; gap: 10px; padding: 10px 12px; background: #fef3c7; border-left: 3px solid var(--amber-600); border-radius: 4px; font-size: 12.5px; }
+  .alert.rose { background: #fee2e2; border-color: var(--rose-600); }
+  .alert .icon { color: var(--amber-600); font-weight: 700; }
+  .alert.rose .icon { color: var(--rose-600); }
+
+  table.proj { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+  table.proj th { padding: 8px 10px; text-align: left; background: var(--ink-50); font-size: 11px; letter-spacing: .04em; color: var(--ink-500); text-transform: uppercase; border-bottom: 1px solid var(--ink-100); }
+  table.proj td { padding: 8px 10px; border-bottom: 1px solid var(--ink-100); vertical-align: top; }
+  table.proj tr.dept td { background: var(--navy-100); font-weight: 700; color: var(--navy-700); font-size: 12px; }
+  table.proj td.num { text-align: right; font-variant-numeric: tabular-nums; }
+  table.proj td.tight { white-space: nowrap; }
+
+  .heat th, .heat td { padding: 6px 8px; text-align: center; font-size: 11.5px; border: 1px solid var(--ink-100); font-variant-numeric: tabular-nums; }
+  .heat th { background: var(--ink-50); font-size: 10.5px; color: var(--ink-500); }
+  .heat th.rh { text-align: left; }
+  .heat td.rh { text-align: left; font-weight: 600; background: var(--ink-50); }
+  .heat td.zero { color: var(--ink-300); }
+  .heat td.warn { background: #fef3c7; color: var(--amber-600); font-weight: 700; }
+  .heat td.danger { background: #fee2e2; color: var(--rose-600); font-weight: 700; }
+
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 18px; }
+  .field { display: flex; flex-direction: column; gap: 4px; }
+  .field label { font-size: 11.5px; color: var(--ink-500); letter-spacing: .04em; text-transform: uppercase; font-weight: 600; }
+  .field .input, .field select, .field textarea { padding: 8px 10px; border: 1px solid var(--ink-200); border-radius: 6px; font-family: inherit; font-size: 13px; background: white; }
+  .field .input.readonly { background: var(--ink-50); color: var(--ink-500); }
+  .field .hint { font-size: 11px; color: var(--ink-500); margin-top: 2px; }
+
+  .timeline-app { display: flex; flex-direction: column; gap: 10px; }
+  .tl-step { display: grid; grid-template-columns: 28px 1fr; gap: 10px; align-items: start; }
+  .tl-step .dot { width: 24px; height: 24px; border-radius: 50%; background: var(--ink-200); display: grid; place-items: center; font-size: 12px; font-weight: 700; color: var(--ink-500); }
+  .tl-step.done .dot { background: var(--green-600); color: white; }
+  .tl-step.now .dot { background: var(--gold-500); color: var(--navy-700); border: 2px solid var(--navy-700); }
+  .tl-step .body { font-size: 12.5px; }
+  .tl-step .who { color: var(--ink-500); font-size: 11px; }
+  .tl-step .when { color: var(--ink-500); font-size: 11px; margin-top: 2px; }
+
+  .upload {
+    border: 2px dashed var(--ink-200); border-radius: 8px; padding: 24px; text-align: center;
+    background: var(--ink-50); color: var(--ink-500); font-size: 13px;
+  }
+  .file-chip { display: inline-flex; gap: 8px; align-items: center; padding: 6px 10px; background: var(--ink-50); border: 1px solid var(--ink-100); border-radius: 6px; font-size: 12px; margin-right: 6px; }
+
+  .approval-row { display: grid; grid-template-columns: auto 1fr auto auto; gap: 12px; padding: 12px 14px; align-items: center; border-bottom: 1px solid var(--ink-100); }
+  .approval-row:last-child { border-bottom: none; }
+  .approval-row .id { font-family: 'JetBrains Mono', monospace; font-size: 11.5px; color: var(--gold-600); }
+  .approval-row .ttl { font-weight: 600; font-size: 13px; }
+  .approval-row .meta { font-size: 11.5px; color: var(--ink-500); }
+  .approval-row .amt { font-weight: 700; font-variant-numeric: tabular-nums; }
+  .approval-row .acts { display: flex; gap: 6px; }
+
+  /* Sign in */
+  .signin {
+    display: grid; grid-template-columns: 1fr 480px; height: 100%;
+    grid-template-columns: unset;
+  }
+  .signin-frame { display: grid; grid-template-columns: 1fr 1fr; height: 100%; background: white; }
+  .signin-hero {
+    background: var(--navy-700); color: white; padding: 48px 56px;
+    display: flex; flex-direction: column; justify-content: space-between;
+    background-image: radial-gradient(circle at 80% 20%, rgba(212,160,23,.15), transparent 60%);
+  }
+  .signin-hero .crest { width: 72px; height: 72px; border-radius: 50%; background: var(--gold-500); color: var(--navy-700); display: grid; place-items: center; font-weight: 800; font-size: 26px; border: 3px solid white; }
+  .signin-hero h1 { font-size: 36px; line-height: 1.15; margin: 24px 0 12px; }
+  .signin-hero p { color: rgba(255,255,255,.7); font-size: 14.5px; max-width: 420px; }
+  .signin-hero .stamp { font-size: 11.5px; color: rgba(255,255,255,.5); letter-spacing: .12em; text-transform: uppercase; }
+  .signin-form { padding: 64px 56px; display: flex; flex-direction: column; justify-content: center; }
+  .signin-form h2 { font-size: 22px; margin: 0 0 8px; }
+  .signin-form .sub { color: var(--ink-500); margin: 0 0 32px; font-size: 14px; }
+  .gbtn { display: flex; align-items: center; gap: 12px; padding: 12px 18px; border: 1px solid var(--ink-200); border-radius: 8px; background: white; font-size: 14px; font-weight: 600; cursor: pointer; }
+  .gbtn .gicon { width: 18px; height: 18px; background: conic-gradient(from 0deg, #ea4335, #fbbc05, #34a853, #4285f4, #ea4335); border-radius: 50%; }
+  .signin-form .restr { font-size: 12.5px; color: var(--ink-500); margin-top: 18px; }
+
+  /* design canvas overrides */
+  .dc-artboard { background: #e9ecef; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel" src="design-canvas.jsx"></script>
+<script type="text/babel">
+const { DesignCanvas, DCSection, DCArtboard } = window;
+
+// ───── Reusable bits ─────
+const Sidebar = ({ active = 'dashboard', role = 'admin' }) => {
+  const items = [
+    { k: 'dashboard', n: 'Dashboard', g: 'หลัก' },
+    { k: 'projects', n: 'ทะเบียนโครงการ', g: 'หลัก' },
+    { k: 'budget', n: 'บัญชีคุมงบ', g: 'หลัก' },
+    { k: 'disburse', n: 'ใบขอเบิก', g: 'งานเบิกจ่าย' },
+    { k: 'approval', n: 'กล่องอนุมัติ', g: 'งานเบิกจ่าย', badge: 7 },
+    { k: 'reports', n: 'รายงาน', g: 'รายงาน' },
+    { k: 'settings', n: 'ตั้งค่า', g: 'ระบบ' },
+  ];
+  const groups = ['หลัก', 'งานเบิกจ่าย', 'รายงาน', 'ระบบ'];
+  return (
+    <div className="sidebar" data-screen-label="sidebar">
+      <div className="sb-brand">
+        <div className="logo">วก</div>
+        <div>
+          <div className="name">ระบบงานแผน</div>
+          <div className="sub">วก.แม่สะเรียง · FY 2569</div>
+        </div>
+      </div>
+      {groups.map(g => (
+        <React.Fragment key={g}>
+          <div className="sb-section">{g}</div>
+          {items.filter(i => i.g === g).map(i => (
+            <div key={i.k} className={'sb-item ' + (i.k === active ? 'active' : '')}>
+              <span className="ic">▸</span>
+              <span style={{flex:1}}>{i.n}</span>
+              {i.badge && <span className="tag rose" style={{fontSize:10}}>{i.badge}</span>}
+            </div>
+          ))}
+        </React.Fragment>
+      ))}
+      <div className="sb-spacer" />
+      <div className="sb-user">
+        <div className="av">นว</div>
+        <div>
+          <div className="nm">นวมินทร์ ดวงคำ</div>
+          <div className="rl">{role} · งานแผนฯ</div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const Topbar = ({ title, crumbs, actions }) => (
+  <div className="topbar">
+    <div>
+      <div className="crumbs">{crumbs}</div>
+      <h1>{title}</h1>
+    </div>
+    <div className="grow" />
+    <div className="search">⌕ ค้นหาโครงการ / รหัสรายจ่าย…</div>
+    {actions}
+  </div>
+);
+
+const fmt = n => n.toLocaleString('th-TH');
+
+// ───── Screens ─────
+const SignIn = () => (
+  <div className="frame" style={{gridTemplateColumns:'unset'}} data-screen-label="01 Sign in">
+    <div className="signin-frame">
+      <div className="signin-hero">
+        <div>
+          <div className="crest">วก</div>
+          <h1>ระบบงานแผน<br/>และงบประมาณ</h1>
+          <p>วิทยาลัยการอาชีพแม่สะเรียง · ทะเบียนโครงการ บัญชีคุมงบ และใบขอเบิก ในระบบเดียว เชื่อมต่อ Google Sheets และ Drive</p>
+        </div>
+        <div className="stamp">FY 2569 · v 0.1</div>
+      </div>
+      <div className="signin-form">
+        <h2>เข้าสู่ระบบ</h2>
+        <p className="sub">ใช้บัญชีอีเมลโดเมนวิทยาลัย<br/><span className="mono" style={{color:'var(--navy-700)'}}>@msc.ac.th</span></p>
+        <button className="gbtn"><span className="gicon"></span>เข้าสู่ระบบด้วย Google</button>
+        <div className="restr">หากเข้าระบบไม่ได้ กรุณาติดต่องานแผนและงบประมาณ<br/>เพื่อเพิ่มรายชื่อในระบบ</div>
+      </div>
+    </div>
+  </div>
+);
+
+const Dashboard = () => (
+  <div className="frame" data-screen-label="02 Dashboard">
+    <Sidebar active="dashboard" />
+    <div className="main">
+      <Topbar title="ภาพรวมงบประมาณ ปีงบฯ 2569" crumbs="หน้าหลัก · Dashboard" actions={
+        <>
+          <button className="btn sm">เลือกปีงบฯ ▾</button>
+          <button className="btn sm primary">+ เพิ่มโครงการ</button>
+        </>
+      }/>
+      <div className="content">
+        <div className="stat-grid">
+          <div className="stat accent">
+            <div className="lbl">งบที่ได้รับจัดสรร</div>
+            <div className="val">฿28,471,564</div>
+            <div className="delta">14 ประเภทเงิน · 9 หมวดงบ</div>
+          </div>
+          <div className="stat">
+            <div className="lbl">เบิกจ่ายแล้ว</div>
+            <div className="val">฿12,805,221</div>
+            <div className="delta up">▲ 45.0% ของงบทั้งหมด</div>
+          </div>
+          <div className="stat">
+            <div className="lbl">รออนุมัติ</div>
+            <div className="val">฿1,247,800</div>
+            <div className="delta">17 รายการ · 7 ค้างที่งานแผน</div>
+          </div>
+          <div className="stat">
+            <div className="lbl">คงเหลือ</div>
+            <div className="val" style={{color:'var(--green-600)'}}>฿14,418,543</div>
+            <div className="delta">50.6% ใช้ได้</div>
+          </div>
+        </div>
+
+        <div className="row-grid">
+          <div className="panel">
+            <h3>การใช้งบรายไตรมาส <span className="more">FY 2569</span></h3>
+            <div className="bar-chart">
+              <div className="bar-row">
+                <div>ไตรมาส 1</div>
+                <div className="bar-track"><div className="bar-fill" style={{width:'78%'}}></div></div>
+                <div className="num">฿3,720,000</div>
+              </div>
+              <div className="bar-row">
+                <div>ไตรมาส 2</div>
+                <div className="bar-track"><div className="bar-fill" style={{width:'92%'}}></div></div>
+                <div className="num">฿4,389,221</div>
+              </div>
+              <div className="bar-row">
+                <div>ไตรมาส 3</div>
+                <div className="bar-track"><div className="bar-fill gold" style={{width:'62%'}}></div></div>
+                <div className="num">฿2,955,000</div>
+              </div>
+              <div className="bar-row">
+                <div>ไตรมาส 4</div>
+                <div className="bar-track"><div className="bar-fill" style={{width:'36%', opacity:.4}}></div></div>
+                <div className="num" style={{color:'var(--ink-500)'}}>฿1,741,000 (คาด)</div>
+              </div>
+            </div>
+          </div>
+          <div className="panel">
+            <h3>แจ้งเตือน <span className="more">5 รายการ</span></h3>
+            <div className="alert-list">
+              <div className="alert rose"><span className="icon">●</span><div><strong>หมวด 305</strong> · ค่าซ่อมยานพาหนะ คงเหลือ 2.3% (฿4,800)</div></div>
+              <div className="alert"><span className="icon">●</span><div><strong>หมวด 401</strong> · ค่าวัสดุก่อสร้าง คงเหลือ 8.1%</div></div>
+              <div className="alert"><span className="icon">●</span><div><strong>D-2569-0118</strong> ค้างอนุมัติ &gt; 5 วัน</div></div>
+              <div className="alert"><span className="icon">●</span><div><strong>โครงการ 24</strong> ระยะเวลาสิ้นสุด 31 ธ.ค. 68</div></div>
+              <div className="alert"><span className="icon">●</span><div><strong>หมวด 605</strong> · งบกิจกรรม นร. รออนุมัติ 5 รายการ</div></div>
+            </div>
+          </div>
+        </div>
+
+        <div className="row-grid" style={{gridTemplateColumns:'1fr 1fr'}}>
+          <div className="panel">
+            <h3>Top 5 โครงการที่ใช้งบมากสุด</h3>
+            <div className="bar-chart" style={{gridTemplateRows:'repeat(5, 1fr)', height:230}}>
+              {[
+                ['จัดจ้างครูผู้สอนสาขาขาดแคลน', 3000000, 96],
+                ['ปรับปรุงภูมิทัศน์อาคารสถานที่', 498000, 100],
+                ['จัดซื้อวัสดุงานอาคารสถานที่', 400000, 78],
+                ['จ้างเหมาบริการแม่บ้าน', 156000, 100],
+                ['ปรับปรุงสนามกีฬา', 200000, 0],
+              ].map(([n, v, p]) => (
+                <div className="bar-row" key={n} style={{gridTemplateColumns:'180px 1fr 70px'}}>
+                  <div style={{fontSize:11.5, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap'}}>{n}</div>
+                  <div className="bar-track"><div className="bar-fill" style={{width: p+'%', background: p>=90?'var(--rose-600)': p>=60?'var(--amber-600)':'var(--navy-500)'}}></div></div>
+                  <div className="num">{p}%</div>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="panel">
+            <h3>กิจกรรมล่าสุด</h3>
+            <div style={{fontSize:12.5, lineHeight:1.85, color:'var(--ink-700)'}}>
+              <div><span className="mono" style={{color:'var(--gold-600)'}}>15:42</span> · นางสาวจุฑามาศ ส่งใบเบิก <span className="mono">D-2569-0124</span> ฿8,500</div>
+              <div><span className="mono" style={{color:'var(--gold-600)'}}>14:18</span> · งานแผน อนุมัติ <span className="mono">D-2569-0123</span></div>
+              <div><span className="mono" style={{color:'var(--gold-600)'}}>11:05</span> · นวมินทร์ สร้างโครงการ <span className="mono">P-2569-198</span></div>
+              <div><span className="mono" style={{color:'var(--gold-600)'}}>10:30</span> · การเงิน บันทึกจ่าย <span className="mono">D-2569-0120</span> ฿24,800</div>
+              <div><span className="mono" style={{color:'var(--gold-600)'}}>09:55</span> · หัวหน้าแผนกไฟฟ้า ส่งต่อใบเบิก 3 รายการ</div>
+              <div><span className="mono" style={{color:'var(--gold-600)'}}>09:12</span> · ระบบ · สำรองข้อมูลรายวัน สำเร็จ</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+);
+
+const Projects = () => (
+  <div className="frame" data-screen-label="03 ทะเบียนโครงการ">
+    <Sidebar active="projects" />
+    <div className="main">
+      <Topbar title="ทะเบียนโครงการ ปีงบฯ 2569" crumbs="หน้าหลัก · ทะเบียนโครงการ" actions={
+        <>
+          <button className="btn sm">⇣ Export Excel</button>
+          <button className="btn sm primary">+ เพิ่มโครงการ</button>
+        </>
+      }/>
+      <div className="content">
+        <div style={{display:'flex', gap:10, marginBottom:14, flexWrap:'wrap'}}>
+          <span className="tag navy">ทุกฝ่าย ▾</span>
+          <span className="tag">งบเรียนฟรี ▾</span>
+          <span className="tag">บกศ. ▾</span>
+          <span className="tag">งบรายจ่ายอื่น ▾</span>
+          <span className="tag">ส่วนกลาง สอศ. ▾</span>
+          <span className="tag gold">สถานะ: อนุมัติแล้ว ▾</span>
+          <div style={{flex:1}}/>
+          <span style={{fontSize:12.5, color:'var(--ink-500)'}}>แสดง 198 โครงการ · งบรวม ฿28,471,564</span>
+        </div>
+        <div className="panel" style={{padding:0, overflow:'hidden'}}>
+          <table className="proj">
+            <thead>
+              <tr>
+                <th style={{width:50}}>ที่</th>
+                <th>ชื่อโครงการ</th>
+                <th style={{width:90}} className="num">รวม</th>
+                <th style={{width:80}} className="num">เรียนฟรี</th>
+                <th style={{width:70}} className="num">บกศ.</th>
+                <th style={{width:80}} className="num">รายจ่ายอื่น</th>
+                <th style={{width:80}} className="num">ส่วนกลาง</th>
+                <th style={{width:130}}>ผู้รับผิดชอบ</th>
+                <th style={{width:80}}>สถานะ</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr className="dept"><td colSpan="9">▾ ฝ่ายบริหารทรัพยากร · 16 โครงการ · ฿5,336,000</td></tr>
+              <tr><td>1</td><td>โครงการรับสมัครและรายงานตัวนักเรียน นักศึกษา</td><td className="num">15,000</td><td className="num">15,000</td><td className="num">—</td><td className="num">—</td><td className="num">—</td><td>งานทะเบียน</td><td><span className="tag green" style={{fontSize:10}}>อนุมัติ</span></td></tr>
+              <tr><td>2</td><td>โครงการมอบประกาศนียบัตรแก่ผู้สำเร็จการศึกษา 2568</td><td className="num">55,000</td><td className="num">55,000</td><td className="num">—</td><td className="num">—</td><td className="num">—</td><td>งานทะเบียน</td><td><span className="tag green" style={{fontSize:10}}>อนุมัติ</span></td></tr>
+              <tr><td>3</td><td>โครงการจัดซื้อครุภัณฑ์งานอาคารสถานที่</td><td className="num">200,000</td><td className="num">200,000</td><td className="num">—</td><td className="num">—</td><td className="num">—</td><td>งานอาคารสถานที่</td><td><span className="tag amber" style={{fontSize:10}}>ดำเนินการ</span></td></tr>
+              <tr><td>4</td><td>โครงการจัดซื้อวัสดุ/อุปกรณ์ ซ่อมแซมงานอาคารสถานที่</td><td className="num">400,000</td><td className="num">400,000</td><td className="num">—</td><td className="num">—</td><td className="num">—</td><td>งานอาคารสถานที่</td><td><span className="tag amber" style={{fontSize:10}}>ดำเนินการ</span></td></tr>
+              <tr><td>7</td><td>โครงการจ้างเหมาบริการแม่บ้าน</td><td className="num">156,000</td><td className="num">156,000</td><td className="num">—</td><td className="num">—</td><td className="num">—</td><td>งานอาคารสถานที่</td><td><span className="tag green" style={{fontSize:10}}>เสร็จสิ้น</span></td></tr>
+              <tr><td>9</td><td>โครงการปรับปรุงภูมิทัศน์อาคารสถานที่และสิ่งแวดล้อม</td><td className="num">500,000</td><td className="num">500,000</td><td className="num">—</td><td className="num">—</td><td className="num">—</td><td>งานอาคารสถานที่</td><td><span className="tag green" style={{fontSize:10}}>เสร็จสิ้น</span></td></tr>
+              <tr><td>16</td><td>จัดจ้างครูผู้สอนและบุคลากรในสาขาที่ขาดแคลน</td><td className="num">3,000,000</td><td className="num">—</td><td className="num">3,000,000</td><td className="num">—</td><td className="num">—</td><td>งานบุคลากร</td><td><span className="tag green" style={{fontSize:10}}>อนุมัติ</span></td></tr>
+              <tr className="dept"><td colSpan="9">▾ ฝ่ายแผนงานและความร่วมมือ · 12 โครงการ · ฿1,247,800</td></tr>
+              <tr><td>17</td><td>ประชุมเชิงปฏิบัติการ จัดทำแผนปฏิบัติราชการประจำปี</td><td className="num">10,000</td><td className="num">10,000</td><td className="num">—</td><td className="num">—</td><td className="num">—</td><td>งานแผนฯ</td><td><span className="tag green" style={{fontSize:10}}>เสร็จสิ้น</span></td></tr>
+              <tr><td>19</td><td>โครงการประกวดผลงานสิ่งประดิษฐ์ของคนรุ่นใหม่</td><td className="num">25,000</td><td className="num">25,000</td><td className="num">—</td><td className="num">—</td><td className="num">—</td><td>งานวิจัยพัฒนาฯ</td><td><span className="tag amber" style={{fontSize:10}}>ดำเนินการ</span></td></tr>
+              <tr><td>20</td><td>สร้างองค์ความรู้ทางการอาชีวศึกษา ถ่ายทอดเทคโนโลยี</td><td className="num">61,000</td><td className="num">—</td><td className="num">—</td><td className="num">—</td><td className="num">61,000</td><td>งานวิจัยพัฒนาฯ</td><td><span className="tag" style={{fontSize:10}}>เสนอ</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+);
+
+const ProjectDetail = () => (
+  <div className="frame" data-screen-label="04 รายละเอียดโครงการ">
+    <Sidebar active="projects" />
+    <div className="main">
+      <Topbar title="โครงการปรับปรุงภูมิทัศน์อาคารสถานที่" crumbs="ทะเบียนโครงการ · P-2569-009" actions={
+        <>
+          <button className="btn sm">⇣ พิมพ์ใบโครงการ</button>
+          <button className="btn sm primary">+ ใบขอเบิกใหม่</button>
+        </>
+      }/>
+      <div className="content">
+        <div className="stat-grid" style={{gridTemplateColumns:'repeat(4, 1fr)'}}>
+          <div className="stat"><div className="lbl">งบที่ขอ</div><div className="val">฿500,000</div><div className="delta">งบเรียนฟรี · หมวด 115</div></div>
+          <div className="stat"><div className="lbl">ใช้ไปแล้ว</div><div className="val">฿498,000</div><div className="delta up">99.6%</div></div>
+          <div className="stat"><div className="lbl">คงเหลือ</div><div className="val" style={{color:'var(--green-600)'}}>฿2,000</div><div className="delta dn">เกือบหมด</div></div>
+          <div className="stat accent"><div className="lbl">สถานะ</div><div className="val" style={{fontSize:18}}>เสร็จสิ้น</div><div className="delta">ปิดเมื่อ 28 ก.พ. 69</div></div>
+        </div>
+
+        <div className="row-grid">
+          <div className="panel">
+            <h3>รายละเอียดโครงการ</h3>
+            <table style={{width:'100%', fontSize:12.5}}>
+              <tbody>
+                <tr><td style={{padding:'5px 0', color:'var(--ink-500)', width:140}}>รหัสโครงการ</td><td className="mono">P-2569-009</td></tr>
+                <tr><td style={{padding:'5px 0', color:'var(--ink-500)'}}>ฝ่าย</td><td>ฝ่ายบริหารทรัพยากร</td></tr>
+                <tr><td style={{padding:'5px 0', color:'var(--ink-500)'}}>งานเจ้าของ</td><td>งานอาคารสถานที่</td></tr>
+                <tr><td style={{padding:'5px 0', color:'var(--ink-500)'}}>ผู้รับผิดชอบ</td><td>นางสาวจุฑามาศ บัวขาว</td></tr>
+                <tr><td style={{padding:'5px 0', color:'var(--ink-500)'}}>ระยะเวลา</td><td>1 ต.ค. 68 – 28 ก.พ. 69</td></tr>
+                <tr><td style={{padding:'5px 0', color:'var(--ink-500)'}}>หมวดงบหลัก</td><td>4xx ค่าวัสดุ (115 - งานอาคาร)</td></tr>
+                <tr><td style={{padding:'5px 0', color:'var(--ink-500)'}}>แหล่งงบ</td><td>งบเรียนฟรี (อุดหนุน)</td></tr>
+                <tr><td style={{padding:'5px 0', color:'var(--ink-500)'}}>Drive folder</td><td><a href="#">drive.google.com/.../P-2569-009</a></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div className="panel">
+            <h3>ไฟล์แนบ <span className="more">5 ไฟล์</span></h3>
+            <div style={{display:'flex', flexDirection:'column', gap:6}}>
+              <div className="file-chip">📄 บันทึกขออนุมัติโครงการ.pdf</div>
+              <div className="file-chip">📄 ใบเสร็จ-วัสดุ-งวด1.pdf</div>
+              <div className="file-chip">📄 ใบเสร็จ-วัสดุ-งวด2.pdf</div>
+              <div className="file-chip">🖼 ภาพก่อนปรับปรุง.jpg</div>
+              <div className="file-chip">🖼 ภาพหลังปรับปรุง.jpg</div>
+            </div>
+          </div>
+        </div>
+
+        <div className="panel" style={{marginTop:14}}>
+          <h3>รายการเบิกจ่าย <span className="more">12 รายการ · ฿498,000</span></h3>
+          <table className="proj">
+            <thead><tr><th>เลขที่</th><th>วันที่</th><th>รายการ</th><th>ผู้ขอเบิก</th><th>หมวด</th><th className="num">จำนวนเงิน</th><th>สถานะ</th></tr></thead>
+            <tbody>
+              <tr><td className="mono">D-2569-0042</td><td>15 ต.ค. 68</td><td>วัสดุปรับปรุงพื้นที่ ลานหน้าอาคาร</td><td>จุฑามาศ บัวขาว</td><td>415</td><td className="num">85,000</td><td><span className="tag green" style={{fontSize:10}}>จ่ายแล้ว</span></td></tr>
+              <tr><td className="mono">D-2569-0058</td><td>2 พ.ย. 68</td><td>ค่าจ้างปรับปรุงสนามหญ้า</td><td>จุฑามาศ บัวขาว</td><td>305</td><td className="num">120,000</td><td><span className="tag green" style={{fontSize:10}}>จ่ายแล้ว</span></td></tr>
+              <tr><td className="mono">D-2569-0073</td><td>20 พ.ย. 68</td><td>ปลูกต้นไม้ + ปุ๋ย</td><td>จุฑามาศ บัวขาว</td><td>415</td><td className="num">42,500</td><td><span className="tag green" style={{fontSize:10}}>จ่ายแล้ว</span></td></tr>
+              <tr><td className="mono">D-2569-0091</td><td>10 ธ.ค. 68</td><td>ทาสีรั้ว + อาคารหน้า</td><td>จุฑามาศ บัวขาว</td><td>415</td><td className="num">75,500</td><td><span className="tag green" style={{fontSize:10}}>จ่ายแล้ว</span></td></tr>
+              <tr><td className="mono">D-2569-0118</td><td>22 ม.ค. 69</td><td>ระบบไฟส่องสว่างทางเดิน</td><td>จุฑามาศ บัวขาว</td><td>305</td><td className="num">175,000</td><td><span className="tag green" style={{fontSize:10}}>จ่ายแล้ว</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+);
+
+const BudgetLedger = () => {
+  const fundCols = ['ปวช.','ปวส.','ระยะสั้น','อุดหนุน','หนังสือ','เครื่องแบบ','กิจกรรม','อุปกรณ์','เครื่องมือ','ทั่วไป','โครงการ','เงินนอก','รายได้','รับฝาก'];
+  const rows = [
+    { code:'101', name:'เงินเดือนพนักงานราชการ', vals:[null,null,null,null,null,null,null,null,null,null,765050,null,null,null], used: 99.99 },
+    { code:'202', name:'ค่าสอนเกินภาระงาน', vals:[null,null,null,169920,null,null,null,null,null,null,null,null,null,null], used: 100 },
+    { code:'206', name:'ค่าจ้างครูรายเดือน', vals:[null,null,null,1019820,null,null,null,null,null,null,null,null,null,null], used: 100 },
+    { code:'207', name:'ค่าจ้างเจ้าหน้าที่รายเดือน', vals:[null,null,null,656837,null,null,null,null,null,null,null,null,null,null], used: 100 },
+    { code:'305', name:'ค่าซ่อมยานพาหนะ', vals:[12000,null,null,null,null,null,null,null,null,null,null,null,null,null], used: 97.7 },
+    { code:'401', name:'แผนกวิชาช่างก่อสร้าง', vals:[35500,62000,15188,null,null,null,null,null,null,null,null,null,2500,null], used: 100 },
+    { code:'415', name:'งานอาคารสถานที่', vals:[200000,null,null,498000,null,null,null,null,null,null,null,null,null,null], used: 99.6 },
+    { code:'501', name:'ค่าไฟฟ้า', vals:[125109,null,null,null,null,null,null,null,null,null,1280,null,null,null], used: 78 },
+    { code:'601', name:'พัฒนาผู้เรียน', vals:[null,null,null,null,null,null,286900,null,null,null,null,null,null,null], used: 62 },
+    { code:'701', name:'ครุภัณฑ์เขียนแบบฯ', vals:[1500000,null,null,null,null,null,null,null,null,null,null,null,null,null], used: 88 },
+    { code:'801', name:'ค่าหนังสือเรียน', vals:[null,null,null,null,604000,null,null,null,null,null,null,null,null,null], used: 0 },
+    { code:'901', name:'ตามรอยพระยุคลบาท', vals:[null,null,null,null,null,null,null,null,null,null,null,null,null,null], used: 0 },
+  ];
+  const cell = v => v ? <td>{(v/1000).toFixed(0)}k</td> : <td className="zero">—</td>;
+  return (
+    <div className="frame" data-screen-label="05 บัญชีคุมงบ">
+      <Sidebar active="budget" />
+      <div className="main">
+        <Topbar title="บัญชีคุมงบ ปีงบฯ 2569" crumbs="หน้าหลัก · บัญชีคุมงบ" actions={
+          <>
+            <button className="btn sm">⇣ Export</button>
+            <button className="btn sm primary">+ บันทึกงบเข้า</button>
+          </>
+        }/>
+        <div className="content">
+          <div style={{display:'flex', gap:10, marginBottom:14}}>
+            <span className="tag navy">มุมมอง: หมวด × ประเภทเงิน</span>
+            <span className="tag">หน่วย: พันบาท</span>
+            <span className="tag gold">แสดงเฉพาะที่ใช้ &gt; 80%</span>
+            <div style={{flex:1}}/>
+            <span style={{fontSize:12.5, color:'var(--ink-500)'}}>หมวดงบ 1xx–9xx · 14 ประเภทเงิน</span>
+          </div>
+          <div className="panel" style={{padding:'10px 12px', overflow:'auto'}}>
+            <table className="heat" style={{width:'100%'}}>
+              <thead>
+                <tr>
+                  <th className="rh" style={{width:60}}>รหัส</th>
+                  <th className="rh">รายการ</th>
+                  {fundCols.map(c => <th key={c} style={{width:48}}>{c}</th>)}
+                  <th style={{width:60}}>ใช้ %</th>
+                </tr>
+              </thead>
+              <tbody>
+                {rows.map(r => (
+                  <tr key={r.code}>
+                    <td className="rh mono">{r.code}</td>
+                    <td className="rh">{r.name}</td>
+                    {r.vals.map((v,i) => v ? <td key={i}>{(v/1000).toFixed(0)}k</td> : <td key={i} className="zero">—</td>)}
+                    <td className={r.used>=95?'danger':r.used>=80?'warn':''}>{r.used.toFixed(0)}%</td>
+                  </tr>
+                ))}
+                <tr style={{background:'var(--ink-50)', fontWeight:700}}>
+                  <td className="rh mono">รวม</td>
+                  <td className="rh">12 หมวด</td>
+                  {fundCols.map((_,i) => <td key={i} className="zero">·</td>)}
+                  <td>—</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const NewDisbursement = () => (
+  <div className="frame" data-screen-label="06 ใบขอเบิก">
+    <Sidebar active="disburse" />
+    <div className="main">
+      <Topbar title="ใบขอเบิกใหม่" crumbs="งานเบิกจ่าย · ใบขอเบิก · ใหม่" actions={
+        <>
+          <button className="btn sm">บันทึกร่าง</button>
+          <button className="btn sm primary">ส่งคำขอ →</button>
+        </>
+      }/>
+      <div className="content" style={{display:'grid', gridTemplateColumns:'2fr 1fr', gap:14, alignItems:'start'}}>
+        <div className="panel">
+          <h3>ข้อมูลใบขอเบิก</h3>
+          <div className="form-grid">
+            <div className="field" style={{gridColumn:'1 / -1'}}>
+              <label>โครงการ *</label>
+              <div className="input">P-2569-009 · ปรับปรุงภูมิทัศน์อาคารสถานที่ ▾</div>
+              <div className="hint">เลือกจากโครงการที่ได้รับอนุมัติแล้ว · งบคงเหลือ ฿2,000</div>
+            </div>
+            <div className="field">
+              <label>หมวดรายจ่าย *</label>
+              <div className="input">415 · งานอาคารสถานที่ ▾</div>
+            </div>
+            <div className="field">
+              <label>ประเภทเงิน *</label>
+              <div className="input">อุดหนุน (จัดการเรียนการสอน) ▾</div>
+            </div>
+            <div className="field">
+              <label>วันที่ขอเบิก</label>
+              <div className="input">15 พ.ค. 2569</div>
+            </div>
+            <div className="field">
+              <label>จำนวนเงิน *</label>
+              <div className="input" style={{textAlign:'right', fontFamily:'JetBrains Mono', fontWeight:700}}>1,800.00 บาท</div>
+            </div>
+            <div className="field" style={{gridColumn:'1 / -1'}}>
+              <label>รายละเอียด *</label>
+              <div className="input" style={{minHeight:60}}>ค่าวัสดุปลูกต้นไม้เพิ่มเติม + ปุ๋ยอินทรีย์ สำหรับสวนหน้าอาคาร 3</div>
+            </div>
+            <div className="field">
+              <label>ผู้ขอใช้</label>
+              <div className="input readonly">นางสาวจุฑามาศ บัวขาว</div>
+            </div>
+            <div className="field">
+              <label>แผนก/งาน</label>
+              <div className="input readonly">งานอาคารสถานที่</div>
+            </div>
+          </div>
+
+          <div style={{marginTop:18}}>
+            <label style={{fontSize:11.5, color:'var(--ink-500)', letterSpacing:'.04em', textTransform:'uppercase', fontWeight:600}}>เอกสารแนบ</label>
+            <div className="upload" style={{marginTop:6}}>
+              ⤓ ลากไฟล์มาวาง หรือ คลิกเพื่อเลือก<br/>
+              <span style={{fontSize:11.5}}>รองรับ PDF, JPG, PNG · บันทึกเข้า Drive ของโครงการอัตโนมัติ</span>
+            </div>
+            <div style={{marginTop:8}}>
+              <span className="file-chip">📄 ใบเสนอราคา-สวน.pdf · 2.1 MB ✕</span>
+            </div>
+          </div>
+        </div>
+
+        <div className="panel" style={{position:'sticky', top:14}}>
+          <h3>ตรวจสอบงบ</h3>
+          <div style={{fontSize:12.5, lineHeight:2, padding:'4px 0'}}>
+            <div style={{display:'flex', justifyContent:'space-between'}}><span style={{color:'var(--ink-500)'}}>งบโครงการคงเหลือ</span><strong>฿2,000</strong></div>
+            <div style={{display:'flex', justifyContent:'space-between'}}><span style={{color:'var(--ink-500)'}}>หมวด 415 คงเหลือ</span><strong>฿18,400</strong></div>
+            <div style={{display:'flex', justifyContent:'space-between'}}><span style={{color:'var(--ink-500)'}}>คำขอครั้งนี้</span><strong style={{color:'var(--rose-600)'}}>− ฿1,800</strong></div>
+            <div style={{borderTop:'1px solid var(--ink-100)', marginTop:6, paddingTop:6, display:'flex', justifyContent:'space-between', fontSize:14}}>
+              <strong>หลังเบิก</strong><strong style={{color:'var(--green-600)'}}>฿200</strong>
+            </div>
+          </div>
+          <div className="alert" style={{marginTop:10}}><span className="icon">●</span><div>หลังเบิกครั้งนี้ งบโครงการจะเหลือ &lt; 1% — ระบบจะปิดโครงการอัตโนมัติเมื่อ admin บันทึกจ่าย</div></div>
+
+          <h3 style={{marginTop:18}}>ขั้นตอนอนุมัติ</h3>
+          <div className="timeline-app">
+            <div className="tl-step now"><div className="dot">1</div><div className="body"><div><strong>คุณ</strong> · กรอกฟอร์ม</div><div className="who">staff · จุฑามาศ บัวขาว</div></div></div>
+            <div className="tl-step"><div className="dot">2</div><div className="body"><div>หัวหน้างานอาคารสถานที่</div><div className="who">head · ปัชชากร โนวรรณ</div></div></div>
+            <div className="tl-step"><div className="dot">3</div><div className="body"><div>งานแผน · ตรวจงบ</div><div className="who">admin</div></div></div>
+            <div className="tl-step"><div className="dot">4</div><div className="body"><div>งานการเงิน · บันทึกจ่าย</div><div className="who">admin</div></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+);
+
+const ApprovalInbox = () => (
+  <div className="frame" data-screen-label="07 กล่องอนุมัติ">
+    <Sidebar active="approval" />
+    <div className="main">
+      <Topbar title="กล่องอนุมัติ" crumbs="งานเบิกจ่าย · กล่องอนุมัติ" actions={
+        <>
+          <button className="btn sm">ทั้งหมด ▾</button>
+          <button className="btn sm primary">อนุมัติทั้งหมด (3)</button>
+        </>
+      }/>
+      <div className="content">
+        <div style={{display:'flex', gap:8, marginBottom:14}}>
+          <span className="tag navy">รอผม (7)</span>
+          <span className="tag">รอหัวหน้างาน (4)</span>
+          <span className="tag">รอการเงิน (5)</span>
+          <span className="tag">เสร็จแล้ววันนี้ (12)</span>
+        </div>
+
+        <div className="panel" style={{padding:0}}>
+          <div style={{padding:'12px 16px', borderBottom:'1px solid var(--ink-100)', fontSize:12, color:'var(--ink-500)', letterSpacing:'.04em', textTransform:'uppercase', fontWeight:700}}>รออนุมัติงานแผน · 7 รายการ</div>
+
+          {[
+            ['D-2569-0124', 'ค่าวัสดุปลูกต้นไม้ + ปุ๋ย', 'จุฑามาศ บัวขาว · งานอาคารสถานที่', 'P-2569-009', 1800, 'หมวด 415 · อุดหนุน'],
+            ['D-2569-0125', 'ค่าซ่อมเครื่องปริ้นเตอร์ Brother', 'นางสาวน้ำทิพย์ · พัสดุ', 'P-2569-013', 4500, 'หมวด 305 · ปวช.'],
+            ['D-2569-0126', 'ค่าวัสดุฝึก แผนกช่างยนต์ ภาคเรียน 1', 'นายปัชชากร โนวรรณ · ช่างยนต์', 'P-2569-067', 28500, 'หมวด 401 · ปวช.+ปวส.'],
+            ['D-2569-0127', 'ค่าน้ำมันรถ ตค-ธค 68', 'นางอำโนญ พัฒนกสิกร · การเงิน', null, 18200, 'หมวด 305 · ทั่วไป'],
+            ['D-2569-0128', 'ค่าตอบแทน วิทยากรอบรม AI สมองกลฝังตัว', 'อ.วุฒิชัย · เทคโนฯ', 'P-2569-024', 12000, 'หมวด 202 · กิจกรรม'],
+            ['D-2569-0129', 'ค่าหนังสือ ปวช. ภาคเรียน 1/2569', 'งานวิชาการ', null, 604000, 'หมวด 801 · หนังสือ'],
+            ['D-2569-0130', 'ค่ากิจกรรมประกวดสิ่งประดิษฐ์', 'งานวิจัยพัฒนาฯ', 'P-2569-019', 25000, 'หมวด 605 · กิจกรรม'],
+          ].map(([id, t, who, proj, amt, cat]) => (
+            <div className="approval-row" key={id}>
+              <div>
+                <div className="id">{id}</div>
+                <div style={{fontSize:11, color:'var(--ink-500)'}}>2 ชม.ก่อน</div>
+              </div>
+              <div>
+                <div className="ttl">{t}</div>
+                <div className="meta">{who} · {cat}{proj && <> · <span className="mono">{proj}</span></>}</div>
+              </div>
+              <div className="amt">฿{fmt(amt)}</div>
+              <div className="acts">
+                <button className="btn sm">ดู</button>
+                <button className="btn sm" style={{background:'#fee2e2', color:'var(--rose-600)', borderColor:'#fecaca'}}>ปฏิเสธ</button>
+                <button className="btn sm primary">อนุมัติ</button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  </div>
+);
+
+const Reports = () => (
+  <div className="frame" data-screen-label="08 รายงาน">
+    <Sidebar active="reports" />
+    <div className="main">
+      <Topbar title="รายงาน" crumbs="หน้าหลัก · รายงาน" actions={
+        <button className="btn sm primary">⇣ Export ทั้งหมด</button>
+      }/>
+      <div className="content">
+        <div className="row-grid" style={{gridTemplateColumns:'320px 1fr'}}>
+          <div className="panel">
+            <h3>เลือกรายงาน</h3>
+            <div style={{display:'flex', flexDirection:'column', gap:6}}>
+              {[
+                ['สรุปงบประมาณรายไตรมาส', 'admin · executive', true],
+                ['สรุปการใช้งบรายโครงการ', 'ทุกบทบาท', false],
+                ['ทะเบียนคุมงบ (101–920)', 'admin', false],
+                ['รายการเบิกแยกแหล่งงบ', 'admin', false],
+                ['Audit log การอนุมัติ', 'admin', false],
+                ['รายงานสำหรับ สอศ.', 'admin · executive', false],
+              ].map(([n, who, sel]) => (
+                <div key={n} style={{padding:'10px 12px', border:'1px solid '+(sel?'var(--navy-700)':'var(--ink-100)'), borderRadius:6, background: sel?'var(--navy-100)':'white', cursor:'pointer'}}>
+                  <div style={{fontWeight: sel?700:500, fontSize:13}}>{n}</div>
+                  <div style={{fontSize:11, color:'var(--ink-500)'}}>{who}</div>
+                </div>
+              ))}
+            </div>
+            <div style={{marginTop:14, paddingTop:14, borderTop:'1px solid var(--ink-100)'}}>
+              <div className="field">
+                <label>ช่วงเวลา</label>
+                <div className="input">ไตรมาส 2 (ม.ค.–มี.ค. 69) ▾</div>
+              </div>
+              <div className="field" style={{marginTop:8}}>
+                <label>รูปแบบ</label>
+                <div style={{display:'flex', gap:6}}>
+                  <span className="tag navy">PDF</span>
+                  <span className="tag">Excel</span>
+                  <span className="tag">Google Sheet</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="panel">
+            <h3>ตัวอย่าง · สรุปงบประมาณรายไตรมาส 2/2569</h3>
+            <div style={{padding:'8px 0', display:'flex', gap:14, flexWrap:'wrap'}}>
+              {[
+                ['เรียนฟรี', 11119490, 5234500],
+                ['บกศ.', 552265, 412300],
+                ['งบรายจ่ายอื่น', 3055495, 1820000],
+                ['ส่วนกลาง สอศ.', 3850000, 980000],
+              ].map(([n, all, used]) => (
+                <div key={n} style={{flex:1, minWidth:140, padding:'10px 12px', background:'var(--ink-50)', borderRadius:6}}>
+                  <div style={{fontSize:11, color:'var(--ink-500)'}}>{n}</div>
+                  <div style={{fontSize:18, fontWeight:800, marginTop:2}}>฿{fmt(used)}</div>
+                  <div style={{fontSize:11, color:'var(--ink-500)'}}>จาก ฿{fmt(all)} ({((used/all)*100).toFixed(0)}%)</div>
+                  <div className="bar-track" style={{marginTop:6, height:6}}><div className="bar-fill" style={{width:((used/all)*100)+'%'}}/></div>
+                </div>
+              ))}
+            </div>
+            <table className="proj" style={{marginTop:10}}>
+              <thead><tr><th>หมวด</th><th>รายการ</th><th className="num">จัดสรร</th><th className="num">ใช้ไป</th><th className="num">คงเหลือ</th><th className="num">%</th></tr></thead>
+              <tbody>
+                <tr><td className="mono">101</td><td>เงินเดือนพนักงานราชการ</td><td className="num">765,050</td><td className="num">765,000</td><td className="num">50</td><td className="num">100%</td></tr>
+                <tr><td className="mono">202</td><td>ค่าสอนเกินภาระงาน</td><td className="num">169,920</td><td className="num">169,920</td><td className="num">0</td><td className="num">100%</td></tr>
+                <tr><td className="mono">305</td><td>ค่าซ่อมยานพาหนะ</td><td className="num">100,000</td><td className="num">95,200</td><td className="num">4,800</td><td className="num">95%</td></tr>
+                <tr><td className="mono">415</td><td>งานอาคารสถานที่</td><td className="num">500,000</td><td className="num">498,000</td><td className="num">2,000</td><td className="num">99.6%</td></tr>
+                <tr><td className="mono">501</td><td>ค่าไฟฟ้า</td><td className="num">240,000</td><td className="num">187,300</td><td className="num">52,700</td><td className="num">78%</td></tr>
+                <tr><td className="mono">801</td><td>ค่าหนังสือเรียน</td><td className="num">604,000</td><td className="num">0</td><td className="num">604,000</td><td className="num">0%</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+);
+
+// ───── Canvas Layout ─────
+ReactDOM.createRoot(document.getElementById('root')).render(
+  <DesignCanvas title="ระบบงานแผน · Hi-fi Mockup" subtitle="วก.แม่สะเรียง · 8 หน้าจอหลัก">
+    <DCSection id="auth" title="1. การเข้าระบบ">
+      <DCArtboard id="signin" label="หน้า Sign in" width={1280} height={800}>
+        <SignIn />
+      </DCArtboard>
+    </DCSection>
+    <DCSection id="overview" title="2. หน้าหลัก & ภาพรวม">
+      <DCArtboard id="dashboard" label="Dashboard" width={1280} height={800}>
+        <Dashboard />
+      </DCArtboard>
+    </DCSection>
+    <DCSection id="projects" title="3. ทะเบียนโครงการ">
+      <DCArtboard id="projects-list" label="รายการโครงการ" width={1280} height={800}>
+        <Projects />
+      </DCArtboard>
+      <DCArtboard id="projects-detail" label="รายละเอียดโครงการ" width={1280} height={800}>
+        <ProjectDetail />
+      </DCArtboard>
+    </DCSection>
+    <DCSection id="budget" title="4. บัญชีคุมงบ">
+      <DCArtboard id="budget-ledger" label="บัญชีคุมงบ (heatmap)" width={1280} height={800}>
+        <BudgetLedger />
+      </DCArtboard>
+    </DCSection>
+    <DCSection id="disburse" title="5. ใบขอเบิก & อนุมัติ">
+      <DCArtboard id="disburse-new" label="ใบขอเบิกใหม่" width={1280} height={800}>
+        <NewDisbursement />
+      </DCArtboard>
+      <DCArtboard id="approval" label="กล่องอนุมัติ" width={1280} height={800}>
+        <ApprovalInbox />
+      </DCArtboard>
+    </DCSection>
+    <DCSection id="reports" title="6. รายงาน">
+      <DCArtboard id="reports" label="รายงาน + Export" width={1280} height={800}>
+        <Reports />
+      </DCArtboard>
+    </DCSection>
+  </DesignCanvas>
+);
+</script>
+</body>
+</html>

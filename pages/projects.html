@@ -1,0 +1,115 @@
+<div>
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+    <div style="display: flex; gap: 8px; align-items: center;">
+      <input type="text" placeholder="ค้นหาโครงการ..." style="padding: 8px 12px; border: 1px solid var(--ink-200); border-radius: 6px; font-size: 14px; width: 200px;">
+      <select style="padding: 8px 12px; border: 1px solid var(--ink-200); border-radius: 6px; font-size: 14px;">
+        <option>ทั้งหมด</option>
+        <option>บริหารทรัพยากร</option>
+        <option>สาขาวิชา</option>
+        <option>กิจการนักเรียน</option>
+        <option>การเรียนการสอน</option>
+      </select>
+    </div>
+    <button class="btn primary">+ เพิ่มโครงการ</button>
+  </div>
+  
+  <div class="panel">
+    <table class="proj" style="width: 100%; border-collapse: collapse;">
+      <thead>
+        <tr>
+          <th style="padding: 10px; text-align: left; font-weight: 600; color: var(--ink-600); text-transform: uppercase; font-size: 11px; background: var(--ink-50); border-bottom: 1px solid var(--ink-100);">รหัส</th>
+          <th style="padding: 10px; text-align: left; font-weight: 600; color: var(--ink-600); text-transform: uppercase; font-size: 11px; background: var(--ink-50); border-bottom: 1px solid var(--ink-100);">ชื่อโครงการ</th>
+          <th style="padding: 10px; text-align: right; font-weight: 600; color: var(--ink-600); text-transform: uppercase; font-size: 11px; background: var(--ink-50); border-bottom: 1px solid var(--ink-100);">งบประมาณ</th>
+          <th style="padding: 10px; text-align: right; font-weight: 600; color: var(--ink-600); text-transform: uppercase; font-size: 11px; background: var(--ink-50); border-bottom: 1px solid var(--ink-100);">เบิกใช้</th>
+          <th style="padding: 10px; text-align: center; font-weight: 600; color: var(--ink-600); text-transform: uppercase; font-size: 11px; background: var(--ink-50); border-bottom: 1px solid var(--ink-100);">สถานะ</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr style="background: var(--navy-100);">
+          <td colspan="5" style="padding: 10px; font-weight: 700; color: var(--navy-700); background: var(--navy-50); border-bottom: 1px solid var(--ink-100);">แผนกบริหารทรัพยากร</td>
+        </tr>
+        <tr style="border-bottom: 1px solid var(--ink-100);">
+          <td style="padding: 10px; color: var(--ink-700);">101</td>
+          <td style="padding: 10px;"><a href="#" onclick="return false" style="color: var(--navy-600); text-decoration: none; cursor: pointer;">โครงการปรับปรุงห้องบริหาร</a></td>
+          <td style="padding: 10px; text-align: right; font-variant-numeric: tabular-nums;">฿450,000</td>
+          <td style="padding: 10px; text-align: right; font-variant-numeric: tabular-nums;">฿280,000</td>
+          <td style="padding: 10px; text-align: center;"><span class="tag navy">กำลังดำเนิน</span></td>
+        </tr>
+        <tr style="border-bottom: 1px solid var(--ink-100);">
+          <td style="padding: 10px; color: var(--ink-700);">102</td>
+          <td style="padding: 10px;"><a href="#" onclick="return false" style="color: var(--navy-600); text-decoration: none; cursor: pointer;">ครุภัณฑ์โต๊ะ chair ปี 2569</a></td>
+          <td style="padding: 10px; text-align: right; font-variant-numeric: tabular-nums;">฿280,000</td>
+          <td style="padding: 10px; text-align: right; font-variant-numeric: tabular-nums;">฿180,000</td>
+          <td style="padding: 10px; text-align: center;"><span class="tag navy">กำลังดำเนิน</span></td>
+        </tr>
+        <tr style="border-bottom: 1px solid var(--ink-100);">
+          <td style="padding: 10px; color: var(--ink-700);">103</td>
+          <td style="padding: 10px;"><a href="#" onclick="return false" style="color: var(--navy-600); text-decoration: none; cursor: pointer;">โครงการอบรมการจัดการหลักสูตร</a></td>
+          <td style="padding: 10px; text-align: right; font-variant-numeric: tabular-nums;">฿120,000</td>
+          <td style="padding: 10px; text-align: right; font-variant-numeric: tabular-nums;">฿120,000</td>
+          <td style="padding: 10px; text-align: center;"><span class="tag teal">ปิด</span></td>
+        </tr>
+        
+        <tr style="background: var(--navy-100);">
+          <td colspan="5" style="padding: 10px; font-weight: 700; color: var(--navy-700); background: var(--navy-50); border-bottom: 1px solid var(--ink-100);">แผนกการเรียนการสอน</td>
+        </tr>
+        <tr style="border-bottom: 1px solid var(--ink-100);">
+          <td style="padding: 10px; color: var(--ink-700);">201</td>
+          <td style="padding: 10px;"><a href="#" onclick="return false" style="color: var(--navy-600); text-decoration: none; cursor: pointer;">วัสดุการเรียนสาขาคอมพิวเตอร์</a></td>
+          <td style="padding: 10px; text-align: right; font-variant-numeric: tabular-nums;">฿350,000</td>
+          <td style="padding: 10px; text-align: right; font-variant-numeric: tabular-nums;">฿280,000</td>
+          <td style="padding: 10px; text-align: center;"><span class="tag navy">กำลังดำเนิน</span></td>
+        </tr>
+        <tr style="border-bottom: 1px solid var(--ink-100);">
+          <td style="padding: 10px; color: var(--ink-700);">202</td>
+          <td style="padding: 10px;"><a href="#" onclick="return false" style="color: var(--navy-600); text-decoration: none; cursor: pointer;">ปรับปรุงปฏิบัติการเกษตร</a></td>
+          <td style="padding: 10px; text-align: right; font-variant-numeric: tabular-nums;">฿580,000</td>
+          <td style="padding: 10px; text-align: right; font-variant-numeric: tabular-nums;">฿0</td>
+          <td style="padding: 10px; text-align: center;"><span class="tag amber" style="background: #fef3c7; color: var(--amber-600);">อนุมัติแล้ว</span></td>
+        </tr>
+        <tr style="border-bottom: 1px solid var(--ink-100);">
+          <td style="padding: 10px; color: var(--ink-700);">203</td>
+          <td style="padding: 10px;"><a href="#" onclick="return false" style="color: var(--navy-600); text-decoration: none; cursor: pointer;">ป้ายประชาสัมพันธ์ประจำปี</a></td>
+          <td style="padding: 10px; text-align: right; font-variant-numeric: tabular-nums;">฿85,000</td>
+          <td style="padding: 10px; text-align: right; font-variant-numeric: tabular-nums;">฿85,000</td>
+          <td style="padding: 10px; text-align: center;"><span class="tag teal">ปิด</span></td>
+        </tr>
+        
+        <tr style="background: var(--navy-100);">
+          <td colspan="5" style="padding: 10px; font-weight: 700; color: var(--navy-700); background: var(--navy-50); border-bottom: 1px solid var(--ink-100);">แผนกกิจการนักเรียน</td>
+        </tr>
+        <tr style="border-bottom: 1px solid var(--ink-100);">
+          <td style="padding: 10px; color: var(--ink-700);">301</td>
+          <td style="padding: 10px;"><a href="#" onclick="return false" style="color: var(--navy-600); text-decoration: none; cursor: pointer;">โครงการวันแนะนำเข้าเรียน 2569</a></td>
+          <td style="padding: 10px; text-align: right; font-variant-numeric: tabular-nums;">฿95,000</td>
+          <td style="padding: 10px; text-align: right; font-variant-numeric: tabular-nums;">฿95,000</td>
+          <td style="padding: 10px; text-align: center;"><span class="tag teal">ปิด</span></td>
+        </tr>
+        <tr style="border-bottom: 1px solid var(--ink-100);">
+          <td style="padding: 10px; color: var(--ink-700);">302</td>
+          <td style="padding: 10px;"><a href="#" onclick="return false" style="color: var(--navy-600); text-decoration: none; cursor: pointer;">โครงการปลายปีพิการ</a></td>
+          <td style="padding: 10px; text-align: right; font-variant-numeric: tabular-nums;">฿120,000</td>
+          <td style="padding: 10px; text-align: right; font-variant-numeric: tabular-nums;">฿0</td>
+          <td style="padding: 10px; text-align: center;"><span class="tag" style="background: var(--ink-100); color: var(--ink-700);">รออนุมัติ</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  
+  <style>
+    .panel {
+      background: white;
+      border: 1px solid var(--ink-100);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    
+    .panel table { width: 100%; }
+    .panel td a { cursor: pointer; }
+    .panel td a:hover { text-decoration: underline; }
+    
+    input, select {
+      font-family: inherit;
+    }
+  </style>
+</div>

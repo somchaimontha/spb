@@ -1,0 +1,325 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<title>ล็อกอิน · ระบบงานแผน วก.แม่สะเรียง</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="styles.css">
+<style>
+  body {
+    margin: 0;
+    background: linear-gradient(135deg, var(--navy-700) 0%, var(--navy-500) 100%);
+    display: grid;
+    place-items: center;
+    min-height: 100vh;
+    font-family: 'Sarabun', system-ui, sans-serif;
+  }
+  
+  .login-container {
+    width: 100%;
+    max-width: 420px;
+    padding: 20px;
+  }
+  
+  .login-card {
+    background: white;
+    border-radius: 16px;
+    padding: 48px 32px;
+    box-shadow: 0 20px 60px rgba(0,0,0,.3);
+    text-align: center;
+  }
+  
+  .logo-circle {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: var(--navy-700);
+    color: var(--gold-500);
+    display: grid;
+    place-items: center;
+    font-weight: 800;
+    font-size: 32px;
+    margin: 0 auto 24px;
+    border: 3px solid var(--gold-500);
+  }
+  
+  .login-card h1 {
+    margin: 0 0 8px;
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--ink-900);
+    letter-spacing: -0.01em;
+  }
+  
+  .login-card .subtitle {
+    color: var(--ink-500);
+    font-size: 14px;
+    margin: 0 0 32px;
+  }
+  
+  .form-group {
+    text-align: left;
+    margin-bottom: 18px;
+  }
+  
+  .form-group label {
+    display: block;
+    font-size: 12px;
+    color: var(--ink-500);
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+  
+  .form-group input {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1px solid var(--ink-200);
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: inherit;
+    box-sizing: border-box;
+    transition: all .2s;
+  }
+  
+  .form-group input:focus {
+    outline: none;
+    border-color: var(--navy-700);
+    box-shadow: 0 0 0 3px rgba(20, 40, 80, .1);
+  }
+  
+  .btn-login {
+    width: 100%;
+    padding: 14px;
+    background: var(--navy-700);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all .2s;
+    margin-top: 8px;
+  }
+  
+  .btn-login:hover {
+    background: var(--navy-600);
+    box-shadow: 0 4px 12px rgba(20, 40, 80, .3);
+  }
+  
+  .btn-login:active {
+    transform: translateY(1px);
+  }
+  
+  .divider {
+    display: flex;
+    align-items: center;
+    margin: 24px 0;
+  }
+  
+  .divider::before,
+  .divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--ink-200);
+  }
+  
+  .divider span {
+    padding: 0 12px;
+    color: var(--ink-500);
+    font-size: 12px;
+  }
+  
+  .btn-google {
+    width: 100%;
+    padding: 12px;
+    background: white;
+    color: var(--ink-900);
+    border: 1px solid var(--ink-200);
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: all .2s;
+  }
+  
+  .btn-google:hover {
+    background: var(--ink-50);
+    border-color: var(--ink-300);
+  }
+  
+  .btn-google::before {
+    content: '🔐';
+    font-size: 18px;
+  }
+  
+  .remember-me {
+    display: flex;
+    align-items: center;
+    margin: 16px 0;
+    font-size: 13px;
+    color: var(--ink-700);
+  }
+  
+  .remember-me input {
+    margin-right: 8px;
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+  }
+  
+  .footer-links {
+    margin-top: 24px;
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    font-size: 12px;
+  }
+  
+  .footer-links a {
+    color: var(--ink-500);
+    text-decoration: none;
+    transition: color .2s;
+  }
+  
+  .footer-links a:hover {
+    color: var(--navy-700);
+  }
+  
+  .alert-message {
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 16px;
+    font-size: 13px;
+  }
+  
+  .alert-message.error {
+    background: #fee2e2;
+    color: var(--rose-600);
+    border: 1px solid #fca5a5;
+  }
+  
+  .alert-message.warning {
+    background: #fef3c7;
+    color: var(--amber-600);
+    border: 1px solid #fde68a;
+  }
+</style>
+</head>
+<body>
+
+<div class="login-container">
+  <div class="login-card">
+    <div class="logo-circle">วก</div>
+    
+    <h1>ล็อกอิน</h1>
+    <p class="subtitle">ระบบงานแผนและงบประมาณ</p>
+    
+    <div id="alert-container"></div>
+    
+    <form id="login-form">
+      <div class="form-group">
+        <label for="email">อีเมล</label>
+        <input type="email" id="email" placeholder="your.name@msc.ac.th" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="password">รหัสผ่าน</label>
+        <input type="password" id="password" placeholder="••••••••" required>
+      </div>
+      
+      <div class="remember-me">
+        <input type="checkbox" id="remember" name="remember">
+        <label for="remember" style="margin: 0; cursor: pointer;">จำรหัสผ่านไว้ครั้งต่อไป</label>
+      </div>
+      
+      <button type="submit" class="btn-login">ล็อกอิน</button>
+    </form>
+    
+    <div class="divider"><span>หรือ</span></div>
+    
+    <button type="button" class="btn-google" onclick="googleLogin(); return false;">
+      ล็อกอินด้วย Google
+    </button>
+    
+    <div class="footer-links">
+      <a href="#" onclick="alert('ติดต่อผู้ดูแลระบบ'); return false;">ลืมรหัสผ่าน?</a>
+      <span>•</span>
+      <a href="#" onclick="alert('ติดต่อผู้ดูแลระบบ'); return false;">ช่วยเหลือ</a>
+    </div>
+  </div>
+  
+  <div style="text-align: center; margin-top: 32px; color: white; font-size: 12px;">
+    <p style="margin: 0;">ระบบนี้สำหรับบุคลากร วิทยาลัยการอาชีพแม่สะเรียง เท่านั้น</p>
+    <p style="margin: 8px 0 0; opacity: .8;">ปีงบประมาณ 2569</p>
+  </div>
+</div>
+
+<script>
+document.getElementById('login-form').addEventListener('submit', function(e) {
+  e.preventDefault();
+  
+  const email = document.getElementById('email').value;
+  const password = document.getElementById('password').value;
+  
+  // Simple validation
+  if (!email.includes('@msc.ac.th')) {
+    showAlert('กรุณาใช้อีเมลที่ลงท้ายด้วย @msc.ac.th', 'warning');
+    return;
+  }
+  
+  if (password.length < 6) {
+    showAlert('รหัสผ่านต้องมีความยาวอย่างน้อย 6 ตัวอักษร', 'error');
+    return;
+  }
+  
+  // Simulate login (in real app, this would authenticate with backend)
+  localStorage.setItem('user', JSON.stringify({
+    email: email,
+    name: email.split('@')[0].split('.').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')
+  }));
+  
+  // Redirect to app
+  window.location.href = 'app.html';
+});
+
+function googleLogin() {
+  // Simulate Google login
+  localStorage.setItem('user', JSON.stringify({
+    email: 'example@msc.ac.th',
+    name: 'ใจจริง ใจ'
+  }));
+  
+  window.location.href = 'app.html';
+}
+
+function showAlert(message, type) {
+  const alertContainer = document.getElementById('alert-container');
+  const alertDiv = document.createElement('div');
+  alertDiv.className = `alert-message ${type}`;
+  alertDiv.textContent = message;
+  alertContainer.innerHTML = '';
+  alertContainer.appendChild(alertDiv);
+  
+  setTimeout(() => {
+    alertDiv.remove();
+  }, 5000);
+}
+
+// Check if user is already logged in
+window.addEventListener('load', function() {
+  const user = localStorage.getItem('user');
+  if (user) {
+    window.location.href = 'app.html';
+  }
+});
+</script>
+
+</body>
+</html>
