@@ -407,9 +407,41 @@ const ProjPage = (() => {
     document.getElementById('proj-status-filter').addEventListener('change', render);
   }
 
+  // Read projects from localStorage (mock seed) without waiting for GAS
+  function _localProjects() {
+    try {
+      const db = JSON.parse(localStorage.getItem('plan_mockdb_v3') || 'null');
+      return (db && Array.isArray(db.projects)) ? db.projects : [];
+    } catch { return []; }
+  }
+
   async function load() {
-    const r = await API.projects.list({ fiscal_year: 2569 });
-    if (r.ok) { _projects = r.data; render(); renderSummary(); }
+    // Step 1: Show local/mock data instantly (zero latency)
+    const local = _localProjects();
+    if (local.length) { _projects = local; render(); renderSummary(); }
+
+    // Step 2: Fetch from API (GAS or Mock) — replace when done, 15s timeout
+    try {
+      const r = await Promise.race([
+        API.projects.list({ fiscal_year: 2569 }),
+        new Promise(res => setTimeout(() => res({ error: 'TIMEOUT' }), 15000))
+      ]);
+      if (r.ok && Array.isArray(r.data)) {
+        _projects = r.data;
+        render();
+        renderSummary();
+      } else if (!local.length) {
+        document.getElementById('proj-tbody').innerHTML =
+          `<tr><td colspan="9" style="text-align:center;padding:40px;color:var(--ink-400)">
+            ${r.error === 'TIMEOUT' ? 'GAS ตอบสนองช้าเกิน 15 วินาที — ลองใหม่' : 'ยังไม่มีข้อมูลโครงการในระบบ'}
+          </td></tr>`;
+      }
+    } catch {
+      if (!local.length) {
+        document.getElementById('proj-tbody').innerHTML =
+          '<tr><td colspan="9" style="text-align:center;padding:40px;color:var(--ink-400)">ไม่สามารถโหลดข้อมูลได้</td></tr>';
+      }
+    }
   }
 
   // ── Render Summary Cards ───────────────────────────────────
