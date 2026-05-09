@@ -38,11 +38,12 @@ const API = (() => {
   // ── HTTP helper ──────────────────────────────────────────
   async function _call(action, params = {}) {
     if (!GAS_URL) return Mock[action] ? Mock[action](params) : { error: 'MOCK_NOT_FOUND', action };
-    const url  = `${GAS_URL}?action=${action}&token=${_token || ''}`;
+    const url  = `${GAS_URL}?action=${action}&token=${encodeURIComponent(_token || '')}`;
     const resp = await fetch(url, {
-      method:  'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body:    JSON.stringify({ token: _token, ...params })
+      method:      'POST',
+      body:        JSON.stringify({ token: _token, ...params })
+      // ไม่ใส่ Content-Type: application/json → ป้องกัน CORS Preflight
+      // browser จะส่งเป็น text/plain (Simple Request) → GAS ตอบได้โดยตรง
     });
     return resp.json();
   }
