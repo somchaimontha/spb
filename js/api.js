@@ -36,16 +36,24 @@ const API = (() => {
   }
 
   // ── HTTP helper ──────────────────────────────────────────
+  // ใช้ GET เท่านั้น — GAS Web App รองรับ CORS สำหรับ GET สมบูรณ์
+  // POST triggers CORS preflight ซึ่ง GAS ไม่รองรับจาก external origin
   async function _call(action, params = {}) {
     if (!GAS_URL) return Mock[action] ? Mock[action](params) : { error: 'MOCK_NOT_FOUND', action };
-    const url  = `${GAS_URL}?action=${action}&token=${encodeURIComponent(_token || '')}`;
-    const resp = await fetch(url, {
-      method:      'POST',
-      body:        JSON.stringify({ token: _token, ...params })
-      // ไม่ใส่ Content-Type: application/json → ป้องกัน CORS Preflight
-      // browser จะส่งเป็น text/plain (Simple Request) → GAS ตอบได้โดยตรง
+
+    const sp = new URLSearchParams({ action, token: _token || '' });
+    Object.entries(params).forEach(([k, v]) => {
+      if (v !== undefined && v !== null) {
+        sp.set(k, typeof v === 'object' ? JSON.stringify(v) : String(v));
+      }
     });
-    return resp.json();
+
+    try {
+      const resp = await fetch(`${GAS_URL}?${sp.toString()}`);
+      return await resp.json();
+    } catch (err) {
+      return { error: 'NETWORK_ERROR', message: String(err) };
+    }
   }
 
   // ── Public API ────────────────────────────────────────────
