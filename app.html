@@ -229,21 +229,135 @@
   .content::-webkit-scrollbar {
     width: 6px;
   }
-  
+
   .sidebar::-webkit-scrollbar-track,
   .content::-webkit-scrollbar-track {
     background: transparent;
   }
-  
+
   .sidebar::-webkit-scrollbar-thumb,
   .content::-webkit-scrollbar-thumb {
     background: rgba(255,255,255,.2);
     border-radius: 3px;
   }
-  
+
   .sidebar::-webkit-scrollbar-thumb:hover,
   .content::-webkit-scrollbar-thumb:hover {
     background: rgba(255,255,255,.3);
+  }
+
+  /* ── DB Connection Status ── */
+  .db-status {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    border: 1px solid;
+    white-space: nowrap;
+    transition: all .3s;
+  }
+  .db-status.mock    { background: #fef3c7; color: #92400e; border-color: #fde68a; }
+  .db-status.online  { background: #dcfce7; color: #14532d; border-color: #86efac; }
+  .db-status.error   { background: #fee2e2; color: #7f1d1d; border-color: #fca5a5; }
+  .db-status.loading { background: var(--ink-50); color: var(--ink-500); border-color: var(--ink-200); }
+
+  .db-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .db-status.mock .db-dot    { background: #f59e0b; }
+  .db-status.online .db-dot  { background: #22c55e; animation: pulse-dot 2s infinite; }
+  .db-status.error .db-dot   { background: #ef4444; }
+  .db-status.loading .db-dot { background: var(--ink-400); }
+
+  @keyframes pulse-dot {
+    0%,100% { opacity: 1; }
+    50%      { opacity: .35; }
+  }
+
+  /* ── Mobile sidebar toggle ── */
+  .menu-toggle {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    color: var(--ink-700);
+    cursor: pointer;
+    padding: 6px;
+    border-radius: 6px;
+    flex-shrink: 0;
+  }
+  .menu-toggle:hover { background: var(--ink-100); }
+
+  .sidebar-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.5);
+    z-index: 90;
+  }
+  .sidebar-overlay.open { display: block; }
+
+  /* ── Responsive breakpoints ── */
+  @media (max-width: 900px) {
+    .app-frame { grid-template-columns: 200px 1fr; }
+    .content { padding: 20px; }
+  }
+
+  @media (max-width: 768px) {
+    .app-frame { grid-template-columns: 1fr; }
+
+    .sidebar {
+      position: fixed;
+      top: 0; left: 0; bottom: 0;
+      width: 268px;
+      z-index: 100;
+      transform: translateX(-100%);
+      transition: transform .25s ease;
+      padding: 16px 12px;
+    }
+    .sidebar.open { transform: translateX(0); }
+
+    .menu-toggle { display: flex; }
+    .topbar { padding: 12px 16px; }
+    .content { padding: 16px; }
+
+    .db-status { display: none; }
+  }
+
+  @media (max-width: 480px) {
+    .content { padding: 12px; }
+    .topbar .breadcrumb { display: none; }
+  }
+
+  /* ── Responsive utilities for child pages ── */
+  @media (max-width: 768px) {
+    /* Override fixed stat-grid columns from sub-pages */
+    .stat-grid { grid-template-columns: repeat(2, 1fr) !important; }
+    /* Settings tabs wrap */
+    .set-tabs { flex-wrap: wrap; }
+    .set-tab  { flex: 0 0 calc(50% - 4px); }
+    /* Settings grid */
+    .set-grid.cols-3 { grid-template-columns: 1fr 1fr !important; }
+    /* Auth grid */
+    .auth-grid { grid-template-columns: 1fr !important; }
+    /* Row grid in dashboard */
+    .row-grid { grid-template-columns: 1fr !important; }
+    /* Disbursement form */
+    form[style*="grid-template-columns: 1fr 1fr"] { grid-template-columns: 1fr !important; }
+    /* Tables — allow horizontal scroll */
+    .proj-table-wrap, .user-table, .div-table { overflow-x: auto; display: block; }
+  }
+
+  @media (max-width: 480px) {
+    .stat-grid { grid-template-columns: 1fr !important; }
+    .set-grid { grid-template-columns: 1fr !important; }
+    .set-tab  { flex: 0 0 100%; }
   }
 </style>
 </head>
@@ -332,19 +446,31 @@
   <!-- Main content -->
   <div class="main">
     <header class="topbar">
+      <button class="menu-toggle" onclick="toggleSidebar()" aria-label="เมนู">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+        </svg>
+      </button>
       <div class="breadcrumb">
         <span>หน้าแรก</span>
         <span id="topbar-title">Dashboard</span>
       </div>
       <div class="grow"></div>
+      <div class="db-status loading" id="dbStatus" title="สถานะการเชื่อมต่อฐานข้อมูล">
+        <span class="db-dot"></span>
+        <span id="dbStatusText">กำลังตรวจสอบ...</span>
+      </div>
       <button class="btn sm ghost" onclick="logout(); return false;">ออกจากระบบ</button>
     </header>
     <div class="content" id="app-content">
       <!-- Content loaded here -->
     </div>
   </div>
-  
+
 </div>
+
+<!-- Mobile sidebar overlay -->
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
 
 <script>
 // ── Auth ───────────────────────────────────────────────────
@@ -409,24 +535,40 @@ const labels = {
   settings:     'ตั้งค่าระบบ'
 };
 
-const contentDiv   = document.getElementById('app-content');
-const topbarTitle  = document.getElementById('topbar-title');
-let _activePage    = null;
+const contentDiv  = document.getElementById('app-content');
+const topbarTitle = document.getElementById('topbar-title');
+let _activePage   = null;
+const _pageCache  = {};
+
+function _injectPage(html) {
+  contentDiv.innerHTML = html;
+  // innerHTML does NOT execute <script> tags — re-create them so they run
+  contentDiv.querySelectorAll('script').forEach(old => {
+    const s = document.createElement('script');
+    [...old.attributes].forEach(a => s.setAttribute(a.name, a.value));
+    s.textContent = old.textContent;
+    old.parentNode.replaceChild(s, old);
+  });
+}
 
 function loadPage(pageName) {
   const url = pages[pageName];
   if (!url) return;
-  if (_activePage === pageName) return; // prevent double-load
+  if (_activePage === pageName) return;
 
   _activePage = pageName;
 
-  // Update sidebar active state immediately (better UX)
   document.querySelectorAll('.sb-item').forEach(item => {
     item.classList.toggle('active', item.dataset.page === pageName);
   });
   topbarTitle.textContent = labels[pageName] || pageName;
 
-  // Loading skeleton
+  // Serve from cache instantly
+  if (_pageCache[pageName]) {
+    _injectPage(_pageCache[pageName]);
+    return;
+  }
+
   contentDiv.innerHTML = `
     <div style="padding:40px;text-align:center;color:var(--ink-400)">
       <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="animation:spin 1s linear infinite">
@@ -436,11 +578,8 @@ function loadPage(pageName) {
     </div>`;
 
   fetch(url)
-    .then(r => {
-      if (!r.ok) throw new Error('HTTP ' + r.status);
-      return r.text();
-    })
-    .then(html => { contentDiv.innerHTML = html; })
+    .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.text(); })
+    .then(html => { _pageCache[pageName] = html; _injectPage(html); })
     .catch(() => {
       _activePage = null;
       contentDiv.innerHTML = `
@@ -451,20 +590,65 @@ function loadPage(pageName) {
     });
 }
 
-// ── Navigation handler ─────────────────────────────────────
+// ── Navigation ─────────────────────────────────────────────
 document.querySelectorAll('.sb-item').forEach(item => {
   item.addEventListener('click', e => {
     e.preventDefault();
+    closeSidebar();
     loadPage(item.dataset.page);
   });
 });
 
+// ── Mobile sidebar ──────────────────────────────────────────
+function toggleSidebar() {
+  document.querySelector('.sidebar').classList.toggle('open');
+  document.getElementById('sidebarOverlay').classList.toggle('open');
+}
+function closeSidebar() {
+  document.querySelector('.sidebar').classList.remove('open');
+  document.getElementById('sidebarOverlay').classList.remove('open');
+}
+
+// ── DB Connection Status ────────────────────────────────────
+async function checkDbStatus() {
+  const el     = document.getElementById('dbStatus');
+  const textEl = document.getElementById('dbStatusText');
+  const GAS_URL = window.__GAS_URL__;
+
+  if (!GAS_URL) {
+    el.className = 'db-status mock';
+    textEl.textContent = 'Demo (MockDB)';
+    return;
+  }
+
+  el.className = 'db-status loading';
+  textEl.textContent = 'กำลังตรวจสอบ...';
+
+  try {
+    const ctrl = new AbortController();
+    const tid  = setTimeout(() => ctrl.abort(), 9000);
+    const resp = await fetch(`${GAS_URL}?action=ping`, { signal: ctrl.signal });
+    clearTimeout(tid);
+    if (resp.ok) {
+      el.className = 'db-status online';
+      textEl.textContent = 'เชื่อมต่อ GAS แล้ว';
+    } else {
+      el.className = 'db-status error';
+      textEl.textContent = 'GAS: ' + resp.status;
+    }
+  } catch (err) {
+    el.className = 'db-status error';
+    textEl.textContent = err.name === 'AbortError' ? 'GAS: หมดเวลา' : 'เชื่อมต่อไม่ได้';
+  }
+}
+
 // ── Spinner keyframe ───────────────────────────────────────
-const styleEl = document.createElement('style');
-styleEl.textContent = '@keyframes spin { to { transform: rotate(360deg); } }';
-document.head.appendChild(styleEl);
+const _styleEl = document.createElement('style');
+_styleEl.textContent = '@keyframes spin { to { transform: rotate(360deg); } }';
+document.head.appendChild(_styleEl);
 
 // ── Start ──────────────────────────────────────────────────
+checkDbStatus();
 loadPage('dashboard');
 </script>
 
