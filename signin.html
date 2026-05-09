@@ -4,6 +4,8 @@
 <meta charset="utf-8">
 <title>ล็อกอิน · ระบบงานแผน วก.แม่สะเรียง</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" type="image/png" href="logo-msr.png">
+<link rel="apple-touch-icon" href="logo-msr.png">
 <link rel="stylesheet" href="styles.css">
 <style>
   body {
@@ -30,17 +32,22 @@
   }
   
   .logo-circle {
-    width: 80px;
-    height: 80px;
+    width: 88px;
+    height: 88px;
     border-radius: 50%;
-    background: var(--navy-700);
-    color: var(--gold-500);
+    background: white;
     display: grid;
     place-items: center;
-    font-weight: 800;
-    font-size: 32px;
-    margin: 0 auto 24px;
+    margin: 0 auto 20px;
     border: 3px solid var(--gold-500);
+    overflow: hidden;
+    box-shadow: 0 4px 16px rgba(20,40,80,.15);
+  }
+
+  .logo-circle img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
   }
   
   .login-card h1 {
@@ -216,7 +223,9 @@
 
 <div class="login-container">
   <div class="login-card">
-    <div class="logo-circle">วก</div>
+    <div class="logo-circle">
+      <img src="logo-msr.png" alt="วิทยาลัยการอาชีพแม่สะเรียง">
+    </div>
     
     <h1>ล็อกอิน</h1>
     <p class="subtitle">ระบบงานแผนและงบประมาณ</p>

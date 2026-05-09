@@ -4,6 +4,8 @@
 <meta charset="utf-8">
 <title>ระบบงานแผน · วก.แม่สะเรียง</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" type="image/png" href="logo-msr.png">
+<link rel="apple-touch-icon" href="logo-msr.png">
 <link rel="stylesheet" href="styles.css">
 <script src="js/api.js"></script>
 <style>
@@ -38,13 +40,18 @@
     width: 40px;
     height: 40px;
     border-radius: 50%;
-    background: var(--gold-500);
-    color: var(--navy-700);
+    background: white;
     display: grid;
     place-items: center;
-    font-weight: 800;
-    font-size: 16px;
     flex-shrink: 0;
+    overflow: hidden;
+    border: 2px solid var(--gold-500);
+  }
+
+  .sb-brand .logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
   }
   
   .sb-brand .info {
@@ -244,7 +251,7 @@
   <!-- Sidebar -->
   <aside class="sidebar">
     <div class="sb-brand">
-      <div class="logo">วก</div>
+      <div class="logo"><img src="logo-msr.png" alt="วก.แม่สะเรียง"></div>
       <div class="info">
         <div class="name">แผนและงบ</div>
         <div class="sub">วก.แม่สะเรียง</div>
