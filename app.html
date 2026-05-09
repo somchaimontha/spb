@@ -5,6 +5,7 @@
 <title>ระบบงานแผน · วก.แม่สะเรียง</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="styles.css">
+<script src="js/api.js"></script>
 <style>
   body { margin: 0; display: flex; min-height: 100vh; background: var(--paper); }
   
@@ -297,15 +298,23 @@
         </svg>
         <span>รายงาน</span>
       </a>
+      <a href="#" class="sb-item admin-only" data-page="settings" style="display:none">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="3"/>
+          <path d="M19.07 4.93a10 10 0 0 0-14.14 0M4.93 19.07a10 10 0 0 0 14.14 0"/>
+          <path d="M12 2v3M12 19v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M2 12h3M19 12h3M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12"/>
+        </svg>
+        <span>ตั้งค่าระบบ</span>
+      </a>
     </nav>
     
     <div class="sb-spacer"></div>
     
     <div class="sb-user">
-      <div class="av">ใ</div>
+      <div class="av" id="sb-av">?</div>
       <div class="info">
-        <div class="nm">ใจจริง ใจ</div>
-        <div class="rl">Staff</div>
+        <div class="nm" id="sb-name">—</div>
+        <div class="rl" id="sb-role">—</div>
       </div>
     </div>
   </aside>
@@ -328,82 +337,122 @@
 </div>
 
 <script>
-// Authentication check
+// ── Auth ───────────────────────────────────────────────────
 function checkAuth() {
-  const user = localStorage.getItem('user');
-  if (!user) {
+  try {
+    const raw = localStorage.getItem('user');
+    if (!raw) { window.location.href = 'signin.html'; return null; }
+    return JSON.parse(raw);
+  } catch {
     window.location.href = 'signin.html';
     return null;
   }
-  return JSON.parse(user);
 }
 
 function logout() {
   if (confirm('คุณแน่ใจหรือว่าต้องการออกจากระบบ?')) {
     localStorage.removeItem('user');
+    localStorage.removeItem('session_token');
     window.location.href = 'signin.html';
   }
 }
 
-// Initialize user info
+// ── Session init ───────────────────────────────────────────
 const currentUser = checkAuth();
 if (currentUser) {
-  document.querySelector('.sb-user .av').textContent = currentUser.name.charAt(0);
-  document.querySelector('.sb-user .nm').textContent = currentUser.name;
+  const initials = (currentUser.name || currentUser.email || '?').charAt(0).toUpperCase();
+  const roleLabels = { admin: 'ผู้ดูแลระบบ', officer: 'เจ้าหน้าที่', viewer: 'ผู้ใช้' };
+
+  document.getElementById('sb-av').textContent   = initials;
+  document.getElementById('sb-name').textContent = currentUser.name || currentUser.email || '—';
+  document.getElementById('sb-role').textContent = roleLabels[currentUser.role] || currentUser.role || 'Staff';
+
+  // Show Settings menu only for admin
+  if (currentUser.role === 'admin') {
+    document.querySelectorAll('.admin-only').forEach(el => el.style.display = '');
+  }
+
+  // Expose globally so page scripts can access
+  window.__currentUser = currentUser;
 }
 
-// Simple page routing
+// ── Routing ────────────────────────────────────────────────
 const pages = {
-  dashboard: 'pages/dashboard.html',
-  projects: 'pages/projects.html',
-  budget: 'pages/budget.html',
-  disbursement: 'pages/disbursement.html',
-  approval: 'pages/approval.html',
-  reports: 'pages/reports.html'
+  dashboard:   'pages/dashboard.html',
+  projects:    'pages/projects.html',
+  budget:      'pages/budget.html',
+  disbursement:'pages/disbursement.html',
+  approval:    'pages/approval.html',
+  reports:     'pages/reports.html',
+  settings:    'pages/settings.html'
 };
 
 const labels = {
-  dashboard: 'Dashboard',
-  projects: 'ทะเบียนโครงการ',
-  budget: 'บัญชีคุมงบ',
+  dashboard:    'Dashboard',
+  projects:     'ทะเบียนโครงการ',
+  budget:       'บัญชีคุมงบ',
   disbursement: 'ขอเบิก',
-  approval: 'กล่องอนุมัติ',
-  reports: 'รายงาน'
+  approval:     'กล่องอนุมัติ',
+  reports:      'รายงาน',
+  settings:     'ตั้งค่าระบบ'
 };
 
-const contentDiv = document.getElementById('app-content');
-const sidebarItems = document.querySelectorAll('.sb-item');
-const topbarTitle = document.getElementById('topbar-title');
+const contentDiv   = document.getElementById('app-content');
+const topbarTitle  = document.getElementById('topbar-title');
+let _activePage    = null;
 
 function loadPage(pageName) {
   const url = pages[pageName];
   if (!url) return;
-  
+  if (_activePage === pageName) return; // prevent double-load
+
+  _activePage = pageName;
+
+  // Update sidebar active state immediately (better UX)
+  document.querySelectorAll('.sb-item').forEach(item => {
+    item.classList.toggle('active', item.dataset.page === pageName);
+  });
+  topbarTitle.textContent = labels[pageName] || pageName;
+
+  // Loading skeleton
+  contentDiv.innerHTML = `
+    <div style="padding:40px;text-align:center;color:var(--ink-400)">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="animation:spin 1s linear infinite">
+        <path d="M21 12a9 9 0 1 1-6.219-8.56"/>
+      </svg>
+      <p style="margin-top:12px;font-size:13px">กำลังโหลด...</p>
+    </div>`;
+
   fetch(url)
-    .then(r => r.text())
-    .then(html => {
-      contentDiv.innerHTML = html;
-      topbarTitle.textContent = labels[pageName];
-      
-      // Update sidebar active state
-      sidebarItems.forEach(item => item.classList.remove('active'));
-      document.querySelector(`[data-page="${pageName}"]`).classList.add('active');
+    .then(r => {
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.text();
     })
-    .catch(e => {
-      contentDiv.innerHTML = `<div class="callout rose"><strong>Error:</strong> ไม่สามารถโหลดหน้านี้ได้</div>`;
+    .then(html => { contentDiv.innerHTML = html; })
+    .catch(() => {
+      _activePage = null;
+      contentDiv.innerHTML = `
+        <div class="callout rose" style="max-width:500px;margin:40px auto">
+          <strong>ไม่สามารถโหลดหน้านี้ได้</strong><br>
+          <span style="font-size:12px;opacity:.7">${pageName} — ยังไม่ได้สร้างหน้านี้</span>
+        </div>`;
     });
 }
 
-// Navigation handler
-sidebarItems.forEach(item => {
-  item.addEventListener('click', (e) => {
+// ── Navigation handler ─────────────────────────────────────
+document.querySelectorAll('.sb-item').forEach(item => {
+  item.addEventListener('click', e => {
     e.preventDefault();
-    const pageName = item.dataset.page;
-    loadPage(pageName);
+    loadPage(item.dataset.page);
   });
 });
 
-// Load dashboard on page load
+// ── Spinner keyframe ───────────────────────────────────────
+const styleEl = document.createElement('style');
+styleEl.textContent = '@keyframes spin { to { transform: rotate(360deg); } }';
+document.head.appendChild(styleEl);
+
+// ── Start ──────────────────────────────────────────────────
 loadPage('dashboard');
 </script>
 

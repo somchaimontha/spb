@@ -1,0 +1,1374 @@
+<!-- pages/settings.html — System Settings & User Management -->
+<style>
+/* ── Settings Layout ── */
+.set-wrap { max-width: 1100px; }
+
+.set-tabs {
+  display: flex;
+  gap: 4px;
+  background: var(--ink-100);
+  padding: 4px;
+  border-radius: 10px;
+  margin-bottom: 24px;
+}
+
+.set-tab {
+  flex: 1;
+  padding: 9px 14px;
+  border: none;
+  background: transparent;
+  border-radius: 7px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink-500);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  transition: all .18s;
+  font-family: inherit;
+}
+
+.set-tab:hover { background: rgba(255,255,255,.6); color: var(--ink-700); }
+.set-tab.active { background: white; color: var(--navy-700); box-shadow: 0 1px 4px rgba(0,0,0,.1); }
+
+.set-tab .ic { width: 15px; height: 15px; }
+
+.set-panel { display: none; }
+.set-panel.active { display: block; }
+
+/* ── Section Cards ── */
+.set-card {
+  background: white;
+  border-radius: 12px;
+  border: 1px solid var(--ink-100);
+  overflow: hidden;
+  margin-bottom: 20px;
+  box-shadow: 0 1px 3px rgba(0,0,0,.04);
+}
+
+.set-card-head {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--ink-100);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.set-card-head h3 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--ink-900);
+  flex: 1;
+}
+
+.set-card-head .desc {
+  font-size: 12px;
+  color: var(--ink-400);
+  margin-top: 2px;
+}
+
+.set-card-body { padding: 20px; }
+
+/* ── Settings Grid Form ── */
+.set-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.set-grid.cols-1 { grid-template-columns: 1fr; }
+.set-grid.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+
+.set-field label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink-600);
+  margin-bottom: 5px;
+  letter-spacing: .02em;
+}
+
+.set-field input,
+.set-field select,
+.set-field textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 8px 11px;
+  border: 1px solid var(--ink-200);
+  border-radius: 7px;
+  font-size: 13.5px;
+  font-family: inherit;
+  color: var(--ink-900);
+  background: white;
+  transition: border-color .15s;
+}
+
+.set-field input:focus,
+.set-field select:focus,
+.set-field textarea:focus {
+  outline: none;
+  border-color: var(--navy-400);
+  box-shadow: 0 0 0 3px rgba(20,40,80,.07);
+}
+
+.set-field textarea { resize: vertical; min-height: 80px; }
+
+.set-field-note {
+  font-size: 11px;
+  color: var(--ink-400);
+  margin-top: 4px;
+}
+
+/* ── Tag List Editor (statuses, categories) ── */
+.tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 12px;
+  background: var(--paper);
+  border-radius: 8px;
+  border: 1px solid var(--ink-100);
+  min-height: 54px;
+}
+
+.tag-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  border-radius: 20px;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: default;
+}
+
+.tag-item .del-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(0,0,0,.15);
+  color: inherit;
+  cursor: pointer;
+  font-size: 10px;
+  line-height: 1;
+  padding: 0;
+}
+
+.tag-item .del-btn:hover { background: rgba(0,0,0,.3); }
+
+.tag-add-row {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+  align-items: flex-end;
+}
+
+.tag-add-row input { flex: 1; }
+.tag-add-row .color-pick { width: 46px; height: 36px; padding: 2px; border-radius: 7px; cursor: pointer; }
+
+/* ── Division Table ── */
+.div-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.div-table th {
+  text-align: left;
+  padding: 9px 12px;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--ink-500);
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  border-bottom: 2px solid var(--ink-100);
+}
+
+.div-table td {
+  padding: 9px 12px;
+  font-size: 13px;
+  border-bottom: 1px solid var(--ink-50);
+  vertical-align: middle;
+}
+
+.div-table tr:last-child td { border-bottom: none; }
+.div-table tr:hover td { background: var(--paper); }
+
+.div-table td input {
+  padding: 5px 8px;
+  border: 1px solid var(--ink-200);
+  border-radius: 6px;
+  font-size: 13px;
+  font-family: inherit;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.div-table td input:focus {
+  outline: none;
+  border-color: var(--navy-400);
+}
+
+/* ── User Table ── */
+.user-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.user-table th {
+  text-align: left;
+  padding: 10px 14px;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--ink-500);
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  border-bottom: 2px solid var(--ink-100);
+  background: var(--paper);
+}
+
+.user-table td {
+  padding: 11px 14px;
+  font-size: 13px;
+  border-bottom: 1px solid var(--ink-50);
+  vertical-align: middle;
+}
+
+.user-table tr:last-child td { border-bottom: none; }
+.user-table tr:hover td { background: #fafbff; }
+
+.user-av {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--navy-700);
+  color: white;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 13px;
+  flex-shrink: 0;
+}
+
+.role-badge {
+  padding: 2px 8px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.role-badge.admin   { background: #fef3c7; color: #92400e; }
+.role-badge.officer { background: #dbeafe; color: #1e40af; }
+.role-badge.viewer  { background: var(--ink-100); color: var(--ink-500); }
+
+.status-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-right: 5px;
+}
+
+.status-dot.on  { background: #22c55e; }
+.status-dot.off { background: var(--ink-300); }
+
+/* ── Authority / Signature Section ── */
+.auth-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.auth-card {
+  background: var(--paper);
+  border-radius: 8px;
+  border: 1px solid var(--ink-100);
+  padding: 16px;
+}
+
+.auth-card h4 {
+  margin: 0 0 12px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink-700);
+}
+
+.auth-card .set-field + .set-field { margin-top: 10px; }
+
+/* ── Modals ── */
+.set-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.45);
+  display: none;
+  place-items: center;
+  z-index: 9000;
+  backdrop-filter: blur(2px);
+}
+
+.set-modal-overlay.open { display: grid; }
+
+.set-modal {
+  background: white;
+  border-radius: 14px;
+  box-shadow: 0 20px 60px rgba(0,0,0,.25);
+  width: 520px;
+  max-width: 96vw;
+  max-height: 88vh;
+  overflow-y: auto;
+}
+
+.set-modal-head {
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid var(--ink-100);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.set-modal-head h3 {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 700;
+  flex: 1;
+}
+
+.set-modal-head .close-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: none;
+  background: var(--ink-100);
+  cursor: pointer;
+  font-size: 16px;
+  display: grid;
+  place-items: center;
+  color: var(--ink-500);
+}
+
+.set-modal-head .close-btn:hover { background: var(--ink-200); color: var(--ink-900); }
+
+.set-modal-body { padding: 20px 24px; }
+.set-modal-body .set-field + .set-field { margin-top: 14px; }
+
+.set-modal-foot {
+  padding: 14px 24px;
+  border-top: 1px solid var(--ink-100);
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  background: var(--paper);
+  border-radius: 0 0 14px 14px;
+}
+
+/* ── Admin Guard Notice ── */
+.admin-only-notice {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px;
+  background: #fef3c7;
+  border: 1px solid #fbbf24;
+  border-radius: 10px;
+  color: #92400e;
+  font-size: 13px;
+  margin-bottom: 20px;
+}
+
+.admin-only-notice svg { width: 20px; height: 20px; flex-shrink: 0; }
+
+/* ── Fiscal Year Badge ── */
+.fy-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 14px;
+  background: var(--navy-700);
+  color: white;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 700;
+  font-family: var(--font-mono, monospace);
+}
+
+/* ── Save Button State ── */
+.save-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: #22c55e;
+  opacity: 0;
+  transition: opacity .3s;
+}
+
+.save-indicator.show { opacity: 1; }
+</style>
+
+<div class="set-wrap">
+
+  <!-- Admin-only notice (hidden for admin) -->
+  <div class="admin-only-notice" id="nonAdminNotice" style="display:none">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+    </svg>
+    <div>
+      <strong>หน้านี้สำหรับผู้ดูแลระบบเท่านั้น</strong><br>
+      บางส่วนจะแสดงแบบอ่านอย่างเดียว
+    </div>
+  </div>
+
+  <!-- Tab Navigation -->
+  <div class="set-tabs" id="setTabs">
+    <button class="set-tab active" data-tab="general">
+      <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 0-14.14 0M4.93 19.07a10 10 0 0 0 14.14 0"/>
+        <path d="M12 2v3M12 19v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M2 12h3M19 12h3M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12"/>
+      </svg>
+      ทั่วไป
+    </button>
+    <button class="set-tab" data-tab="statuses">
+      <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+      </svg>
+      สถานะ & หมวด
+    </button>
+    <button class="set-tab" data-tab="divisions">
+      <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+        <polyline points="9 22 9 12 15 12 15 22"/>
+      </svg>
+      ฝ่าย/แผนก
+    </button>
+    <button class="set-tab" data-tab="authority">
+      <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+      </svg>
+      ผู้มีอำนาจ
+    </button>
+    <button class="set-tab" data-tab="users">
+      <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+        <circle cx="9" cy="7" r="4"/>
+        <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>
+      </svg>
+      ผู้ใช้งาน
+    </button>
+  </div>
+
+  <!-- ── Tab: General ── -->
+  <div class="set-panel active" id="tab-general">
+    <div class="set-card">
+      <div class="set-card-head">
+        <div>
+          <h3>ข้อมูลองค์กร</h3>
+          <div class="desc">ชื่อหน่วยงาน ปีงบประมาณ และการตั้งค่าระบบหลัก</div>
+        </div>
+        <span class="save-indicator" id="si-general">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg> บันทึกแล้ว
+        </span>
+        <button class="btn sm primary" onclick="SettingsPage.saveGeneral()">บันทึก</button>
+      </div>
+      <div class="set-card-body">
+        <div class="set-grid">
+          <div class="set-field">
+            <label>ชื่อหน่วยงาน (ไทย)</label>
+            <input id="org_name_th" type="text" placeholder="วิทยาลัยการอาชีพแม่สะเรียง">
+          </div>
+          <div class="set-field">
+            <label>ชื่อหน่วยงาน (ย่อ)</label>
+            <input id="org_abbr" type="text" placeholder="วก.แม่สะเรียง">
+          </div>
+          <div class="set-field">
+            <label>ปีงบประมาณปัจจุบัน (พ.ศ.)</label>
+            <input id="fiscal_year" type="number" min="2560" max="2580" placeholder="2569">
+            <div class="set-field-note">ใช้กำหนดค่าเริ่มต้นสำหรับ filter และการสร้างข้อมูลใหม่</div>
+          </div>
+          <div class="set-field">
+            <label>รหัสหน่วยงาน (สำหรับเอกสาร)</label>
+            <input id="org_code" type="text" placeholder="MSC">
+          </div>
+          <div class="set-field" style="grid-column:1/-1">
+            <label>ที่อยู่</label>
+            <textarea id="org_address" rows="2" placeholder="เลขที่ ... ตำบล อำเภอแม่สะเรียง จังหวัดแม่ฮ่องสอน"></textarea>
+          </div>
+          <div class="set-field">
+            <label>โทรศัพท์</label>
+            <input id="org_phone" type="text" placeholder="053-681-xxx">
+          </div>
+          <div class="set-field">
+            <label>Email</label>
+            <input id="org_email" type="email" placeholder="info@msc.ac.th">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="set-card">
+      <div class="set-card-head">
+        <div>
+          <h3>การตั้งค่าระบบ</h3>
+          <div class="desc">ข้อจำกัดการเบิกจ่าย ระบบแจ้งเตือน</div>
+        </div>
+        <button class="btn sm primary" onclick="SettingsPage.saveSystem()">บันทึก</button>
+      </div>
+      <div class="set-card-body">
+        <div class="set-grid cols-3">
+          <div class="set-field">
+            <label>เกณฑ์แจ้งเตือน % งบใช้ (สีส้ม)</label>
+            <input id="warn_pct" type="number" min="0" max="100" placeholder="80">
+            <div class="set-field-note">แสดงสีส้มเมื่อใช้เกิน %</div>
+          </div>
+          <div class="set-field">
+            <label>เกณฑ์แจ้งเตือน % งบใช้ (สีแดง)</label>
+            <input id="danger_pct" type="number" min="0" max="100" placeholder="95">
+            <div class="set-field-note">แสดงสีแดงเมื่อใช้เกิน %</div>
+          </div>
+          <div class="set-field">
+            <label>จำนวนรายการต่อหน้า</label>
+            <select id="page_size">
+              <option value="25">25</option>
+              <option value="50">50</option>
+              <option value="100">100</option>
+            </select>
+          </div>
+          <div class="set-field">
+            <label>อนุญาตการเบิกเกินงบ</label>
+            <select id="allow_overspend">
+              <option value="false">ไม่อนุญาต (ล็อคฟอร์ม)</option>
+              <option value="warn">เตือน แต่อนุญาต</option>
+              <option value="true">อนุญาต (ไม่เตือน)</option>
+            </select>
+          </div>
+          <div class="set-field">
+            <label>Session หมดอายุ (ชั่วโมง)</label>
+            <input id="session_ttl" type="number" min="1" max="72" placeholder="8">
+          </div>
+          <div class="set-field">
+            <label>โหมดการทำงาน</label>
+            <select id="work_mode">
+              <option value="mock">Demo (MockDB - ไม่บันทึกถาวร)</option>
+              <option value="gas">Production (Google Sheets)</option>
+            </select>
+            <div class="set-field-note">ต้องตั้งค่า GAS URL ก่อนเปิดใช้ Production</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Tab: Statuses & Categories ── -->
+  <div class="set-panel" id="tab-statuses">
+    <!-- Project Statuses -->
+    <div class="set-card">
+      <div class="set-card-head">
+        <div>
+          <h3>สถานะโครงการ</h3>
+          <div class="desc">กำหนด label และสีสำหรับแต่ละสถานะ (ใช้ใน dropdown และ badge)</div>
+        </div>
+        <button class="btn sm primary" onclick="SettingsPage.saveStatuses()">บันทึก</button>
+      </div>
+      <div class="set-card-body">
+        <div class="tag-list" id="statusList"></div>
+        <div class="tag-add-row" id="statusAddRow" style="margin-top:12px">
+          <div class="set-field" style="flex:1;margin:0">
+            <input id="newStatusKey" type="text" placeholder="key (เช่น on_track)" style="margin-bottom:4px">
+          </div>
+          <div class="set-field" style="flex:2;margin:0">
+            <input id="newStatusLabel" type="text" placeholder="ชื่อแสดงผล (เช่น ดำเนินการตามแผน)">
+          </div>
+          <input class="color-pick" id="newStatusColor" type="color" value="#22c55e">
+          <button class="btn sm" onclick="SettingsPage.addStatus()">+ เพิ่ม</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Budget Categories -->
+    <div class="set-card">
+      <div class="set-card-head">
+        <div>
+          <h3>หมวดงบประมาณ (Budget Categories)</h3>
+          <div class="desc">รหัสหมวด 1xx-9xx สำหรับจำแนกประเภทรายจ่าย</div>
+        </div>
+        <button class="btn sm primary" onclick="SettingsPage.saveCategories()">บันทึก</button>
+      </div>
+      <div class="set-card-body">
+        <div class="tag-list" id="catList"></div>
+        <div class="tag-add-row" style="margin-top:12px">
+          <div class="set-field" style="flex:1;margin:0">
+            <input id="newCatCode" type="text" placeholder="รหัส (เช่น 6xx)" maxlength="10">
+          </div>
+          <div class="set-field" style="flex:3;margin:0">
+            <input id="newCatLabel" type="text" placeholder="ชื่อหมวด (เช่น โครงการ/กิจกรรม)">
+          </div>
+          <input class="color-pick" id="newCatColor" type="color" value="#6366f1">
+          <button class="btn sm" onclick="SettingsPage.addCategory()">+ เพิ่ม</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Budget Types -->
+    <div class="set-card">
+      <div class="set-card-head">
+        <div>
+          <h3>ประเภทงบประมาณ (Budget Types)</h3>
+          <div class="desc">แหล่งเงิน 4 ประเภทหลัก</div>
+        </div>
+        <button class="btn sm primary" onclick="SettingsPage.saveBudgetTypes()">บันทึก</button>
+      </div>
+      <div class="set-card-body">
+        <div class="tag-list" id="btypeList"></div>
+        <div class="tag-add-row" style="margin-top:12px">
+          <div class="set-field" style="flex:1;margin:0">
+            <input id="newBtKey" type="text" placeholder="key">
+          </div>
+          <div class="set-field" style="flex:2;margin:0">
+            <input id="newBtLabel" type="text" placeholder="ชื่อแสดงผล">
+          </div>
+          <input class="color-pick" id="newBtColor" type="color" value="#0ea5e9">
+          <button class="btn sm" onclick="SettingsPage.addBudgetType()">+ เพิ่ม</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Tab: Divisions ── -->
+  <div class="set-panel" id="tab-divisions">
+    <div class="set-card">
+      <div class="set-card-head">
+        <div>
+          <h3>ฝ่าย / แผนก</h3>
+          <div class="desc">กำหนดรหัสและชื่อหน่วยงานภายในวิทยาลัย</div>
+        </div>
+        <button class="btn sm" onclick="SettingsPage.addDivision()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+          </svg>
+          เพิ่มฝ่าย
+        </button>
+        <button class="btn sm primary" onclick="SettingsPage.saveDivisions()">บันทึก</button>
+      </div>
+      <div class="set-card-body" style="padding:0">
+        <table class="div-table">
+          <thead>
+            <tr>
+              <th style="width:40px">#</th>
+              <th style="width:130px">รหัส (code)</th>
+              <th>ชื่อฝ่าย/แผนก</th>
+              <th style="width:140px">หัวหน้า</th>
+              <th style="width:50px"></th>
+            </tr>
+          </thead>
+          <tbody id="divBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Tab: Authority / Signatures ── -->
+  <div class="set-panel" id="tab-authority">
+    <div class="set-card">
+      <div class="set-card-head">
+        <div>
+          <h3>ผู้มีอำนาจลงนาม</h3>
+          <div class="desc">ชื่อและตำแหน่งสำหรับพิมพ์ลงในเอกสารใบเบิก/รายงาน</div>
+        </div>
+        <button class="btn sm primary" onclick="SettingsPage.saveAuthority()">บันทึก</button>
+      </div>
+      <div class="set-card-body">
+        <div class="auth-grid">
+          <div class="auth-card">
+            <h4>ผู้อนุมัติรายการ (ลายเซ็นที่ 1)</h4>
+            <div class="set-field">
+              <label>ชื่อ-นามสกุล</label>
+              <input id="auth1_name" type="text" placeholder="นาย/นาง/นางสาว ...">
+            </div>
+            <div class="set-field">
+              <label>ตำแหน่ง</label>
+              <input id="auth1_pos" type="text" placeholder="ผู้อำนวยการวิทยาลัย...">
+            </div>
+            <div class="set-field">
+              <label>บทบาท</label>
+              <input id="auth1_role" type="text" placeholder="ผู้อนุมัติ">
+            </div>
+          </div>
+          <div class="auth-card">
+            <h4>ผู้เสนอ/รับรอง (ลายเซ็นที่ 2)</h4>
+            <div class="set-field">
+              <label>ชื่อ-นามสกุล</label>
+              <input id="auth2_name" type="text" placeholder="นาย/นาง/นางสาว ...">
+            </div>
+            <div class="set-field">
+              <label>ตำแหน่ง</label>
+              <input id="auth2_pos" type="text" placeholder="รองผู้อำนวยการฝ่ายแผน...">
+            </div>
+            <div class="set-field">
+              <label>บทบาท</label>
+              <input id="auth2_role" type="text" placeholder="ผู้เสนอ">
+            </div>
+          </div>
+          <div class="auth-card">
+            <h4>ผู้ตรวจ/การเงิน (ลายเซ็นที่ 3)</h4>
+            <div class="set-field">
+              <label>ชื่อ-นามสกุล</label>
+              <input id="auth3_name" type="text" placeholder="นาย/นาง/นางสาว ...">
+            </div>
+            <div class="set-field">
+              <label>ตำแหน่ง</label>
+              <input id="auth3_pos" type="text" placeholder="หัวหน้างานการเงิน...">
+            </div>
+            <div class="set-field">
+              <label>บทบาท</label>
+              <input id="auth3_role" type="text" placeholder="ผู้ตรวจสอบ">
+            </div>
+          </div>
+          <div class="auth-card">
+            <h4>ผู้จัดทำ (ลายเซ็นที่ 4)</h4>
+            <div class="set-field">
+              <label>ชื่อ-นามสกุล</label>
+              <input id="auth4_name" type="text" placeholder="นาย/นาง/นางสาว ...">
+            </div>
+            <div class="set-field">
+              <label>ตำแหน่ง</label>
+              <input id="auth4_pos" type="text" placeholder="เจ้าหน้าที่งานแผน...">
+            </div>
+            <div class="set-field">
+              <label>บทบาท</label>
+              <input id="auth4_role" type="text" placeholder="ผู้จัดทำ">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Tab: Users ── -->
+  <div class="set-panel" id="tab-users">
+    <div class="set-card">
+      <div class="set-card-head">
+        <div>
+          <h3>ผู้ใช้งานระบบ</h3>
+          <div class="desc">จัดการบัญชีผู้ใช้ บทบาท และหน่วยงาน</div>
+        </div>
+        <button class="btn sm primary" onclick="SettingsPage.openUserModal()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+          </svg>
+          เพิ่มผู้ใช้
+        </button>
+      </div>
+      <div class="set-card-body" style="padding:0">
+        <table class="user-table">
+          <thead>
+            <tr>
+              <th style="width:44px"></th>
+              <th>ชื่อผู้ใช้</th>
+              <th>Email</th>
+              <th>บทบาท</th>
+              <th>หน่วยงาน</th>
+              <th>สถานะ</th>
+              <th>เข้าสู่ระบบล่าสุด</th>
+              <th style="width:100px"></th>
+            </tr>
+          </thead>
+          <tbody id="userBody">
+            <tr>
+              <td colspan="8" style="text-align:center;padding:30px;color:var(--ink-400)">
+                กำลังโหลด...
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ── User Modal ── -->
+<div class="set-modal-overlay" id="userModal">
+  <div class="set-modal">
+    <div class="set-modal-head">
+      <h3 id="userModalTitle">เพิ่มผู้ใช้งาน</h3>
+      <button class="close-btn" onclick="SettingsPage.closeUserModal()">✕</button>
+    </div>
+    <div class="set-modal-body">
+      <input type="hidden" id="um_user_id">
+      <div class="set-field">
+        <label>ชื่อ-นามสกุล <span style="color:#e53e3e">*</span></label>
+        <input id="um_display_name" type="text" placeholder="ชื่อ นามสกุล">
+      </div>
+      <div class="set-field">
+        <label>Email <span style="color:#e53e3e">*</span></label>
+        <input id="um_email" type="email" placeholder="user@example.com">
+      </div>
+      <div class="set-field">
+        <label>รหัสผ่าน</label>
+        <input id="um_password" type="password" placeholder="ปล่อยว่างไว้หากไม่ต้องการเปลี่ยน">
+        <div class="set-field-note">สร้างใหม่: กรอกรหัสผ่านที่ต้องการ (ขั้นต่ำ 6 ตัวอักษร)</div>
+      </div>
+      <div class="set-grid">
+        <div class="set-field">
+          <label>บทบาท</label>
+          <select id="um_role">
+            <option value="viewer">Viewer — ดูอย่างเดียว</option>
+            <option value="officer">Officer — แก้ไขได้</option>
+            <option value="admin">Admin — ดูแลระบบ</option>
+          </select>
+        </div>
+        <div class="set-field">
+          <label>หน่วยงาน</label>
+          <select id="um_department">
+            <option value="">-- ไม่ระบุ --</option>
+          </select>
+        </div>
+        <div class="set-field" id="um_status_wrap" style="display:none">
+          <label>สถานะ</label>
+          <select id="um_is_active">
+            <option value="true">เปิดใช้งาน</option>
+            <option value="false">ปิดใช้งาน</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="set-modal-foot">
+      <button class="btn ghost" onclick="SettingsPage.closeUserModal()">ยกเลิก</button>
+      <button class="btn primary" onclick="SettingsPage.saveUser()">บันทึก</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const SettingsPage = (() => {
+
+  // ── State ──────────────────────────────────────────────────
+  let _isAdmin = false;
+  let _statuses = [];
+  let _categories = [];
+  let _budgetTypes = [];
+  let _divisions = [];
+  let _users = [];
+  let _editingUserId = null;
+  let _settings = {};
+
+  // ── Defaults ───────────────────────────────────────────────
+  const DEFAULT_STATUSES = [
+    { key:'draft',       label:'ร่าง',                 color:'#94a3b8' },
+    { key:'pending',     label:'รออนุมัติ',             color:'#f59e0b' },
+    { key:'approved',    label:'อนุมัติแล้ว',           color:'#3b82f6' },
+    { key:'on_track',    label:'ดำเนินการตามแผน',       color:'#22c55e' },
+    { key:'delayed',     label:'ล่าช้า',                color:'#f97316' },
+    { key:'completed',   label:'เสร็จสิ้น',             color:'#059669' },
+    { key:'cancelled',   label:'ยกเลิก',               color:'#ef4444' }
+  ];
+
+  const DEFAULT_CATEGORIES = [
+    { key:'1xx', label:'บุคลากร',           color:'#6366f1' },
+    { key:'2xx', label:'ดำเนินงาน',         color:'#0ea5e9' },
+    { key:'6xx', label:'โครงการ/กิจกรรม',   color:'#8b5cf6' },
+    { key:'7xx', label:'ครุภัณฑ์',          color:'#f59e0b' },
+    { key:'8xx', label:'อุดหนุน',           color:'#ec4899' },
+    { key:'9xx', label:'รายจ่ายอื่น',       color:'#64748b' }
+  ];
+
+  const DEFAULT_BUDGET_TYPES = [
+    { key:'learning_free', label:'งบเรียนฟรี',       color:'#22c55e' },
+    { key:'nonformal',     label:'บกศ.',              color:'#3b82f6' },
+    { key:'other',         label:'งบรายจ่ายอื่น',   color:'#f59e0b' },
+    { key:'central',       label:'งบส่วนกลาง สอศ.', color:'#8b5cf6' }
+  ];
+
+  const DEFAULT_DIVISIONS = [
+    { code:'admin_res',  name:'ฝ่ายบริหารทรัพยากร',         head:'หัวหน้าฝ่าย' },
+    { code:'plan',       name:'ฝ่ายแผนงานและความร่วมมือ',    head:'หัวหน้าฝ่าย' },
+    { code:'student',    name:'ฝ่ายพัฒนากิจการนักเรียน',    head:'หัวหน้าฝ่าย' },
+    { code:'academic',   name:'ฝ่ายวิชาการ',                head:'หัวหน้าฝ่าย' },
+    { code:'activity',   name:'งานกิจกรรม/ชมรมวิชาชีพ',    head:'ครูที่ปรึกษา' }
+  ];
+
+  // ── Init ───────────────────────────────────────────────────
+  async function init() {
+    // Check admin
+    try {
+      const u = JSON.parse(localStorage.getItem('user') || '{}');
+      _isAdmin = (u.role === 'admin');
+    } catch { _isAdmin = false; }
+
+    if (!_isAdmin) {
+      document.getElementById('nonAdminNotice').style.display = 'flex';
+    }
+
+    // Wire tabs
+    document.querySelectorAll('.set-tab').forEach(btn => {
+      btn.addEventListener('click', () => switchTab(btn.dataset.tab));
+    });
+
+    // Load saved settings from localStorage (MockDB mode)
+    _loadFromStore();
+
+    // Render all sections
+    _renderStatuses();
+    _renderCategories();
+    _renderBudgetTypes();
+    _renderDivisions();
+    _fillGeneralForm();
+    _fillAuthorityForm();
+
+    // Load users
+    if (_isAdmin) {
+      await _loadUsers();
+    } else {
+      document.getElementById('userBody').innerHTML =
+        '<tr><td colspan="8" style="text-align:center;padding:20px;color:var(--ink-400)">เฉพาะ Admin เท่านั้น</td></tr>';
+    }
+  }
+
+  function _loadFromStore() {
+    try {
+      const raw = localStorage.getItem('plan_settings_v1');
+      if (raw) {
+        const s = JSON.parse(raw);
+        _settings     = s.settings    || {};
+        _statuses     = s.statuses    || DEFAULT_STATUSES;
+        _categories   = s.categories  || DEFAULT_CATEGORIES;
+        _budgetTypes  = s.budgetTypes || DEFAULT_BUDGET_TYPES;
+        _divisions    = s.divisions   || DEFAULT_DIVISIONS;
+      } else {
+        _statuses    = [...DEFAULT_STATUSES];
+        _categories  = [...DEFAULT_CATEGORIES];
+        _budgetTypes = [...DEFAULT_BUDGET_TYPES];
+        _divisions   = JSON.parse(JSON.stringify(DEFAULT_DIVISIONS));
+        _settings    = {
+          org_name_th: 'วิทยาลัยการอาชีพแม่สะเรียง',
+          org_abbr:    'วก.แม่สะเรียง',
+          fiscal_year: '2569',
+          org_code:    'MSC',
+          org_address: '142 หมู่ 3 ตำบลแม่สะเรียง อำเภอแม่สะเรียง จังหวัดแม่ฮ่องสอน 58110',
+          org_phone:   '053-681-234',
+          org_email:   'plan@msc.ac.th',
+          warn_pct:    '80',
+          danger_pct:  '95',
+          page_size:   '25',
+          allow_overspend: 'warn',
+          session_ttl: '8',
+          work_mode:   'mock',
+          auth1_name: '', auth1_pos: 'ผู้อำนวยการวิทยาลัยการอาชีพแม่สะเรียง', auth1_role: 'ผู้อนุมัติ',
+          auth2_name: '', auth2_pos: 'รองผู้อำนวยการฝ่ายแผนงานและความร่วมมือ', auth2_role: 'ผู้เสนอ',
+          auth3_name: '', auth3_pos: 'หัวหน้างานการเงิน', auth3_role: 'ผู้ตรวจสอบ',
+          auth4_name: '', auth4_pos: 'เจ้าหน้าที่งานแผนและงบประมาณ', auth4_role: 'ผู้จัดทำ'
+        };
+      }
+    } catch {
+      _statuses    = [...DEFAULT_STATUSES];
+      _categories  = [...DEFAULT_CATEGORIES];
+      _budgetTypes = [...DEFAULT_BUDGET_TYPES];
+      _divisions   = JSON.parse(JSON.stringify(DEFAULT_DIVISIONS));
+      _settings    = {};
+    }
+  }
+
+  function _saveToStore() {
+    localStorage.setItem('plan_settings_v1', JSON.stringify({
+      settings: _settings, statuses: _statuses,
+      categories: _categories, budgetTypes: _budgetTypes, divisions: _divisions
+    }));
+  }
+
+  // ── Tab Switching ──────────────────────────────────────────
+  function switchTab(tabId) {
+    document.querySelectorAll('.set-tab').forEach(b => b.classList.toggle('active', b.dataset.tab === tabId));
+    document.querySelectorAll('.set-panel').forEach(p => p.classList.toggle('active', p.id === 'tab-' + tabId));
+  }
+
+  // ── General Form ───────────────────────────────────────────
+  function _fillGeneralForm() {
+    const fields = ['org_name_th','org_abbr','fiscal_year','org_code','org_address',
+                    'org_phone','org_email','warn_pct','danger_pct','page_size',
+                    'allow_overspend','session_ttl','work_mode'];
+    fields.forEach(f => {
+      const el = document.getElementById(f);
+      if (el && _settings[f] !== undefined) el.value = _settings[f];
+    });
+  }
+
+  function saveGeneral() {
+    const fields = ['org_name_th','org_abbr','fiscal_year','org_code','org_address','org_phone','org_email'];
+    fields.forEach(f => { const el = document.getElementById(f); if (el) _settings[f] = el.value; });
+    _saveToStore();
+    _flashSaved('si-general');
+  }
+
+  function saveSystem() {
+    const fields = ['warn_pct','danger_pct','page_size','allow_overspend','session_ttl','work_mode'];
+    fields.forEach(f => { const el = document.getElementById(f); if (el) _settings[f] = el.value; });
+    _saveToStore();
+    _flashSaved('si-general');
+  }
+
+  function _flashSaved(id) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.classList.add('show');
+    setTimeout(() => el.classList.remove('show'), 2000);
+  }
+
+  // ── Authority Form ─────────────────────────────────────────
+  function _fillAuthorityForm() {
+    ['auth1_name','auth1_pos','auth1_role',
+     'auth2_name','auth2_pos','auth2_role',
+     'auth3_name','auth3_pos','auth3_role',
+     'auth4_name','auth4_pos','auth4_role'].forEach(f => {
+      const el = document.getElementById(f);
+      if (el && _settings[f] !== undefined) el.value = _settings[f];
+    });
+  }
+
+  function saveAuthority() {
+    ['auth1_name','auth1_pos','auth1_role',
+     'auth2_name','auth2_pos','auth2_role',
+     'auth3_name','auth3_pos','auth3_role',
+     'auth4_name','auth4_pos','auth4_role'].forEach(f => {
+      const el = document.getElementById(f);
+      if (el) _settings[f] = el.value;
+    });
+    _saveToStore();
+    alert('บันทึกข้อมูลผู้มีอำนาจลงนามแล้ว');
+  }
+
+  // ── Statuses ───────────────────────────────────────────────
+  function _renderStatuses() {
+    const list = document.getElementById('statusList');
+    if (!list) return;
+    list.innerHTML = _statuses.map((s, i) => `
+      <span class="tag-item" style="background:${s.color}20;color:${s.color};border:1px solid ${s.color}40">
+        <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${s.color}"></span>
+        ${_esc(s.label)} <code style="font-size:10px;opacity:.7">${_esc(s.key)}</code>
+        <button class="del-btn" onclick="SettingsPage._delStatus(${i})" title="ลบ">✕</button>
+      </span>`).join('');
+  }
+
+  function addStatus() {
+    const key   = document.getElementById('newStatusKey').value.trim();
+    const label = document.getElementById('newStatusLabel').value.trim();
+    const color = document.getElementById('newStatusColor').value;
+    if (!key || !label) { alert('กรุณากรอก key และชื่อสถานะ'); return; }
+    if (_statuses.find(s => s.key === key)) { alert('key นี้มีอยู่แล้ว'); return; }
+    _statuses.push({ key, label, color });
+    _renderStatuses();
+    document.getElementById('newStatusKey').value = '';
+    document.getElementById('newStatusLabel').value = '';
+  }
+
+  function _delStatus(i) {
+    if (!confirm('ลบสถานะนี้?')) return;
+    _statuses.splice(i, 1);
+    _renderStatuses();
+  }
+
+  function saveStatuses() {
+    _saveToStore();
+    _flashSaved('si-general');
+    alert('บันทึกสถานะโครงการแล้ว');
+  }
+
+  // ── Categories ─────────────────────────────────────────────
+  function _renderCategories() {
+    const list = document.getElementById('catList');
+    if (!list) return;
+    list.innerHTML = _categories.map((c, i) => `
+      <span class="tag-item" style="background:${c.color}18;color:${c.color};border:1px solid ${c.color}35">
+        <code style="font-size:11px;font-weight:800">${_esc(c.key)}</code>
+        ${_esc(c.label)}
+        <button class="del-btn" onclick="SettingsPage._delCat(${i})" title="ลบ">✕</button>
+      </span>`).join('');
+  }
+
+  function addCategory() {
+    const key   = document.getElementById('newCatCode').value.trim();
+    const label = document.getElementById('newCatLabel').value.trim();
+    const color = document.getElementById('newCatColor').value;
+    if (!key || !label) { alert('กรุณากรอกรหัสและชื่อหมวด'); return; }
+    _categories.push({ key, label, color });
+    _renderCategories();
+    document.getElementById('newCatCode').value = '';
+    document.getElementById('newCatLabel').value = '';
+  }
+
+  function _delCat(i) {
+    if (!confirm('ลบหมวดนี้?')) return;
+    _categories.splice(i, 1);
+    _renderCategories();
+  }
+
+  function saveCategories() {
+    _saveToStore();
+    alert('บันทึกหมวดงบประมาณแล้ว');
+  }
+
+  // ── Budget Types ───────────────────────────────────────────
+  function _renderBudgetTypes() {
+    const list = document.getElementById('btypeList');
+    if (!list) return;
+    list.innerHTML = _budgetTypes.map((b, i) => `
+      <span class="tag-item" style="background:${b.color}18;color:${b.color};border:1px solid ${b.color}35">
+        ${_esc(b.label)} <code style="font-size:10px;opacity:.7">${_esc(b.key)}</code>
+        <button class="del-btn" onclick="SettingsPage._delBtype(${i})" title="ลบ">✕</button>
+      </span>`).join('');
+  }
+
+  function addBudgetType() {
+    const key   = document.getElementById('newBtKey').value.trim();
+    const label = document.getElementById('newBtLabel').value.trim();
+    const color = document.getElementById('newBtColor').value;
+    if (!key || !label) { alert('กรุณากรอก key และชื่อประเภท'); return; }
+    _budgetTypes.push({ key, label, color });
+    _renderBudgetTypes();
+    document.getElementById('newBtKey').value = '';
+    document.getElementById('newBtLabel').value = '';
+  }
+
+  function _delBtype(i) {
+    if (!confirm('ลบประเภทนี้?')) return;
+    _budgetTypes.splice(i, 1);
+    _renderBudgetTypes();
+  }
+
+  function saveBudgetTypes() {
+    _saveToStore();
+    alert('บันทึกประเภทงบประมาณแล้ว');
+  }
+
+  // ── Divisions ──────────────────────────────────────────────
+  function _renderDivisions() {
+    const tbody = document.getElementById('divBody');
+    if (!tbody) return;
+    tbody.innerHTML = _divisions.map((d, i) => `
+      <tr data-div-idx="${i}">
+        <td style="color:var(--ink-400);font-size:12px">${i + 1}</td>
+        <td><input value="${_esc(d.code)}" placeholder="รหัส" class="div-code" data-i="${i}"></td>
+        <td><input value="${_esc(d.name)}" placeholder="ชื่อฝ่าย" class="div-name" data-i="${i}"></td>
+        <td><input value="${_esc(d.head || '')}" placeholder="ชื่อหัวหน้า" class="div-head" data-i="${i}"></td>
+        <td>
+          <button class="btn sm ghost" style="color:#ef4444;border-color:#fca5a5" onclick="SettingsPage._delDiv(${i})">ลบ</button>
+        </td>
+      </tr>`).join('');
+  }
+
+  function addDivision() {
+    _divisions.push({ code: '', name: '', head: '' });
+    _renderDivisions();
+    // Focus last row's code input
+    const inputs = document.querySelectorAll('.div-code');
+    if (inputs.length) inputs[inputs.length - 1].focus();
+  }
+
+  function _delDiv(i) {
+    if (!confirm('ลบฝ่าย/แผนกนี้?')) return;
+    _divisions.splice(i, 1);
+    _renderDivisions();
+  }
+
+  function saveDivisions() {
+    // Collect values from table
+    _divisions = [];
+    document.querySelectorAll('#divBody tr').forEach((tr, i) => {
+      const code = (tr.querySelector('.div-code')?.value || '').trim();
+      const name = (tr.querySelector('.div-name')?.value || '').trim();
+      const head = (tr.querySelector('.div-head')?.value || '').trim();
+      if (code || name) _divisions.push({ code, name, head });
+    });
+    _saveToStore();
+    _renderDivisions();
+    alert('บันทึกรายการฝ่าย/แผนกแล้ว');
+  }
+
+  // ── Users ──────────────────────────────────────────────────
+  async function _loadUsers() {
+    const tbody = document.getElementById('userBody');
+    try {
+      // Try real API first, fallback to mock
+      const db    = JSON.parse(localStorage.getItem('plan_mockdb_v3') || '{}');
+      const users = db.users || _defaultUsers();
+      _users = users;
+      _renderUsers();
+    } catch {
+      tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:20px;color:var(--ink-400)">ไม่สามารถโหลดข้อมูลผู้ใช้ได้</td></tr>';
+    }
+  }
+
+  function _defaultUsers() {
+    return [
+      { user_id:'u1', email:'admin@msc.ac.th', display_name:'ผู้ดูแลระบบ', role:'admin',   department:'plan',       is_active:true,  last_login: new Date().toISOString() },
+      { user_id:'u2', email:'officer@msc.ac.th',display_name:'เจ้าหน้าที่แผน',role:'officer',department:'plan',    is_active:true,  last_login:'' },
+      { user_id:'u3', email:'viewer@msc.ac.th', display_name:'ผู้ใช้ทั่วไป', role:'viewer', department:'academic', is_active:true,  last_login:'' }
+    ];
+  }
+
+  function _renderUsers() {
+    const tbody = document.getElementById('userBody');
+    if (!tbody || !_users.length) {
+      if (tbody) tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:20px;color:var(--ink-400)">ไม่มีผู้ใช้งาน</td></tr>';
+      return;
+    }
+    const roleMap = { admin: 'Admin', officer: 'Officer', viewer: 'Viewer' };
+    const divMap  = {};
+    _divisions.forEach(d => { divMap[d.code] = d.name; });
+
+    tbody.innerHTML = _users.map(u => {
+      const initials = (u.display_name || u.email || '?').charAt(0).toUpperCase();
+      const active   = u.is_active === true || u.is_active === 'true' || u.is_active === 'TRUE';
+      const lastLogin = u.last_login ? _fmtDate(u.last_login) : '—';
+      const deptName  = divMap[u.department] || u.department || '—';
+      return `
+        <tr>
+          <td><div class="user-av">${_esc(initials)}</div></td>
+          <td><strong>${_esc(u.display_name || '(ไม่ระบุ)')}</strong></td>
+          <td style="color:var(--ink-600);font-size:12.5px">${_esc(u.email)}</td>
+          <td><span class="role-badge ${u.role}">${roleMap[u.role] || u.role}</span></td>
+          <td style="font-size:12.5px">${_esc(deptName)}</td>
+          <td>
+            <span class="status-dot ${active ? 'on' : 'off'}"></span>
+            ${active ? 'เปิดใช้งาน' : 'ปิดใช้งาน'}
+          </td>
+          <td style="font-size:12px;color:var(--ink-500)">${lastLogin}</td>
+          <td>
+            <button class="btn sm ghost" onclick="SettingsPage.openUserModal('${_esc(u.user_id)}')">แก้ไข</button>
+          </td>
+        </tr>`;
+    }).join('');
+
+    // Populate department dropdown
+    const sel = document.getElementById('um_department');
+    if (sel) {
+      const existing = Array.from(sel.options).map(o => o.value);
+      _divisions.forEach(d => {
+        if (!existing.includes(d.code)) {
+          sel.add(new Option(d.name, d.code));
+        }
+      });
+    }
+  }
+
+  function openUserModal(userId) {
+    _editingUserId = userId || null;
+    const title = document.getElementById('userModalTitle');
+    const modal = document.getElementById('userModal');
+
+    if (userId) {
+      title.textContent = 'แก้ไขผู้ใช้';
+      const u = _users.find(x => x.user_id === userId);
+      if (u) {
+        document.getElementById('um_user_id').value      = u.user_id;
+        document.getElementById('um_display_name').value = u.display_name || '';
+        document.getElementById('um_email').value         = u.email;
+        document.getElementById('um_password').value      = '';
+        document.getElementById('um_role').value          = u.role || 'viewer';
+        document.getElementById('um_department').value    = u.department || '';
+        document.getElementById('um_is_active').value     = String(u.is_active === true || u.is_active === 'true' || u.is_active === 'TRUE');
+        document.getElementById('um_status_wrap').style.display = '';
+      }
+    } else {
+      title.textContent = 'เพิ่มผู้ใช้งาน';
+      document.getElementById('um_user_id').value      = '';
+      document.getElementById('um_display_name').value = '';
+      document.getElementById('um_email').value         = '';
+      document.getElementById('um_password').value      = '';
+      document.getElementById('um_role').value          = 'viewer';
+      document.getElementById('um_department').value    = '';
+      document.getElementById('um_status_wrap').style.display = 'none';
+    }
+
+    modal.classList.add('open');
+  }
+
+  function closeUserModal() {
+    document.getElementById('userModal').classList.remove('open');
+    _editingUserId = null;
+  }
+
+  function saveUser() {
+    const name = document.getElementById('um_display_name').value.trim();
+    const email = document.getElementById('um_email').value.trim();
+    const pwd   = document.getElementById('um_password').value;
+    const role  = document.getElementById('um_role').value;
+    const dept  = document.getElementById('um_department').value;
+
+    if (!name || !email) { alert('กรุณากรอกชื่อและ Email'); return; }
+
+    if (_editingUserId) {
+      const u = _users.find(x => x.user_id === _editingUserId);
+      if (u) {
+        u.display_name = name;
+        u.role         = role;
+        u.department   = dept;
+        u.is_active    = document.getElementById('um_is_active').value === 'true';
+      }
+    } else {
+      if (!pwd || pwd.length < 6) { alert('กรุณากรอกรหัสผ่านอย่างน้อย 6 ตัวอักษร'); return; }
+      if (_users.find(u => u.email === email)) { alert('Email นี้มีอยู่แล้ว'); return; }
+      _users.push({
+        user_id:      'u' + Date.now(),
+        email,
+        display_name: name,
+        role,
+        department:   dept,
+        is_active:    true,
+        last_login:   ''
+      });
+    }
+
+    // Persist to mockdb
+    const db = JSON.parse(localStorage.getItem('plan_mockdb_v3') || '{}');
+    db.users = _users;
+    localStorage.setItem('plan_mockdb_v3', JSON.stringify(db));
+
+    closeUserModal();
+    _renderUsers();
+  }
+
+  // ── Helpers ────────────────────────────────────────────────
+  function _esc(s) {
+    return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  function _fmtDate(iso) {
+    if (!iso) return '—';
+    try {
+      const d = new Date(iso);
+      const day  = d.getDate().toString().padStart(2,'0');
+      const mon  = (d.getMonth()+1).toString().padStart(2,'0');
+      const year = d.getFullYear() + 543;
+      const h    = d.getHours().toString().padStart(2,'0');
+      const m    = d.getMinutes().toString().padStart(2,'0');
+      return `${day}/${mon}/${year} ${h}:${m}`;
+    } catch { return iso; }
+  }
+
+  // ── Public API ─────────────────────────────────────────────
+  return {
+    init,
+    saveGeneral, saveSystem, saveAuthority,
+    addStatus, _delStatus, saveStatuses,
+    addCategory, _delCat, saveCategories,
+    addBudgetType, _delBtype, saveBudgetTypes,
+    addDivision, _delDiv, saveDivisions,
+    openUserModal, closeUserModal, saveUser
+  };
+})();
+
+// Close modal on overlay click
+document.getElementById('userModal').addEventListener('click', function(e) {
+  if (e.target === this) SettingsPage.closeUserModal();
+});
+
+SettingsPage.init();
+</script>

@@ -64,9 +64,9 @@ logs/
 npm-debug.log*
 yarn-debug.log*
 
-# Uploads (เฉพาะข้อมูลชั่วคราว)
-uploads/temp/
-uploads/*.tmp
+# Uploads — ข้อมูลงบประมาณจริง ห้าม push เด็ดขาด
+uploads/
+planwork_webapp_prompt.md
 
 # Next phase backend (when added)
 backend/
