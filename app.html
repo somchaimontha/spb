@@ -7,6 +7,9 @@
 <link rel="icon" type="image/png" href="logo-msr.png">
 <link rel="apple-touch-icon" href="logo-msr.png">
 <link rel="stylesheet" href="styles.css">
+<script>
+  window.__GAS_URL__ = 'https://script.google.com/macros/s/AKfycbzqNFleiDVWfMcwQbsDBCvYOZtnujCluR1Gl9iCWmx-J6DS84HpFMGXHfKgphH49hRLLQ/exec';
+</script>
 <script src="js/api.js"></script>
 <style>
   body { margin: 0; display: flex; min-height: 100vh; background: var(--paper); }
@@ -347,9 +350,11 @@
 // ── Auth ───────────────────────────────────────────────────
 function checkAuth() {
   try {
-    const raw = localStorage.getItem('user');
+    const raw = localStorage.getItem('plan_user');
     if (!raw) { window.location.href = 'signin.html'; return null; }
-    return JSON.parse(raw);
+    const u = JSON.parse(raw);
+    if (!u || !u.email) { window.location.href = 'signin.html'; return null; }
+    return u;
   } catch {
     window.location.href = 'signin.html';
     return null;
@@ -358,8 +363,7 @@ function checkAuth() {
 
 function logout() {
   if (confirm('คุณแน่ใจหรือว่าต้องการออกจากระบบ?')) {
-    localStorage.removeItem('user');
-    localStorage.removeItem('session_token');
+    API.auth.logout();
     window.location.href = 'signin.html';
   }
 }
@@ -367,11 +371,12 @@ function logout() {
 // ── Session init ───────────────────────────────────────────
 const currentUser = checkAuth();
 if (currentUser) {
-  const initials = (currentUser.name || currentUser.email || '?').charAt(0).toUpperCase();
-  const roleLabels = { admin: 'ผู้ดูแลระบบ', officer: 'เจ้าหน้าที่', viewer: 'ผู้ใช้' };
+  const displayName = currentUser.display_name || currentUser.name || currentUser.email || '?';
+  const initials    = displayName.charAt(0).toUpperCase();
+  const roleLabels  = { admin: 'ผู้ดูแลระบบ', officer: 'เจ้าหน้าที่', viewer: 'ผู้ใช้' };
 
   document.getElementById('sb-av').textContent   = initials;
-  document.getElementById('sb-name').textContent = currentUser.name || currentUser.email || '—';
+  document.getElementById('sb-name').textContent = displayName;
   document.getElementById('sb-role').textContent = roleLabels[currentUser.role] || currentUser.role || 'Staff';
 
   // Show Settings menu only for admin

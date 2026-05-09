@@ -7,6 +7,10 @@
 <link rel="icon" type="image/png" href="logo-msr.png">
 <link rel="apple-touch-icon" href="logo-msr.png">
 <link rel="stylesheet" href="styles.css">
+<script>
+  window.__GAS_URL__ = 'https://script.google.com/macros/s/AKfycbzqNFleiDVWfMcwQbsDBCvYOZtnujCluR1Gl9iCWmx-J6DS84HpFMGXHfKgphH49hRLLQ/exec';
+</script>
+<script src="js/api.js"></script>
 <style>
   body {
     margin: 0;
@@ -271,62 +275,60 @@
 </div>
 
 <script>
-document.getElementById('login-form').addEventListener('submit', function(e) {
+const loginForm = document.getElementById('login-form');
+const loginBtn  = loginForm.querySelector('button[type="submit"]');
+
+loginForm.addEventListener('submit', async function(e) {
   e.preventDefault();
-  
-  const email = document.getElementById('email').value;
+
+  const email    = document.getElementById('email').value.trim();
   const password = document.getElementById('password').value;
-  
-  // Simple validation
-  if (!email.includes('@msc.ac.th')) {
-    showAlert('กรุณาใช้อีเมลที่ลงท้ายด้วย @msc.ac.th', 'warning');
+
+  if (!email || !password) {
+    showAlert('กรุณากรอก Email และรหัสผ่าน', 'warning');
     return;
   }
-  
-  if (password.length < 6) {
-    showAlert('รหัสผ่านต้องมีความยาวอย่างน้อย 6 ตัวอักษร', 'error');
-    return;
+
+  // Loading state
+  loginBtn.textContent = 'กำลังเข้าสู่ระบบ...';
+  loginBtn.disabled = true;
+
+  try {
+    const r = await API.auth.login(email, password);
+
+    if (r.ok) {
+      window.location.href = 'app.html';
+    } else {
+      const msg = {
+        'INVALID_CREDENTIALS': 'Email หรือรหัสผ่านไม่ถูกต้อง',
+        'ACCOUNT_INACTIVE':    'บัญชีนี้ถูกระงับการใช้งาน กรุณาติดต่อผู้ดูแลระบบ',
+        'MOCK_NOT_FOUND':      'ไม่พบบัญชีผู้ใช้ (Demo mode)'
+      }[r.error] || (r.message || 'เกิดข้อผิดพลาด กรุณาลองใหม่');
+      showAlert(msg, 'error');
+    }
+  } catch (err) {
+    showAlert('ไม่สามารถเชื่อมต่อระบบได้ กรุณาตรวจสอบอินเทอร์เน็ต', 'error');
+  } finally {
+    loginBtn.textContent = 'ล็อกอิน';
+    loginBtn.disabled = false;
   }
-  
-  // Simulate login (in real app, this would authenticate with backend)
-  localStorage.setItem('user', JSON.stringify({
-    email: email,
-    name: email.split('@')[0].split('.').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')
-  }));
-  
-  // Redirect to app
-  window.location.href = 'app.html';
 });
 
 function googleLogin() {
-  // Simulate Google login
-  localStorage.setItem('user', JSON.stringify({
-    email: 'example@msc.ac.th',
-    name: 'ใจจริง ใจ'
-  }));
-  
-  window.location.href = 'app.html';
+  showAlert('Google Login ยังไม่เปิดใช้งาน กรุณาล็อกอินด้วย Email', 'warning');
 }
 
 function showAlert(message, type) {
   const alertContainer = document.getElementById('alert-container');
-  const alertDiv = document.createElement('div');
-  alertDiv.className = `alert-message ${type}`;
-  alertDiv.textContent = message;
-  alertContainer.innerHTML = '';
-  alertContainer.appendChild(alertDiv);
-  
-  setTimeout(() => {
-    alertDiv.remove();
-  }, 5000);
+  alertContainer.innerHTML = `<div class="alert-message ${type}">${message}</div>`;
+  setTimeout(() => { alertContainer.innerHTML = ''; }, 6000);
 }
 
-// Check if user is already logged in
+// ถ้า login อยู่แล้ว → ไปหน้า app ทันที
 window.addEventListener('load', function() {
-  const user = localStorage.getItem('user');
-  if (user) {
-    window.location.href = 'app.html';
-  }
+  const u = localStorage.getItem('plan_user');
+  const t = localStorage.getItem('plan_token');
+  if (u && t) window.location.href = 'app.html';
 });
 </script>
 

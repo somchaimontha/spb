@@ -405,7 +405,16 @@ const API = (() => {
     function getUsers()    { return { ok:true, data: _getDB().users }; }
     function resetDB()     { localStorage.removeItem(DB_KEY); return { ok:true }; }
 
-    return { getProjects, getProject, createProject, updateProject, cancelProject,
+    function login(p) {
+      const db   = _getDB();
+      const user = db.users.find(u => u.email === p.email && (u.is_active === true || u.is_active === 'true'));
+      if (!user) return { error: 'INVALID_CREDENTIALS', message: 'ไม่พบบัญชีผู้ใช้นี้ในระบบ Demo' };
+      const token = 'mock_' + _uid();
+      return { ok:true, token, user:{ user_id:user.user_id, email:user.email,
+        display_name:user.display_name, role:user.role, department:user.department } };
+    }
+
+    return { login, getProjects, getProject, createProject, updateProject, cancelProject,
              getRounds, addRound, deleteRound, getDashboardKPIs, getSettings, updateSettings, getUsers,
              getDisbursements: ()=>({ok:true,data:[]}), createDisbursement:()=>({ok:true}),
              approveDisbursement:()=>({ok:true}), getBudgetEstimates:()=>({ok:true,data:[]}),
