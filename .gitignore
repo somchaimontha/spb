@@ -23,7 +23,8 @@ config.local.js
 .apikey
 api.key
 
-# Google Apps Script
+# Google Apps Script — จัดการผ่าน script.google.com โดยตรง ไม่ต้อง push
+gas/
 Code.gs
 appsscript.json
 databasesetup.gs
