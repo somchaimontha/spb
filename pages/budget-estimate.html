@@ -1,0 +1,233 @@
+<style>
+/* ── ประมาณการรายจ่าย ───────────────────────────────────── */
+.be-toolbar { display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-bottom:18px; }
+.be-toolbar .spacer { flex:1; }
+
+.be-stat-grid { display:grid; grid-template-columns:repeat(6,1fr); gap:12px; margin-bottom:20px; }
+.be-stat { background:white; border:1px solid var(--ink-100); border-radius:var(--radius); padding:14px 16px; }
+.be-stat .lbl { font-size:11px; color:var(--ink-500); font-weight:600; margin-bottom:4px; letter-spacing:.04em; }
+.be-stat .val { font-size:18px; font-weight:700; color:var(--ink-900); font-variant-numeric:tabular-nums; }
+.be-stat.lf-card  .val { color:#1e40af; }
+.be-stat.sub-card .val { color:#92400e; }
+.be-stat.bk-card  .val { color:#6b21a8; }
+.be-stat.oth-card .val { color:#991b1b; }
+.be-stat.cen-card .val { color:#166534; }
+
+.be-table-wrap { overflow-x:auto; }
+.be-table { width:100%; border-collapse:collapse; font-size:13px; min-width:960px; }
+.be-table th {
+  padding:8px 10px; text-align:left; background:var(--navy-700); color:white;
+  font-size:11px; font-weight:700; letter-spacing:.05em; white-space:nowrap;
+  position:sticky; top:0; z-index:1;
+}
+.be-table th.num { text-align:right; }
+.be-table td { padding:8px 10px; border-bottom:1px solid var(--ink-100); vertical-align:middle; }
+.be-table tr.div-header td {
+  background:var(--navy-600); color:white; font-weight:700; font-size:12px;
+  padding:7px 10px; letter-spacing:.04em; border-bottom:none;
+}
+.be-table tr.data-row:hover td { background:#f8faff; }
+.be-table tr.data-row td { transition:background .12s; }
+.be-table tr.total-row td {
+  background:var(--navy-50); font-weight:700; border-top:2px solid var(--navy-200);
+  font-size:13px;
+}
+.be-num { text-align:right; font-variant-numeric:tabular-nums; font-family:'JetBrains Mono',monospace; font-size:12.5px; white-space:nowrap; }
+.be-zero { color:var(--ink-300); }
+.be-col-no   { width:48px; text-align:center; }
+.be-col-name { min-width:220px; }
+.be-col-resp { width:130px; font-size:11.5px; color:var(--ink-500); }
+.be-col-total{ width:120px; }
+.be-col-bt   { width:110px; }
+
+@media print {
+  .be-toolbar, .sb-nav, .topbar { display:none !important; }
+  .be-table th { background:#1D3A73 !important; -webkit-print-color-adjust:exact; }
+}
+</style>
+
+<div>
+  <!-- Toolbar -->
+  <div class="be-toolbar">
+    <select class="filter-sel" id="be-div-filter" onchange="beFilter()">
+      <option value="">ทุกฝ่าย/งาน</option>
+      <option value="admin">ฝ่ายบริหารทรัพยากร</option>
+      <option value="plan">ฝ่ายแผนงานและความร่วมมือ</option>
+      <option value="student">ฝ่ายพัฒนากิจการนักเรียน</option>
+      <option value="academic">ฝ่ายวิชาการ</option>
+      <option value="activity">งานกิจกรรม/ชมรม</option>
+    </select>
+    <div class="spacer"></div>
+    <button class="btn sm ghost" onclick="window.print()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:4px">
+        <polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/>
+        <rect x="6" y="14" width="12" height="8"/>
+      </svg>พิมพ์
+    </button>
+  </div>
+
+  <!-- Stat cards -->
+  <div class="be-stat-grid" id="be-stats">
+    <div class="be-stat"><div class="lbl">รวมทั้งสิ้น</div><div class="val" id="be-tot">—</div></div>
+    <div class="be-stat lf-card"><div class="lbl">งบเรียนฟรีรวม</div><div class="val" id="be-lf">—</div></div>
+    <div class="be-stat sub-card"><div class="lbl">งบดำเนินงาน</div><div class="val" id="be-sub">—</div></div>
+    <div class="be-stat bk-card"><div class="lbl">บกศ.</div><div class="val" id="be-bk">—</div></div>
+    <div class="be-stat oth-card"><div class="lbl">งบรายจ่ายอื่น</div><div class="val" id="be-oth">—</div></div>
+    <div class="be-stat cen-card"><div class="lbl">งบส่วนกลาง สอศ.</div><div class="val" id="be-cen">—</div></div>
+  </div>
+
+  <!-- Table -->
+  <div class="panel" style="padding:0">
+    <div class="be-table-wrap">
+      <table class="be-table">
+        <thead>
+          <tr>
+            <th class="be-col-no">ที่</th>
+            <th class="be-col-name">ชื่อโครงการ</th>
+            <th class="be-col-resp">งาน/แผนก</th>
+            <th class="be-col-total num">รวมทั้งสิ้น</th>
+            <th class="be-col-bt num" style="background:#1e3a8a">งบเรียนฟรีรวม</th>
+            <th class="be-col-bt num" style="background:#78350f">งบดำเนินงาน</th>
+            <th class="be-col-bt num" style="background:#581c87">บกศ.</th>
+            <th class="be-col-bt num" style="background:#7f1d1d">งบรายจ่ายอื่น</th>
+            <th class="be-col-bt num" style="background:#14532d">งบส่วนกลาง สอศ.</th>
+          </tr>
+        </thead>
+        <tbody id="be-tbody">
+          <tr><td colspan="9" style="text-align:center;padding:40px;color:var(--ink-400)">กำลังโหลด...</td></tr>
+        </tbody>
+        <tfoot id="be-tfoot"></tfoot>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+  'use strict';
+  const F = n => n ? '฿'+Number(n).toLocaleString('th-TH',{maximumFractionDigits:0}) : '<span class="be-zero">—</span>';
+  const FN = n => n ? Number(n).toLocaleString('th-TH',{maximumFractionDigits:0}) : '<span class="be-zero">—</span>';
+
+  const DIV_LABELS = {
+    admin:    'ฝ่ายบริหารทรัพยากร',
+    plan:     'ฝ่ายแผนงานและความร่วมมือ',
+    student:  'ฝ่ายพัฒนากิจการนักเรียน นักศึกษา',
+    academic: 'ฝ่ายวิชาการ',
+    activity: 'งานกิจกรรมพัฒนาผู้เรียน / ชมรมวิชาชีพ'
+  };
+  const DIV_ORDER = ['admin','plan','student','academic','activity'];
+
+  let _allProjects = [];
+  let _totals = {};
+
+  function _updateStats(ps) {
+    const t = { total:0, lf:0, sub:0, bk:0, other:0, central:0 };
+    ps.forEach(r => {
+      t.total   += Number(r.total_budget||0);
+      t.lf      += Number(r.b_learning_free||0);
+      t.sub     += Number(r.b_subsidy||0);
+      t.bk      += Number(r.b_nonformal||0);
+      t.other   += Number(r.b_other||0);
+      t.central += Number(r.b_central||0);
+    });
+    document.getElementById('be-tot').textContent = '฿'+t.total.toLocaleString('th-TH',{maximumFractionDigits:0});
+    document.getElementById('be-lf').textContent  = '฿'+t.lf.toLocaleString('th-TH',{maximumFractionDigits:0});
+    document.getElementById('be-sub').textContent = '฿'+t.sub.toLocaleString('th-TH',{maximumFractionDigits:0});
+    document.getElementById('be-bk').textContent  = '฿'+t.bk.toLocaleString('th-TH',{maximumFractionDigits:0});
+    document.getElementById('be-oth').textContent = '฿'+t.other.toLocaleString('th-TH',{maximumFractionDigits:0});
+    document.getElementById('be-cen').textContent = '฿'+t.central.toLocaleString('th-TH',{maximumFractionDigits:0});
+    return t;
+  }
+
+  function _buildRows(ps) {
+    const filterDiv = document.getElementById('be-div-filter').value;
+    const filtered  = filterDiv ? ps.filter(p => p.division_code === filterDiv) : ps;
+    const t = _updateStats(filtered);
+
+    const tbody = document.getElementById('be-tbody');
+    const tfoot = document.getElementById('be-tfoot');
+
+    if (!filtered.length) {
+      tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:40px;color:var(--ink-400)">ไม่มีข้อมูล</td></tr>';
+      tfoot.innerHTML = '';
+      return;
+    }
+
+    // Group by division
+    const groups = {};
+    DIV_ORDER.forEach(d => { groups[d] = []; });
+    filtered.forEach(p => {
+      const d = p.division_code || 'admin';
+      if (!groups[d]) groups[d] = [];
+      groups[d].push(p);
+    });
+
+    let html = '';
+    let rowNo = 0;
+
+    Object.entries(groups).forEach(([div, rows]) => {
+      if (!rows.length) return;
+      // Division header
+      html += `<tr class="div-header"><td colspan="9">${DIV_LABELS[div] || div}</td></tr>`;
+      // Sub-total accumulators for this division
+      const dt = { total:0, lf:0, sub:0, bk:0, other:0, central:0 };
+      rows.forEach(p => {
+        rowNo++;
+        dt.total   += Number(p.total_budget||0);
+        dt.lf      += Number(p.b_learning_free||0);
+        dt.sub     += Number(p.b_subsidy||0);
+        dt.bk      += Number(p.b_nonformal||0);
+        dt.other   += Number(p.b_other||0);
+        dt.central += Number(p.b_central||0);
+
+        html += `<tr class="data-row">
+          <td class="be-col-no" style="color:var(--ink-400);font-size:12px">${p.project_no}</td>
+          <td class="be-col-name" style="font-weight:600;color:var(--ink-900);line-height:1.35">${p.project_name}</td>
+          <td class="be-col-resp">${p.responsible_person||'—'}</td>
+          <td class="be-num">${FN(p.total_budget)}</td>
+          <td class="be-num">${FN(p.b_learning_free)}</td>
+          <td class="be-num">${FN(p.b_subsidy)}</td>
+          <td class="be-num">${FN(p.b_nonformal)}</td>
+          <td class="be-num">${FN(p.b_other)}</td>
+          <td class="be-num">${FN(p.b_central)}</td>
+        </tr>`;
+      });
+      // Division subtotal row
+      html += `<tr class="total-row">
+        <td colspan="3" style="text-align:right;font-size:12px;color:var(--ink-600)">รวม${DIV_LABELS[div]||div}</td>
+        <td class="be-num">${dt.total.toLocaleString('th-TH',{maximumFractionDigits:0})}</td>
+        <td class="be-num">${dt.lf   ? dt.lf.toLocaleString('th-TH',{maximumFractionDigits:0}) : '<span class="be-zero">—</span>'}</td>
+        <td class="be-num">${dt.sub  ? dt.sub.toLocaleString('th-TH',{maximumFractionDigits:0}) : '<span class="be-zero">—</span>'}</td>
+        <td class="be-num">${dt.bk   ? dt.bk.toLocaleString('th-TH',{maximumFractionDigits:0}) : '<span class="be-zero">—</span>'}</td>
+        <td class="be-num">${dt.other? dt.other.toLocaleString('th-TH',{maximumFractionDigits:0}) : '<span class="be-zero">—</span>'}</td>
+        <td class="be-num">${dt.central?dt.central.toLocaleString('th-TH',{maximumFractionDigits:0}):'<span class="be-zero">—</span>'}</td>
+      </tr>`;
+    });
+
+    tbody.innerHTML = html;
+
+    // Grand total footer
+    tfoot.innerHTML = `<tr style="background:var(--navy-700);color:white;font-weight:700">
+      <td colspan="3" style="padding:10px;text-align:right;font-size:13px">รวมทั้งสิ้น (${rowNo} โครงการ)</td>
+      <td class="be-num" style="padding:10px;font-size:14px">${t.total.toLocaleString('th-TH',{maximumFractionDigits:0})}</td>
+      <td class="be-num" style="padding:10px">${t.lf     ? t.lf.toLocaleString('th-TH',{maximumFractionDigits:0}) : '—'}</td>
+      <td class="be-num" style="padding:10px">${t.sub    ? t.sub.toLocaleString('th-TH',{maximumFractionDigits:0}) : '—'}</td>
+      <td class="be-num" style="padding:10px">${t.bk     ? t.bk.toLocaleString('th-TH',{maximumFractionDigits:0}) : '—'}</td>
+      <td class="be-num" style="padding:10px">${t.other  ? t.other.toLocaleString('th-TH',{maximumFractionDigits:0}) : '—'}</td>
+      <td class="be-num" style="padding:10px">${t.central? t.central.toLocaleString('th-TH',{maximumFractionDigits:0}): '—'}</td>
+    </tr>`;
+  }
+
+  function beFilter() { _buildRows(_allProjects); }
+  window.beFilter = beFilter;
+
+  // Load
+  API.budget.getEstimates().then(r => {
+    if (!r.ok) return;
+    _allProjects = r.data;
+    _buildRows(_allProjects);
+  }).catch(() => {
+    document.getElementById('be-tbody').innerHTML = '<tr><td colspan="9" style="text-align:center;padding:40px;color:var(--rose-600)">ไม่สามารถโหลดข้อมูลได้</td></tr>';
+  });
+})();
+</script>

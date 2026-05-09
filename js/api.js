@@ -89,12 +89,18 @@ const API = (() => {
   };
 
   const budget = {
-    async getEstimates(fy = FISCAL_YEAR)    { return _call('getBudgetEstimates',    { fiscal_year: fy }); },
-    async getAllocations(fy = FISCAL_YEAR)   { return _call('getBudgetAllocations',  { fiscal_year: fy }); },
-    async getReceived(fy = FISCAL_YEAR)     { return _call('getBudgetReceived',      { fiscal_year: fy }); },
-    async getDistribution(fy = FISCAL_YEAR) { return _call('getBudgetDistribution',  { fiscal_year: fy }); },
-    async getDisbursements(filters = {})    { return _call('getDisbursements', filters); },
-    async createDisbursement(data)          { return _call('createDisbursement', data); },
+    async getEstimates(fy = FISCAL_YEAR)            { return _call('getBudgetEstimates',       { fiscal_year: fy }); },
+    async getAllocations(fy = FISCAL_YEAR)           { return _call('getBudgetAllocations',     { fiscal_year: fy }); },
+    async createAllocation(data)                    { return _call('createBudgetAllocation',   data); },
+    async deleteAllocation(id)                      { return _call('deleteBudgetAllocation',   { alloc_id: id }); },
+    async getReceived(fy = FISCAL_YEAR)             { return _call('getBudgetReceived',        { fiscal_year: fy }); },
+    async createReceived(data)                      { return _call('createBudgetReceived',     data); },
+    async deleteReceived(id)                        { return _call('deleteBudgetReceived',     { recv_id: id }); },
+    async getDistribution(fy = FISCAL_YEAR)         { return _call('getBudgetDistribution',    { fiscal_year: fy }); },
+    async createDistribution(data)                  { return _call('createBudgetDistribution', data); },
+    async deleteDistribution(id)                    { return _call('deleteBudgetDistribution', { dist_id: id }); },
+    async getDisbursements(filters = {})            { return _call('getDisbursements', filters); },
+    async createDisbursement(data)                  { return _call('createDisbursement', data); },
     async approveDisbursement(id, approved, remark = '') {
       return _call('approveDisbursement', { disburse_id: id, approved, remark });
     }
@@ -125,7 +131,7 @@ const API = (() => {
 
   // ── MockDB (localStorage + seed) ─────────────────────────
   const Mock = (() => {
-    const DB_KEY = 'plan_mockdb_v4';
+    const DB_KEY = 'plan_mockdb_v5';
 
     function _load() {
       try { return JSON.parse(localStorage.getItem(DB_KEY) || 'null'); } catch { return null; }
@@ -146,12 +152,44 @@ const API = (() => {
       const projects = _buildProjects();
       return {
         projects,
-        rounds:        [],
-        history:       [],
-        disbursements: [],
+        rounds:               [],
+        history:              [],
+        disbursements:        [],
+        budget_allocations:   _seedBudgetAllocations(),
+        budget_received:      _seedBudgetReceived(),
+        budget_distribution:  [],
         users: [{ user_id: 'u1', email: 'admin@msc.ac.th', display_name: 'ผู้ดูแลระบบ', role: 'admin', department: 'งานแผนฯ', is_active: true }],
         settings: _defaultSettings()
       };
+    }
+
+    // ── Budget seed helpers ───────────────────────────────────
+    // lf=311,030  sub=3,596,060  bk=3,352,400  other=10,000  central=3,850,000  total=11,119,490
+    function _seedBudgetAllocations() {
+      return [
+        { alloc_id:'al1', alloc_no:1, alloc_date:'2025-10-01', memo_no:'สอศ.2568/3451', budget_type:'sub',     amount:1500000, quarter:1, fiscal_year:FISCAL_YEAR, note:'จัดสรรงบดำเนินงาน ครั้งที่ 1/2569',            created_by:'u1', created_at:'2025-10-01T00:00:00.000Z' },
+        { alloc_id:'al2', alloc_no:2, alloc_date:'2025-10-01', memo_no:'สอศ.2568/3452', budget_type:'bk',      amount:1500000, quarter:1, fiscal_year:FISCAL_YEAR, note:'จัดสรรงบบำรุงการศึกษา ครั้งที่ 1/2569',        created_by:'u1', created_at:'2025-10-01T00:00:00.000Z' },
+        { alloc_id:'al3', alloc_no:3, alloc_date:'2026-01-08', memo_no:'สอศ.2569/0122', budget_type:'lf',      amount:186618,  quarter:2, fiscal_year:FISCAL_YEAR, note:'จัดสรรงบเรียนฟรี ครั้งที่ 1/2569',             created_by:'u1', created_at:'2026-01-08T00:00:00.000Z' },
+        { alloc_id:'al4', alloc_no:4, alloc_date:'2026-01-08', memo_no:'สอศ.2569/0123', budget_type:'sub',     amount:1096060, quarter:2, fiscal_year:FISCAL_YEAR, note:'จัดสรรงบดำเนินงาน ครั้งที่ 2/2569',            created_by:'u1', created_at:'2026-01-08T00:00:00.000Z' },
+        { alloc_id:'al5', alloc_no:5, alloc_date:'2026-01-08', memo_no:'สอศ.2569/0124', budget_type:'bk',      amount:1852400, quarter:2, fiscal_year:FISCAL_YEAR, note:'จัดสรรงบบำรุงการศึกษา ครั้งที่ 2/2569',        created_by:'u1', created_at:'2026-01-08T00:00:00.000Z' },
+        { alloc_id:'al6', alloc_no:6, alloc_date:'2026-04-01', memo_no:'สอศ.2569/1201', budget_type:'central',  amount:3850000, quarter:3, fiscal_year:FISCAL_YEAR, note:'จัดสรรงบส่วนกลาง ครุภัณฑ์แผนกช่างก่อสร้าง',  created_by:'u1', created_at:'2026-04-01T00:00:00.000Z' },
+        { alloc_id:'al7', alloc_no:7, alloc_date:'2026-04-01', memo_no:'สอศ.2569/1202', budget_type:'lf',      amount:124412,  quarter:3, fiscal_year:FISCAL_YEAR, note:'จัดสรรงบเรียนฟรี ครั้งที่ 2/2569',             created_by:'u1', created_at:'2026-04-01T00:00:00.000Z' },
+        { alloc_id:'al8', alloc_no:8, alloc_date:'2026-04-01', memo_no:'สอศ.2569/1203', budget_type:'other',   amount:10000,   quarter:3, fiscal_year:FISCAL_YEAR, note:'จัดสรรงบรายจ่ายอื่น',                          created_by:'u1', created_at:'2026-04-01T00:00:00.000Z' },
+        { alloc_id:'al9', alloc_no:9, alloc_date:'2026-07-01', memo_no:'สอศ.2569/2301', budget_type:'sub',     amount:1000000, quarter:4, fiscal_year:FISCAL_YEAR, note:'จัดสรรงบดำเนินงาน ครั้งที่ 3/2569',            created_by:'u1', created_at:'2026-07-01T00:00:00.000Z' },
+      ];
+    }
+
+    function _seedBudgetReceived() {
+      return [
+        { recv_id:'rv1', recv_no:1, recv_date:'2025-10-15', ref_no:'บช.ร.001/68', budget_type:'sub',     amount:1500000, fiscal_year:FISCAL_YEAR, note:'รับงบดำเนินงาน ไตรมาส 1',           created_by:'u1', created_at:'2025-10-15T00:00:00.000Z' },
+        { recv_id:'rv2', recv_no:2, recv_date:'2025-10-15', ref_no:'บช.ร.002/68', budget_type:'bk',      amount:1500000, fiscal_year:FISCAL_YEAR, note:'รับงบบำรุงการศึกษา ไตรมาส 1',       created_by:'u1', created_at:'2025-10-15T00:00:00.000Z' },
+        { recv_id:'rv3', recv_no:3, recv_date:'2026-01-20', ref_no:'บช.ร.003/69', budget_type:'lf',      amount:186618,  fiscal_year:FISCAL_YEAR, note:'รับงบเรียนฟรี ครั้งที่ 1',          created_by:'u1', created_at:'2026-01-20T00:00:00.000Z' },
+        { recv_id:'rv4', recv_no:4, recv_date:'2026-01-20', ref_no:'บช.ร.004/69', budget_type:'sub',     amount:1096060, fiscal_year:FISCAL_YEAR, note:'รับงบดำเนินงาน ไตรมาส 2',           created_by:'u1', created_at:'2026-01-20T00:00:00.000Z' },
+        { recv_id:'rv5', recv_no:5, recv_date:'2026-01-20', ref_no:'บช.ร.005/69', budget_type:'bk',      amount:1852400, fiscal_year:FISCAL_YEAR, note:'รับงบบำรุงการศึกษา ไตรมาส 2',       created_by:'u1', created_at:'2026-01-20T00:00:00.000Z' },
+        { recv_id:'rv6', recv_no:6, recv_date:'2026-04-15', ref_no:'บช.ร.006/69', budget_type:'central',  amount:3850000, fiscal_year:FISCAL_YEAR, note:'รับงบส่วนกลาง ครุภัณฑ์ช่างก่อสร้าง', created_by:'u1', created_at:'2026-04-15T00:00:00.000Z' },
+        { recv_id:'rv7', recv_no:7, recv_date:'2026-04-15', ref_no:'บช.ร.007/69', budget_type:'lf',      amount:124412,  fiscal_year:FISCAL_YEAR, note:'รับงบเรียนฟรี ครั้งที่ 2',          created_by:'u1', created_at:'2026-04-15T00:00:00.000Z' },
+        { recv_id:'rv8', recv_no:8, recv_date:'2026-04-15', ref_no:'บช.ร.008/69', budget_type:'other',   amount:10000,   fiscal_year:FISCAL_YEAR, note:'รับงบรายจ่ายอื่น',                   created_by:'u1', created_at:'2026-04-15T00:00:00.000Z' },
+      ];
     }
 
     // ข้อมูลโครงการจริงปีงบประมาณ 2569 วิทยาลัยการอาชีพแม่สะเรียง (121 โครงการ)
@@ -444,6 +482,110 @@ const API = (() => {
       _save(db); return { ok:true };
     }
 
+    // ── Budget functions ──────────────────────────────────────
+    const _BT_LABELS = { lf:'งบเรียนฟรีรวม', sub:'งบดำเนินงาน', bk:'บกศ.', other:'งบรายจ่ายอื่น', central:'งบส่วนกลาง สอศ.' };
+    const _BT_KEYS   = ['lf','sub','bk','other','central'];
+    const _BT_MAP    = { lf:'b_learning_free', sub:'b_subsidy', bk:'b_nonformal', other:'b_other', central:'b_central' };
+
+    function getBudgetEstimates(p) {
+      const db = _getDB();
+      const fy = Number(p.fiscal_year) || FISCAL_YEAR;
+      const ps = db.projects.filter(r => r.fiscal_year === fy && r.is_active !== false);
+      const totals = { total:0, lf:0, sub:0, bk:0, other:0, central:0 };
+      ps.forEach(r => {
+        totals.total   += Number(r.total_budget||0);
+        totals.lf      += Number(r.b_learning_free||0);
+        totals.sub     += Number(r.b_subsidy||0);
+        totals.bk      += Number(r.b_nonformal||0);
+        totals.other   += Number(r.b_other||0);
+        totals.central += Number(r.b_central||0);
+      });
+      return { ok:true, data: ps, totals, fiscal_year: fy };
+    }
+
+    function getBudgetAllocations(p) {
+      const db = _getDB();
+      const fy = Number(p.fiscal_year) || FISCAL_YEAR;
+      const rows = db.budget_allocations.filter(r => r.fiscal_year === fy).sort((a,b)=>a.alloc_no-b.alloc_no);
+      const totals = {};
+      _BT_KEYS.forEach(k => { totals[k] = rows.filter(r=>r.budget_type===k).reduce((s,r)=>s+Number(r.amount||0),0); });
+      return { ok:true, data: rows, totals };
+    }
+
+    function createBudgetAllocation(p) {
+      const db = _getDB();
+      if (!db.budget_allocations) db.budget_allocations = [];
+      const seq = db.budget_allocations.filter(r=>r.fiscal_year===FISCAL_YEAR).length + 1;
+      const rec = { alloc_id:_uid(), alloc_no:seq, alloc_date:p.alloc_date||'', memo_no:p.memo_no||'',
+        budget_type:p.budget_type||'sub', amount:Number(p.amount)||0, quarter:Number(p.quarter)||1,
+        fiscal_year:FISCAL_YEAR, note:p.note||'', created_by:'u1', created_at:_now() };
+      db.budget_allocations.push(rec); _save(db);
+      return { ok:true, data: rec };
+    }
+
+    function deleteBudgetAllocation(p) {
+      const db = _getDB();
+      db.budget_allocations = db.budget_allocations.filter(r => r.alloc_id !== p.alloc_id);
+      _save(db); return { ok:true };
+    }
+
+    function getBudgetReceived(p) {
+      const db = _getDB();
+      const fy = Number(p.fiscal_year) || FISCAL_YEAR;
+      const rows = db.budget_received.filter(r => r.fiscal_year === fy).sort((a,b)=>a.recv_no-b.recv_no);
+      const totals = {};
+      _BT_KEYS.forEach(k => { totals[k] = rows.filter(r=>r.budget_type===k).reduce((s,r)=>s+Number(r.amount||0),0); });
+      return { ok:true, data: rows, totals };
+    }
+
+    function createBudgetReceived(p) {
+      const db = _getDB();
+      if (!db.budget_received) db.budget_received = [];
+      const seq = db.budget_received.filter(r=>r.fiscal_year===FISCAL_YEAR).length + 1;
+      const rec = { recv_id:_uid(), recv_no:seq, recv_date:p.recv_date||'', ref_no:p.ref_no||'',
+        budget_type:p.budget_type||'sub', amount:Number(p.amount)||0,
+        fiscal_year:FISCAL_YEAR, note:p.note||'', created_by:'u1', created_at:_now() };
+      db.budget_received.push(rec); _save(db);
+      return { ok:true, data: rec };
+    }
+
+    function deleteBudgetReceived(p) {
+      const db = _getDB();
+      db.budget_received = db.budget_received.filter(r => r.recv_id !== p.recv_id);
+      _save(db); return { ok:true };
+    }
+
+    function getBudgetDistribution(p) {
+      const db = _getDB();
+      const fy = Number(p.fiscal_year) || FISCAL_YEAR;
+      const rows = (db.budget_distribution||[]).filter(r => r.fiscal_year === fy).sort((a,b)=>a.dist_no-b.dist_no);
+      const ps   = db.projects;
+      const enriched = rows.map(r => {
+        const proj = ps.find(pp => pp.project_id === r.project_id || pp.project_no === r.project_no) || {};
+        return { ...r, project_name: proj.project_name||'', project_no_display: proj.project_no||r.project_no||'' };
+      });
+      const totals = {};
+      _BT_KEYS.forEach(k => { totals[k] = enriched.filter(r=>r.budget_type===k).reduce((s,r)=>s+Number(r.amount||0),0); });
+      return { ok:true, data: enriched, totals };
+    }
+
+    function createBudgetDistribution(p) {
+      const db = _getDB();
+      if (!db.budget_distribution) db.budget_distribution = [];
+      const seq = db.budget_distribution.filter(r=>r.fiscal_year===FISCAL_YEAR).length + 1;
+      const rec = { dist_id:_uid(), dist_no:seq, dist_date:p.dist_date||'', project_id:p.project_id||'',
+        project_no:p.project_no||'', budget_type:p.budget_type||'sub', amount:Number(p.amount)||0,
+        fiscal_year:FISCAL_YEAR, note:p.note||'', created_by:'u1', created_at:_now() };
+      db.budget_distribution.push(rec); _save(db);
+      return { ok:true, data: rec };
+    }
+
+    function deleteBudgetDistribution(p) {
+      const db = _getDB();
+      db.budget_distribution = db.budget_distribution.filter(r => r.dist_id !== p.dist_id);
+      _save(db); return { ok:true };
+    }
+
     function getDashboardKPIs() {
       const db = _getDB();
       const ps = db.projects;
@@ -488,10 +630,11 @@ const API = (() => {
     return { login, getProjects, getProject, createProject, updateProject, cancelProject,
              getRounds, addRound, deleteRound, getDashboardKPIs, getSettings, updateSettings, getUsers,
              getDisbursements: ()=>({ok:true,data:[]}), createDisbursement:()=>({ok:true}),
-             approveDisbursement:()=>({ok:true}), getBudgetEstimates:()=>({ok:true,data:[]}),
-             getBudgetAllocations:()=>({ok:true,data:[]}), getBudgetReceived:()=>({ok:true,data:[],totals:{}}),
-             getBudgetDistribution:()=>({ok:true,data:[],summary:{}}), exportReport:()=>({ok:true}),
-             resetDB };
+             approveDisbursement:()=>({ok:true}),
+             getBudgetEstimates, getBudgetAllocations, createBudgetAllocation, deleteBudgetAllocation,
+             getBudgetReceived, createBudgetReceived, deleteBudgetReceived,
+             getBudgetDistribution, createBudgetDistribution, deleteBudgetDistribution,
+             exportReport:()=>({ok:true}), resetDB };
   })();
 
   return { auth, dashboard, projects, budget, settings, fmt, Mock };

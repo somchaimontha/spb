@@ -1,0 +1,433 @@
+<style>
+/* ── จัดสรร งปม. ────────────────────────────────────────── */
+.ba-toolbar { display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-bottom:18px; }
+.ba-toolbar .spacer { flex:1; }
+
+.ba-summary-grid { display:grid; grid-template-columns:repeat(5,1fr); gap:12px; margin-bottom:20px; }
+.ba-card { background:white; border:1px solid var(--ink-100); border-radius:var(--radius); padding:14px 16px; }
+.ba-card .lbl  { font-size:11px; color:var(--ink-500); font-weight:600; margin-bottom:4px; }
+.ba-card .recv { font-size:15px; font-weight:700; font-variant-numeric:tabular-nums; }
+.ba-card .dist { font-size:12px; color:var(--ink-500); margin-top:2px; }
+.ba-card .pct  { font-size:11px; margin-top:6px; display:flex; align-items:center; gap:6px; }
+.ba-card .bar  { flex:1; height:6px; background:var(--ink-100); border-radius:3px; overflow:hidden; }
+.ba-card .bar-fill { height:100%; border-radius:3px; }
+.ba-card.lf-c  .recv { color:#1e40af; }
+.ba-card.sub-c .recv { color:#92400e; }
+.ba-card.bk-c  .recv { color:#6b21a8; }
+.ba-card.oth-c .recv { color:#991b1b; }
+.ba-card.cen-c .recv { color:#166534; }
+.ba-card.lf-c  .bar-fill { background:#3b82f6; }
+.ba-card.sub-c .bar-fill { background:#f59e0b; }
+.ba-card.bk-c  .bar-fill { background:#a855f7; }
+.ba-card.oth-c .bar-fill { background:#ef4444; }
+.ba-card.cen-c .bar-fill { background:#22c55e; }
+
+.ba-table-wrap { overflow-x:auto; }
+.ba-table { width:100%; border-collapse:collapse; font-size:13.5px; }
+.ba-table th {
+  padding:9px 12px; text-align:left; background:var(--ink-50);
+  font-size:11px; font-weight:700; color:var(--ink-500);
+  text-transform:uppercase; letter-spacing:.06em; border-bottom:2px solid var(--ink-200);
+  white-space:nowrap; position:sticky; top:0; z-index:1;
+}
+.ba-table th.num { text-align:right; }
+.ba-table td { padding:9px 12px; border-bottom:1px solid var(--ink-100); vertical-align:middle; }
+.ba-table tr:hover td { background:#f8faff; }
+.ba-table tr.total-row td { background:var(--navy-50); font-weight:700; border-top:2px solid var(--navy-200); }
+.ba-num { text-align:right; font-variant-numeric:tabular-nums; font-family:'JetBrains Mono',monospace; font-size:12.5px; white-space:nowrap; }
+.bt-badge { display:inline-block; padding:2px 8px; border-radius:10px; font-size:11.5px; font-weight:600; }
+.bt-lf      { background:#dbeafe; color:#1e40af; }
+.bt-sub     { background:#fef3c7; color:#92400e; }
+.bt-bk      { background:#f3e8ff; color:#6b21a8; }
+.bt-other   { background:#fee2e2; color:#991b1b; }
+.bt-central { background:#dcfce7; color:#166534; }
+.proj-chip  { font-size:11.5px; background:var(--ink-100); color:var(--ink-700); padding:2px 7px; border-radius:10px; font-weight:600; }
+
+/* Modal */
+.ba-modal-overlay { position:fixed; inset:0; background:rgba(11,23,38,.45); z-index:200; display:flex; align-items:center; justify-content:center; backdrop-filter:blur(2px); }
+.ba-modal { background:white; border-radius:var(--radius); box-shadow:var(--shadow-md); width:560px; max-width:95vw; max-height:90vh; overflow-y:auto; }
+.ba-modal-hd { display:flex; justify-content:space-between; align-items:center; padding:18px 22px; border-bottom:1px solid var(--ink-100); position:sticky; top:0; background:white; z-index:1; }
+.ba-modal-hd h3 { margin:0; font-size:16px; font-weight:700; }
+.ba-modal-bd { padding:22px; display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+.ba-modal-ft { padding:14px 22px; border-top:1px solid var(--ink-100); display:flex; gap:8px; justify-content:flex-end; }
+.ba-form-row { display:flex; flex-direction:column; gap:4px; }
+.ba-form-row.full { grid-column:1/-1; }
+.ba-form-row label { font-size:12.5px; font-weight:600; color:var(--ink-600); }
+.ba-input { padding:8px 10px; border:1px solid var(--ink-200); border-radius:var(--radius-sm); font-size:14px; font-family:inherit; }
+.ba-input:focus { outline:none; border-color:var(--navy-500); box-shadow:0 0 0 3px rgba(29,58,115,.1); }
+.ba-proj-search { position:relative; }
+.ba-proj-search input { width:100%; box-sizing:border-box; }
+.ba-proj-list { position:absolute; top:calc(100% + 2px); left:0; right:0; background:white; border:1px solid var(--ink-200); border-radius:var(--radius-sm); box-shadow:var(--shadow-md); max-height:220px; overflow-y:auto; z-index:10; display:none; }
+.ba-proj-item { padding:8px 12px; cursor:pointer; font-size:13px; border-bottom:1px solid var(--ink-50); }
+.ba-proj-item:hover { background:var(--navy-50); }
+.ba-proj-item .no { color:var(--ink-400); font-size:11px; margin-right:6px; }
+
+/* Budget remaining callout */
+.ba-remain-info { background:var(--ink-50); border-radius:var(--radius-sm); padding:10px 14px; font-size:12.5px; margin-bottom:0; }
+</style>
+
+<div>
+  <!-- Toolbar -->
+  <div class="ba-toolbar">
+    <select class="filter-sel" id="ba-bt-filter" onchange="baRender()">
+      <option value="">ทุกหมวดงบ</option>
+      <option value="lf">งบเรียนฟรีรวม</option>
+      <option value="sub">งบดำเนินงาน</option>
+      <option value="bk">บกศ.</option>
+      <option value="other">งบรายจ่ายอื่น</option>
+      <option value="central">งบส่วนกลาง สอศ.</option>
+    </select>
+    <div class="spacer"></div>
+    <span id="ba-count-badge" style="font-size:12px;color:var(--ink-500)"></span>
+    <button class="btn sm" id="ba-add-btn" onclick="baOpenModal()" style="display:none">
+      + จัดสรรงบประมาณให้โครงการ
+    </button>
+  </div>
+
+  <!-- Summary cards: received vs distributed -->
+  <div class="ba-summary-grid" id="ba-summary-grid">
+    <div class="ba-card lf-c">
+      <div class="lbl">งบเรียนฟรีรวม</div>
+      <div class="recv" id="ba-recv-lf">—</div>
+      <div class="dist" id="ba-dist-lf"></div>
+      <div class="pct"><div class="bar"><div class="bar-fill" id="ba-bar-lf" style="width:0%"></div></div><span id="ba-pct-lf">0%</span></div>
+    </div>
+    <div class="ba-card sub-c">
+      <div class="lbl">งบดำเนินงาน</div>
+      <div class="recv" id="ba-recv-sub">—</div>
+      <div class="dist" id="ba-dist-sub"></div>
+      <div class="pct"><div class="bar"><div class="bar-fill" id="ba-bar-sub" style="width:0%"></div></div><span id="ba-pct-sub">0%</span></div>
+    </div>
+    <div class="ba-card bk-c">
+      <div class="lbl">บกศ.</div>
+      <div class="recv" id="ba-recv-bk">—</div>
+      <div class="dist" id="ba-dist-bk"></div>
+      <div class="pct"><div class="bar"><div class="bar-fill" id="ba-bar-bk" style="width:0%"></div></div><span id="ba-pct-bk">0%</span></div>
+    </div>
+    <div class="ba-card oth-c">
+      <div class="lbl">งบรายจ่ายอื่น</div>
+      <div class="recv" id="ba-recv-oth">—</div>
+      <div class="dist" id="ba-dist-oth"></div>
+      <div class="pct"><div class="bar"><div class="bar-fill" id="ba-bar-oth" style="width:0%"></div></div><span id="ba-pct-oth">0%</span></div>
+    </div>
+    <div class="ba-card cen-c">
+      <div class="lbl">งบส่วนกลาง สอศ.</div>
+      <div class="recv" id="ba-recv-cen">—</div>
+      <div class="dist" id="ba-dist-cen"></div>
+      <div class="pct"><div class="bar"><div class="bar-fill" id="ba-bar-cen" style="width:0%"></div></div><span id="ba-pct-cen">0%</span></div>
+    </div>
+  </div>
+
+  <!-- Table -->
+  <div class="panel" style="padding:0">
+    <div class="ba-table-wrap">
+      <table class="ba-table">
+        <thead>
+          <tr>
+            <th style="width:52px;text-align:center">ที่</th>
+            <th style="width:110px">วันที่จัดสรร</th>
+            <th style="min-width:260px">โครงการ</th>
+            <th>หมวดงบ</th>
+            <th class="num" style="width:150px">จำนวนจัดสรร (บาท)</th>
+            <th style="min-width:140px">หมายเหตุ</th>
+            <th style="width:60px"></th>
+          </tr>
+        </thead>
+        <tbody id="ba-tbody">
+          <tr><td colspan="7" style="text-align:center;padding:40px;color:var(--ink-400)">กำลังโหลด...</td></tr>
+        </tbody>
+        <tfoot id="ba-tfoot"></tfoot>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Add modal -->
+<div class="ba-modal-overlay" id="baModal" style="display:none">
+  <div class="ba-modal">
+    <div class="ba-modal-hd">
+      <h3>จัดสรรงบประมาณให้โครงการ</h3>
+      <button onclick="baCloseModal()" style="background:none;border:none;cursor:pointer;font-size:22px;color:var(--ink-400);padding:0 4px">×</button>
+    </div>
+    <div class="ba-modal-bd">
+      <div class="ba-form-row">
+        <label>วันที่จัดสรร *</label>
+        <input type="date" class="ba-input" id="ba-f-date">
+      </div>
+      <div class="ba-form-row">
+        <label>หมวดงบประมาณ *</label>
+        <select class="ba-input" id="ba-f-type" onchange="baTypeChanged()">
+          <option value="lf">งบเรียนฟรีรวม</option>
+          <option value="sub">งบดำเนินงาน</option>
+          <option value="bk">บกศ.</option>
+          <option value="other">งบรายจ่ายอื่น</option>
+          <option value="central">งบส่วนกลาง สอศ.</option>
+        </select>
+      </div>
+      <div class="ba-form-row full">
+        <label>โครงการ *</label>
+        <div class="ba-proj-search">
+          <input type="text" class="ba-input" id="ba-f-proj-search" placeholder="พิมพ์เพื่อค้นหาโครงการ..." oninput="baProjSearch()" autocomplete="off">
+          <div class="ba-proj-list" id="ba-proj-list"></div>
+        </div>
+        <input type="hidden" id="ba-f-proj-id">
+        <input type="hidden" id="ba-f-proj-no">
+        <div id="ba-selected-proj" style="margin-top:6px;font-size:12.5px;color:var(--navy-600);font-weight:600;display:none"></div>
+      </div>
+      <div class="ba-form-row full" id="ba-remain-wrap" style="display:none">
+        <div class="ba-remain-info" id="ba-remain-info"></div>
+      </div>
+      <div class="ba-form-row full">
+        <label>จำนวนเงินที่จัดสรร (บาท) *</label>
+        <input type="number" class="ba-input" id="ba-f-amount" min="0" step="1" placeholder="0">
+      </div>
+      <div class="ba-form-row full">
+        <label>หมายเหตุ</label>
+        <input type="text" class="ba-input" id="ba-f-note" placeholder="รายละเอียดเพิ่มเติม">
+      </div>
+    </div>
+    <div class="ba-modal-ft">
+      <button class="btn ghost" onclick="baCloseModal()">ยกเลิก</button>
+      <button class="btn" id="ba-save-btn" onclick="baSave()">บันทึก</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+  'use strict';
+  const BT_LABEL = { lf:'งบเรียนฟรีรวม', sub:'งบดำเนินงาน', bk:'บกศ.', other:'งบรายจ่ายอื่น', central:'งบส่วนกลาง สอศ.' };
+  const BT_CLS   = { lf:'bt-lf', sub:'bt-sub', bk:'bt-bk', other:'bt-other', central:'bt-central' };
+  const BT_FIELD = { lf:'b_learning_free', sub:'b_subsidy', bk:'b_nonformal', other:'b_other', central:'b_central' };
+
+  const N = n => Number(n||0).toLocaleString('th-TH',{maximumFractionDigits:0});
+  const FMT_DATE = d => {
+    if (!d) return '—';
+    const dt = new Date(d);
+    const m = ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+    return `${dt.getDate()} ${m[dt.getMonth()]} ${dt.getFullYear()+543}`;
+  };
+
+  let _distRows   = [];
+  let _distTotals = {};
+  let _recvTotals = {};
+  let _allProjects = [];
+  let _isAdmin = (window.__currentUser && window.__currentUser.role === 'admin');
+
+  if (_isAdmin) document.getElementById('ba-add-btn').style.display = '';
+
+  function _cardKey(k) {
+    return k === 'other' ? 'oth' : k === 'central' ? 'cen' : k;
+  }
+
+  function _updateCards() {
+    ['lf','sub','bk','other','central'].forEach(k => {
+      const ck    = _cardKey(k);
+      const recv  = _recvTotals[k] || 0;
+      const dist  = _distTotals[k] || 0;
+      const remain= recv - dist;
+      const pct   = recv > 0 ? Math.min(Math.round(dist/recv*100), 100) : 0;
+
+      const recvEl = document.getElementById('ba-recv-'+ck);
+      const distEl = document.getElementById('ba-dist-'+ck);
+      const barEl  = document.getElementById('ba-bar-'+ck);
+      const pctEl  = document.getElementById('ba-pct-'+ck);
+
+      if (recvEl) recvEl.textContent = '฿' + N(recv);
+      if (distEl) distEl.textContent = `จัดสรรแล้ว ฿${N(dist)} / คงเหลือ ฿${N(remain)}`;
+      if (barEl)  barEl.style.width = pct + '%';
+      if (pctEl)  pctEl.textContent = pct + '%';
+    });
+  }
+
+  function baRender() {
+    const bt = document.getElementById('ba-bt-filter').value;
+    let rows = [..._distRows];
+    if (bt) rows = rows.filter(r => r.budget_type === bt);
+
+    _updateCards();
+    document.getElementById('ba-count-badge').textContent = `${rows.length} รายการ`;
+
+    const tbody = document.getElementById('ba-tbody');
+    const tfoot = document.getElementById('ba-tfoot');
+
+    if (!rows.length) {
+      tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:40px;color:var(--ink-400)">ยังไม่มีรายการจัดสรรงบประมาณให้โครงการ<br><span style="font-size:12px;opacity:.6">กดปุ่ม "จัดสรรงบประมาณให้โครงการ" เพื่อเพิ่มรายการ</span></td></tr>';
+      tfoot.innerHTML = '';
+      return;
+    }
+
+    let grandTotal = 0;
+    let html = '';
+    rows.forEach((r, i) => {
+      grandTotal += Number(r.amount||0);
+      const pName = r.project_name || '—';
+      const pNo   = r.project_no_display || r.project_no || '';
+      html += `<tr>
+        <td style="text-align:center;color:var(--ink-400);font-size:12px">${i+1}</td>
+        <td>${FMT_DATE(r.dist_date)}</td>
+        <td>
+          ${pNo ? `<span class="proj-chip">ที่ ${pNo}</span> ` : ''}
+          <span style="font-weight:600;color:var(--ink-900)">${pName}</span>
+        </td>
+        <td><span class="bt-badge ${BT_CLS[r.budget_type]||''}">${BT_LABEL[r.budget_type]||r.budget_type}</span></td>
+        <td class="ba-num">${N(r.amount)}</td>
+        <td style="font-size:12.5px;color:var(--ink-600)">${r.note||'—'}</td>
+        <td style="text-align:center">${_isAdmin ? `<button class="btn sm ghost" style="color:var(--rose-600);border-color:transparent;padding:3px 8px" onclick="baDelete('${r.dist_id}')">ลบ</button>` : ''}</td>
+      </tr>`;
+    });
+    tbody.innerHTML = html;
+
+    tfoot.innerHTML = `<tr class="total-row">
+      <td colspan="4" style="padding:10px 12px;text-align:right">รวมจัดสรรทั้งสิ้น (${rows.length} รายการ)</td>
+      <td class="ba-num" style="padding:10px 12px;font-size:14px">${N(grandTotal)}</td>
+      <td colspan="2"></td>
+    </tr>`;
+  }
+
+  window.baRender = baRender;
+
+  // Project search
+  window.baProjSearch = function() {
+    const q    = document.getElementById('ba-f-proj-search').value.trim().toLowerCase();
+    const list = document.getElementById('ba-proj-list');
+    const bt   = document.getElementById('ba-f-type').value;
+    const field= BT_FIELD[bt];
+
+    if (!q) { list.style.display = 'none'; return; }
+
+    const filtered = _allProjects.filter(p =>
+      (p.project_name.toLowerCase().includes(q) || p.project_no.includes(q)) &&
+      Number(p[field]||0) > 0
+    ).slice(0, 20);
+
+    if (!filtered.length) { list.style.display = 'none'; return; }
+
+    list.innerHTML = filtered.map(p =>
+      `<div class="ba-proj-item" onclick="baSelectProject('${p.project_id}','${p.project_no}',${JSON.stringify(p.project_name)},${p[field]||0})">
+        <span class="no">ที่ ${p.project_no}</span>${p.project_name}
+        <span style="float:right;color:var(--navy-600);font-weight:700">฿${N(p[field]||0)}</span>
+      </div>`
+    ).join('');
+    list.style.display = 'block';
+  };
+
+  window.baSelectProject = function(id, no, name, budgetAmt) {
+    document.getElementById('ba-f-proj-id').value    = id;
+    document.getElementById('ba-f-proj-no').value    = no;
+    document.getElementById('ba-f-proj-search').value = `ที่ ${no} – ${name}`;
+    document.getElementById('ba-proj-list').style.display = 'none';
+
+    const sel = document.getElementById('ba-selected-proj');
+    sel.textContent = `โครงการที่ ${no}: ${name}`;
+    sel.style.display = '';
+
+    // Show remaining budget info
+    const bt    = document.getElementById('ba-f-type').value;
+    const alreadyDist = _distRows.filter(r => (r.project_id === id || r.project_no === no) && r.budget_type === bt)
+      .reduce((s,r) => s + Number(r.amount||0), 0);
+    const rem = budgetAmt - alreadyDist;
+
+    const wrap = document.getElementById('ba-remain-wrap');
+    const info = document.getElementById('ba-remain-info');
+    info.innerHTML = `งบ${BT_LABEL[bt]} ของโครงการนี้: <strong>฿${N(budgetAmt)}</strong> &nbsp;|&nbsp; จัดสรรแล้ว: <strong>฿${N(alreadyDist)}</strong> &nbsp;|&nbsp; คงเหลือ: <strong style="color:${rem>=0?'var(--navy-600)':'var(--rose-600)'}">฿${N(rem)}</strong>`;
+    wrap.style.display = '';
+  };
+
+  window.baTypeChanged = function() {
+    // Reset project selection when type changes
+    document.getElementById('ba-f-proj-id').value = '';
+    document.getElementById('ba-f-proj-no').value = '';
+    document.getElementById('ba-f-proj-search').value = '';
+    document.getElementById('ba-selected-proj').style.display = 'none';
+    document.getElementById('ba-remain-wrap').style.display = 'none';
+    document.getElementById('ba-proj-list').style.display = 'none';
+  };
+
+  window.baOpenModal = function() {
+    document.getElementById('ba-f-date').value = new Date().toISOString().slice(0,10);
+    document.getElementById('ba-f-type').value = 'sub';
+    document.getElementById('ba-f-proj-search').value = '';
+    document.getElementById('ba-f-proj-id').value = '';
+    document.getElementById('ba-f-proj-no').value = '';
+    document.getElementById('ba-f-amount').value = '';
+    document.getElementById('ba-f-note').value = '';
+    document.getElementById('ba-selected-proj').style.display = 'none';
+    document.getElementById('ba-remain-wrap').style.display = 'none';
+    document.getElementById('ba-proj-list').style.display = 'none';
+    document.getElementById('baModal').style.display = 'flex';
+  };
+
+  window.baCloseModal = function() { document.getElementById('baModal').style.display = 'none'; };
+
+  window.baSave = async function() {
+    const date   = document.getElementById('ba-f-date').value;
+    const btype  = document.getElementById('ba-f-type').value;
+    const projId = document.getElementById('ba-f-proj-id').value;
+    const projNo = document.getElementById('ba-f-proj-no').value;
+    const amount = Number(document.getElementById('ba-f-amount').value);
+    const note   = document.getElementById('ba-f-note').value.trim();
+
+    if (!date || !projId || !amount) {
+      alert('กรุณาเลือกวันที่ โครงการ และจำนวนเงิน'); return;
+    }
+    const btn = document.getElementById('ba-save-btn');
+    btn.disabled = true; btn.textContent = 'กำลังบันทึก...';
+    const r = await API.budget.createDistribution({ dist_date:date, project_id:projId, project_no:projNo, budget_type:btype, amount, note });
+    btn.disabled = false; btn.textContent = 'บันทึก';
+    if (r.ok) {
+      baCloseModal();
+      // Re-fetch to get enriched project_name
+      API.budget.getDistribution().then(dr => {
+        if (dr.ok) {
+          _distRows   = dr.data;
+          _distTotals = dr.totals || {};
+        } else {
+          _distRows.push(r.data);
+          _distTotals[btype] = (_distTotals[btype]||0) + amount;
+        }
+        baRender();
+      });
+    } else {
+      alert('เกิดข้อผิดพลาด: ' + (r.error||'unknown'));
+    }
+  };
+
+  window.baDelete = async function(id) {
+    if (!confirm('ยืนยันการลบรายการจัดสรรนี้?')) return;
+    const r = await API.budget.deleteDistribution(id);
+    if (r.ok) {
+      const idx = _distRows.findIndex(x => x.dist_id === id);
+      if (idx !== -1) {
+        const bt = _distRows[idx].budget_type;
+        _distTotals[bt] = Math.max(0, (_distTotals[bt]||0) - Number(_distRows[idx].amount||0));
+        _distRows.splice(idx, 1);
+      }
+      baRender();
+    }
+  };
+
+  // Close project dropdown when clicking outside
+  document.addEventListener('click', function(e) {
+    if (!e.target.closest('.ba-proj-search')) {
+      const list = document.getElementById('ba-proj-list');
+      if (list) list.style.display = 'none';
+    }
+  });
+
+  // Load all data in parallel
+  Promise.all([
+    API.budget.getDistribution(),
+    API.budget.getReceived(),
+    API.budget.getEstimates()
+  ]).then(([dr, rr, er]) => {
+    if (dr.ok) { _distRows = dr.data; _distTotals = dr.totals || {}; }
+    if (rr.ok) { _recvTotals = rr.totals || {}; }
+    if (er.ok) { _allProjects = er.data; }
+    baRender();
+  }).catch(() => {
+    document.getElementById('ba-tbody').innerHTML =
+      '<tr><td colspan="7" style="text-align:center;padding:40px;color:var(--rose-600)">ไม่สามารถโหลดข้อมูลได้</td></tr>';
+  });
+})();
+</script>

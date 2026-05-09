@@ -1,0 +1,300 @@
+<style>
+/* ── รายการจัดสรร ───────────────────────────────────────── */
+.al-toolbar { display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-bottom:18px; }
+.al-toolbar .spacer { flex:1; }
+
+.al-stat-grid { display:grid; grid-template-columns:repeat(5,1fr); gap:12px; margin-bottom:20px; }
+.al-stat { background:white; border:1px solid var(--ink-100); border-radius:var(--radius); padding:14px 16px; }
+.al-stat .lbl { font-size:11px; color:var(--ink-500); font-weight:600; margin-bottom:4px; }
+.al-stat .val { font-size:16px; font-weight:700; font-variant-numeric:tabular-nums; }
+.al-stat.lf-s  .val { color:#1e40af; }
+.al-stat.sub-s .val { color:#92400e; }
+.al-stat.bk-s  .val { color:#6b21a8; }
+.al-stat.oth-s .val { color:#991b1b; }
+.al-stat.cen-s .val { color:#166534; }
+
+.al-table-wrap { overflow-x:auto; }
+.al-table { width:100%; border-collapse:collapse; font-size:13.5px; }
+.al-table th {
+  padding:9px 12px; text-align:left; background:var(--ink-50);
+  font-size:11px; font-weight:700; color:var(--ink-500);
+  text-transform:uppercase; letter-spacing:.06em; border-bottom:2px solid var(--ink-200);
+  white-space:nowrap; position:sticky; top:0; z-index:1;
+}
+.al-table th.num { text-align:right; }
+.al-table td { padding:9px 12px; border-bottom:1px solid var(--ink-100); vertical-align:middle; }
+.al-table tr:hover td { background:#f8faff; }
+.al-table tr.grand-row td { background:var(--navy-50); font-weight:700; border-top:2px solid var(--navy-200); }
+.al-num { text-align:right; font-variant-numeric:tabular-nums; font-family:'JetBrains Mono',monospace; font-size:12.5px; white-space:nowrap; }
+.bt-badge { display:inline-block; padding:2px 8px; border-radius:10px; font-size:11.5px; font-weight:600; }
+.bt-lf      { background:#dbeafe; color:#1e40af; }
+.bt-sub     { background:#fef3c7; color:#92400e; }
+.bt-bk      { background:#f3e8ff; color:#6b21a8; }
+.bt-other   { background:#fee2e2; color:#991b1b; }
+.bt-central { background:#dcfce7; color:#166534; }
+
+.qt-badge { display:inline-block; padding:2px 8px; border-radius:10px; font-size:11px; background:var(--ink-100); color:var(--ink-600); font-weight:600; }
+
+/* Modal */
+.al-modal-overlay { position:fixed; inset:0; background:rgba(11,23,38,.45); z-index:200; display:flex; align-items:center; justify-content:center; backdrop-filter:blur(2px); }
+.al-modal { background:white; border-radius:var(--radius); box-shadow:var(--shadow-md); width:520px; max-width:95vw; }
+.al-modal-hd { display:flex; justify-content:space-between; align-items:center; padding:18px 22px; border-bottom:1px solid var(--ink-100); }
+.al-modal-hd h3 { margin:0; font-size:16px; font-weight:700; }
+.al-modal-bd { padding:22px; display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+.al-modal-ft { padding:14px 22px; border-top:1px solid var(--ink-100); display:flex; gap:8px; justify-content:flex-end; }
+.al-form-row { display:flex; flex-direction:column; gap:4px; }
+.al-form-row.full { grid-column:1/-1; }
+.al-form-row label { font-size:12.5px; font-weight:600; color:var(--ink-600); }
+.al-input { padding:8px 10px; border:1px solid var(--ink-200); border-radius:var(--radius-sm); font-size:14px; font-family:inherit; }
+.al-input:focus { outline:none; border-color:var(--navy-500); box-shadow:0 0 0 3px rgba(29,58,115,.1); }
+</style>
+
+<div>
+  <!-- Toolbar -->
+  <div class="al-toolbar">
+    <select class="filter-sel" id="al-bt-filter" onchange="alRender()">
+      <option value="">ทุกหมวดงบ</option>
+      <option value="lf">งบเรียนฟรีรวม</option>
+      <option value="sub">งบดำเนินงาน</option>
+      <option value="bk">บกศ.</option>
+      <option value="other">งบรายจ่ายอื่น</option>
+      <option value="central">งบส่วนกลาง สอศ.</option>
+    </select>
+    <select class="filter-sel" id="al-qt-filter" onchange="alRender()">
+      <option value="">ทุกไตรมาส</option>
+      <option value="1">ไตรมาส 1</option>
+      <option value="2">ไตรมาส 2</option>
+      <option value="3">ไตรมาส 3</option>
+      <option value="4">ไตรมาส 4</option>
+    </select>
+    <div class="spacer"></div>
+    <span id="al-count-badge" style="font-size:12px;color:var(--ink-500)"></span>
+    <button class="btn sm" id="al-add-btn" onclick="alOpenModal()" style="display:none">
+      + เพิ่มรายการจัดสรร
+    </button>
+  </div>
+
+  <!-- Stat cards by budget type -->
+  <div class="al-stat-grid">
+    <div class="al-stat lf-s"><div class="lbl">งบเรียนฟรีรวม</div><div class="val" id="al-tot-lf">—</div></div>
+    <div class="al-stat sub-s"><div class="lbl">งบดำเนินงาน</div><div class="val" id="al-tot-sub">—</div></div>
+    <div class="al-stat bk-s"><div class="lbl">บกศ.</div><div class="val" id="al-tot-bk">—</div></div>
+    <div class="al-stat oth-s"><div class="lbl">งบรายจ่ายอื่น</div><div class="val" id="al-tot-oth">—</div></div>
+    <div class="al-stat cen-s"><div class="lbl">งบส่วนกลาง สอศ.</div><div class="val" id="al-tot-cen">—</div></div>
+  </div>
+
+  <!-- Table -->
+  <div class="panel" style="padding:0">
+    <div class="al-table-wrap">
+      <table class="al-table">
+        <thead>
+          <tr>
+            <th style="width:52px;text-align:center">ที่</th>
+            <th style="width:110px">วันที่จัดสรร</th>
+            <th style="width:160px">เลขที่หนังสือ</th>
+            <th>หมวดงบ</th>
+            <th class="num" style="width:140px">จำนวนเงิน (บาท)</th>
+            <th class="num" style="width:140px">ยอดสะสม (บาท)</th>
+            <th style="width:90px;text-align:center">ไตรมาส</th>
+            <th style="min-width:160px">หมายเหตุ</th>
+            <th style="width:60px"></th>
+          </tr>
+        </thead>
+        <tbody id="al-tbody">
+          <tr><td colspan="9" style="text-align:center;padding:40px;color:var(--ink-400)">กำลังโหลด...</td></tr>
+        </tbody>
+        <tfoot id="al-tfoot"></tfoot>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Add modal -->
+<div class="al-modal-overlay" id="alModal" style="display:none">
+  <div class="al-modal">
+    <div class="al-modal-hd">
+      <h3>เพิ่มรายการจัดสรรงบประมาณ</h3>
+      <button onclick="alCloseModal()" style="background:none;border:none;cursor:pointer;font-size:22px;color:var(--ink-400);padding:0 4px">×</button>
+    </div>
+    <div class="al-modal-bd">
+      <div class="al-form-row">
+        <label>วันที่จัดสรร *</label>
+        <input type="date" class="al-input" id="al-f-date">
+      </div>
+      <div class="al-form-row">
+        <label>ไตรมาส</label>
+        <select class="al-input" id="al-f-quarter">
+          <option value="1">ไตรมาส 1</option>
+          <option value="2">ไตรมาส 2</option>
+          <option value="3">ไตรมาส 3</option>
+          <option value="4">ไตรมาส 4</option>
+        </select>
+      </div>
+      <div class="al-form-row">
+        <label>เลขที่หนังสือ *</label>
+        <input type="text" class="al-input" id="al-f-memo" placeholder="เช่น สอศ.2569/0001">
+      </div>
+      <div class="al-form-row">
+        <label>หมวดงบประมาณ *</label>
+        <select class="al-input" id="al-f-type">
+          <option value="lf">งบเรียนฟรีรวม</option>
+          <option value="sub">งบดำเนินงาน</option>
+          <option value="bk">บกศ.</option>
+          <option value="other">งบรายจ่ายอื่น</option>
+          <option value="central">งบส่วนกลาง สอศ.</option>
+        </select>
+      </div>
+      <div class="al-form-row full">
+        <label>จำนวนเงิน (บาท) *</label>
+        <input type="number" class="al-input" id="al-f-amount" min="0" step="1" placeholder="0">
+      </div>
+      <div class="al-form-row full">
+        <label>หมายเหตุ</label>
+        <input type="text" class="al-input" id="al-f-note" placeholder="รายละเอียดเพิ่มเติม">
+      </div>
+    </div>
+    <div class="al-modal-ft">
+      <button class="btn ghost" onclick="alCloseModal()">ยกเลิก</button>
+      <button class="btn" id="al-save-btn" onclick="alSave()">บันทึก</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+  'use strict';
+  const BT_LABEL = { lf:'งบเรียนฟรีรวม', sub:'งบดำเนินงาน', bk:'บกศ.', other:'งบรายจ่ายอื่น', central:'งบส่วนกลาง สอศ.' };
+  const BT_CLS   = { lf:'bt-lf', sub:'bt-sub', bk:'bt-bk', other:'bt-other', central:'bt-central' };
+  const N = n => Number(n||0).toLocaleString('th-TH',{maximumFractionDigits:0});
+  const FMT_DATE = d => {
+    if (!d) return '—';
+    const dt = new Date(d);
+    const m = ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+    return `${dt.getDate()} ${m[dt.getMonth()]} ${dt.getFullYear()+543}`;
+  };
+
+  let _allRows = [];
+  let _totals  = {};
+  let _isAdmin = (window.__currentUser && window.__currentUser.role === 'admin');
+
+  if (_isAdmin) document.getElementById('al-add-btn').style.display = '';
+
+  function _updateStats(t) {
+    ['lf','sub','bk','other','central'].forEach(k => {
+      const el = document.getElementById('al-tot-'+( k==='other'?'oth': k==='central'?'cen': k ));
+      if (el) el.textContent = '฿' + N(t[k]||0);
+    });
+  }
+
+  function alRender() {
+    const bt = document.getElementById('al-bt-filter').value;
+    const qt = document.getElementById('al-qt-filter').value;
+    let rows = [..._allRows];
+    if (bt) rows = rows.filter(r => r.budget_type === bt);
+    if (qt) rows = rows.filter(r => String(r.quarter) === qt);
+
+    // Update stats (always show all totals regardless of filter)
+    _updateStats(_totals);
+    document.getElementById('al-count-badge').textContent = `${rows.length} รายการ`;
+
+    // Compute running cumulative per budget_type within the filtered rows
+    const cumByType = {};
+    let grandTotal = 0;
+
+    const tbody = document.getElementById('al-tbody');
+    if (!rows.length) {
+      tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:40px;color:var(--ink-400)">ไม่มีข้อมูลรายการจัดสรร</td></tr>';
+      document.getElementById('al-tfoot').innerHTML = '';
+      return;
+    }
+
+    let html = '';
+    rows.forEach((r, i) => {
+      cumByType[r.budget_type] = (cumByType[r.budget_type]||0) + Number(r.amount||0);
+      grandTotal += Number(r.amount||0);
+      const canDel = _isAdmin;
+      html += `<tr>
+        <td style="text-align:center;color:var(--ink-400);font-size:12px">${i+1}</td>
+        <td>${FMT_DATE(r.alloc_date)}</td>
+        <td style="font-family:monospace;font-size:12px;color:var(--navy-600)">${r.memo_no||'—'}</td>
+        <td><span class="bt-badge ${BT_CLS[r.budget_type]||''}">${BT_LABEL[r.budget_type]||r.budget_type}</span></td>
+        <td class="al-num">${N(r.amount)}</td>
+        <td class="al-num" style="color:var(--ink-500)">${N(cumByType[r.budget_type])}</td>
+        <td style="text-align:center"><span class="qt-badge">Q${r.quarter}</span></td>
+        <td style="font-size:12.5px;color:var(--ink-600)">${r.note||'—'}</td>
+        <td style="text-align:center">${canDel ? `<button class="btn sm ghost" style="color:var(--rose-600);border-color:transparent;padding:3px 8px" onclick="alDelete('${r.alloc_id}')">ลบ</button>` : ''}</td>
+      </tr>`;
+    });
+    tbody.innerHTML = html;
+
+    document.getElementById('al-tfoot').innerHTML = `<tr class="grand-row">
+      <td colspan="4" style="padding:10px 12px;text-align:right">รวมทั้งสิ้น (${rows.length} รายการ)</td>
+      <td class="al-num" style="padding:10px 12px;font-size:14px">${N(grandTotal)}</td>
+      <td colspan="4"></td>
+    </tr>`;
+  }
+
+  window.alRender = alRender;
+
+  window.alOpenModal = function() {
+    document.getElementById('al-f-date').value = new Date().toISOString().slice(0,10);
+    document.getElementById('al-f-memo').value = '';
+    document.getElementById('al-f-type').value = 'sub';
+    document.getElementById('al-f-amount').value = '';
+    document.getElementById('al-f-note').value = '';
+    document.getElementById('alModal').style.display = 'flex';
+  };
+
+  window.alCloseModal = function() { document.getElementById('alModal').style.display = 'none'; };
+
+  window.alSave = async function() {
+    const date   = document.getElementById('al-f-date').value;
+    const memo   = document.getElementById('al-f-memo').value.trim();
+    const btype  = document.getElementById('al-f-type').value;
+    const amount = Number(document.getElementById('al-f-amount').value);
+    const qt     = Number(document.getElementById('al-f-quarter').value);
+    const note   = document.getElementById('al-f-note').value.trim();
+
+    if (!date || !memo || !amount) {
+      alert('กรุณากรอกวันที่ เลขที่หนังสือ และจำนวนเงิน'); return;
+    }
+    const btn = document.getElementById('al-save-btn');
+    btn.disabled = true; btn.textContent = 'กำลังบันทึก...';
+    const r = await API.budget.createAllocation({ alloc_date:date, memo_no:memo, budget_type:btype, amount, quarter:qt, note });
+    btn.disabled = false; btn.textContent = 'บันทึก';
+    if (r.ok) {
+      alCloseModal();
+      _allRows.push(r.data);
+      _totals[btype] = (_totals[btype]||0) + amount;
+      alRender();
+    } else {
+      alert('เกิดข้อผิดพลาด: ' + (r.error||'unknown'));
+    }
+  };
+
+  window.alDelete = async function(id) {
+    if (!confirm('ยืนยันการลบรายการจัดสรรนี้?')) return;
+    const r = await API.budget.deleteAllocation(id);
+    if (r.ok) {
+      const idx = _allRows.findIndex(x => x.alloc_id === id);
+      if (idx !== -1) {
+        const bt = _allRows[idx].budget_type;
+        _totals[bt] = (_totals[bt]||0) - Number(_allRows[idx].amount||0);
+        _allRows.splice(idx, 1);
+      }
+      alRender();
+    }
+  };
+
+  // Load
+  API.budget.getAllocations().then(r => {
+    if (!r.ok) return;
+    _allRows = r.data;
+    _totals  = r.totals || {};
+    alRender();
+  }).catch(() => {
+    document.getElementById('al-tbody').innerHTML =
+      '<tr><td colspan="9" style="text-align:center;padding:40px;color:var(--rose-600)">ไม่สามารถโหลดข้อมูลได้</td></tr>';
+  });
+})();
+</script>
