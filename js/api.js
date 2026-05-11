@@ -49,8 +49,15 @@ const API = (() => {
     });
 
     try {
-      const resp = await fetch(`${GAS_URL}?${sp.toString()}`);
-      return await resp.json();
+      const resp   = await fetch(`${GAS_URL}?${sp.toString()}`);
+      const result = await resp.json();
+      // If GAS rejects the token (e.g. browser still holds a mock/expired token),
+      // fall back to MockDB so the user can still see local data
+      if (result.error === 'UNAUTHORIZED' && Mock[action]) {
+        console.warn('[API] GAS UNAUTHORIZED for', action, '— falling back to MockDB');
+        return Mock[action](params);
+      }
+      return result;
     } catch (err) {
       return { error: 'NETWORK_ERROR', message: String(err) };
     }

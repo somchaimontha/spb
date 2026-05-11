@@ -410,7 +410,7 @@ const ProjPage = (() => {
   // Read projects from localStorage (mock seed) without waiting for GAS
   function _localProjects() {
     try {
-      const db = JSON.parse(localStorage.getItem('plan_mockdb_v3') || 'null');
+      const db = JSON.parse(localStorage.getItem('plan_mockdb_v5') || 'null');
       return (db && Array.isArray(db.projects)) ? db.projects : [];
     } catch { return []; }
   }
