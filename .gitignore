@@ -42,11 +42,19 @@ data/
 *.db
 *.sqlite
 
-# Documentation (ส่วนตัว)
+# Documentation & Markdown files (ส่วนตัว — ไม่ push ไป GitHub)
 docs/
+AGENTS.md
+GIT_SECURITY.md
+GUIDE.md
+IMPLEMENTATION.md
+PROJECT_STATUS.md
+data_structure_mapping.md
+planwork_webapp_prompt.md
 PRIVATE_NOTES.md
 TODO.md
 TEMP/
+*.md
 
 # Node modules (ถ้ามีการใช้ npm ในอนาคต)
 node_modules/

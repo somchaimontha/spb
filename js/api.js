@@ -27,12 +27,15 @@ const API = (() => {
     _token = token; _user = user;
     localStorage.setItem('plan_token', token);
     localStorage.setItem('plan_user', JSON.stringify(user));
+    // Sign the session so Security.enforce() can detect role tampering
+    if (typeof Security !== 'undefined') Security.sign(token, user);
   }
 
   function logout() {
     _token = null; _user = null;
     localStorage.removeItem('plan_token');
     localStorage.removeItem('plan_user');
+    if (typeof Security !== 'undefined') Security.clear();
   }
 
   // ── HTTP helper ──────────────────────────────────────────

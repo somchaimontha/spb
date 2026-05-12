@@ -10,7 +10,9 @@
 <script>
   window.__GAS_URL__ = 'https://script.google.com/macros/s/AKfycbzqNFleiDVWfMcwQbsDBCvYOZtnujCluR1Gl9iCWmx-J6DS84HpFMGXHfKgphH49hRLLQ/exec';
 </script>
+<script src="js/security.js"></script>
 <script src="js/api.js"></script>
+<script src="js/tamper-guard.js" defer></script>
 <style>
   body { margin: 0; display: flex; min-height: 100vh; background: var(--paper); }
   
@@ -506,6 +508,8 @@
 // ── Auth ───────────────────────────────────────────────────
 function checkAuth() {
   try {
+    // Integrity check first — detects if plan_user was edited via DevTools
+    if (typeof Security !== 'undefined' && !Security.enforce('signin.html')) return null;
     const raw = localStorage.getItem('plan_user');
     if (!raw) { window.location.href = 'signin.html'; return null; }
     const u = JSON.parse(raw);

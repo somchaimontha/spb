@@ -10,6 +10,7 @@
 <script>
   window.__GAS_URL__ = 'https://script.google.com/macros/s/AKfycbzqNFleiDVWfMcwQbsDBCvYOZtnujCluR1Gl9iCWmx-J6DS84HpFMGXHfKgphH49hRLLQ/exec';
 </script>
+<script src="js/security.js"></script>
 <script src="js/api.js"></script>
 <style>
   body {
@@ -324,11 +325,24 @@ function showAlert(message, type) {
   setTimeout(() => { alertContainer.innerHTML = ''; }, 6000);
 }
 
-// ถ้า login อยู่แล้ว → ไปหน้า app ทันที
+// แสดงเตือนถ้าถูก redirect มาเพราะตรวจพบการ tamper
+(function() {
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('tampered') === '1') {
+    setTimeout(() => showAlert(
+      '⚠️ ตรวจพบการแก้ไขข้อมูลเซสชัน — ระบบบังคับออกจากระบบเพื่อความปลอดภัย',
+      'error'
+    ), 200);
+  }
+})();
+
+// ถ้า login อยู่แล้ว และ session ไม่ถูก tamper → ไปหน้า app ทันที
 window.addEventListener('load', function() {
   const u = localStorage.getItem('plan_user');
   const t = localStorage.getItem('plan_token');
-  if (u && t) window.location.href = 'app.html';
+  if (u && t && typeof Security !== 'undefined' && Security.verify()) {
+    window.location.href = 'app.html';
+  }
 });
 </script>
 
