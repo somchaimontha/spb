@@ -146,7 +146,12 @@
 <div id="proj-root">
   <!-- Toolbar -->
   <div class="proj-toolbar">
-    <input id="proj-search" class="search-box" type="text" placeholder="🔍 ค้นหาโครงการ / รหัส...">
+    <input id="proj-search" class="search-box" type="text" placeholder="🔍 ค้นหาโครงการ / รหัส / ฝ่าย...">
+    <select id="proj-fy-filter" class="filter-sel" title="ปีงบประมาณ">
+      <option value="2569">ปีงบ 2569</option>
+      <option value="2568">ปีงบ 2568</option>
+      <option value="">ทุกปี</option>
+    </select>
     <select id="proj-div-filter" class="filter-sel">
       <option value="">ทุกฝ่าย</option>
       <option value="admin">ฝ่ายบริหารทรัพยากร</option>
@@ -176,7 +181,7 @@
     <table class="proj-table">
       <thead>
         <tr>
-          <th class="col-no">รหัส</th>
+          <th class="col-no">รหัสโครงการ</th>
           <th class="col-name">ชื่อโครงการ / ผู้รับผิดชอบ</th>
           <th class="col-num">งบที่ได้รับ</th>
           <th class="col-num">ยอดจริง</th>
@@ -403,6 +408,7 @@ window.ProjPage = (() => {
   async function init() {
     await load();
     document.getElementById('proj-search').addEventListener('input', _debounce(render, 250));
+    document.getElementById('proj-fy-filter').addEventListener('change', render);
     document.getElementById('proj-div-filter').addEventListener('change', render);
     document.getElementById('proj-status-filter').addEventListener('change', render);
   }
@@ -462,13 +468,18 @@ window.ProjPage = (() => {
   // ── Render Table ──────────────────────────────────────────
   function render() {
     const q      = (document.getElementById('proj-search').value||'').toLowerCase();
+    const fy     = document.getElementById('proj-fy-filter').value;
     const div    = document.getElementById('proj-div-filter').value;
     const status = document.getElementById('proj-status-filter').value;
 
     let list = _projects.filter(p => {
+      if (fy     && String(p.fiscal_year) !== fy) return false;
       if (div    && p.division_code !== div) return false;
       if (status && p.status !== status)     return false;
-      if (q && !p.project_name.toLowerCase().includes(q) && !String(p.project_no).includes(q)) return false;
+      if (q && !p.project_name.toLowerCase().includes(q) &&
+               !String(p.project_no).includes(q) &&
+               !(p.project_code||'').toLowerCase().includes(q) &&
+               !(p.department||'').toLowerCase().includes(q)) return false;
       return true;
     });
 
@@ -549,7 +560,7 @@ window.ProjPage = (() => {
     const rem     = total - actual;
     const pct     = total>0 ? Math.round(actual/total*100) : 0;
     const isOver  = actual > total;
-    const hasCnt  = p.round_count > 0;
+    const execCnt = Number(p.execution_count || p.round_count || 0);
     const isExp   = _expanded.has(p.project_id);
     const statusColor = API.fmt.statusColor(p.status);
 
@@ -563,29 +574,30 @@ window.ProjPage = (() => {
     if (!pills) pills = '<span class="bpill">—</span>';
 
     const progClass = pct >= 100 ? 'danger' : pct >= 80 ? 'warn' : '';
-
-    // Action menu
     const suppBadge = p.is_supplementary ? '<span class="tag amber" style="font-size:10px;padding:1px 6px">เพิ่มเติม</span>' : '';
+    const codeDisplay = p.project_code || p.project_no;
 
     return `<tr class="main-row" data-pid="${p.project_id}">
-      <td class="col-no" style="text-align:center;color:var(--ink-500);font-size:12.5px;font-weight:700">${p.project_no}</td>
+      <td class="col-no" style="text-align:center;font-size:11px;font-weight:700;color:var(--navy-600)">
+        <div style="font-family:'JetBrains Mono',monospace">${_escHtml(codeDisplay)}</div>
+      </td>
       <td class="col-name">
         <div class="proj-name-cell">
-          <div class="proj-name-main">${_escHtml(p.project_name)}</div>
+          <div class="proj-name-main" style="cursor:pointer" onclick="openProjectDetail('${p.project_id}')">${_escHtml(p.project_name)}</div>
           <div style="display:flex;align-items:center;gap:6px;margin-top:2px;">
             ${p.responsible_person?`<span class="proj-name-resp">👤 ${_escHtml(p.responsible_person)}</span>`:''}
             ${suppBadge}
           </div>
           <div class="proj-name-badges">
-            ${hasCnt ? `<button class="expand-btn" onclick="ProjPage.toggleRounds('${p.project_id}',this)">${isExp?'▲':'▼'}<span class="cnt">×${p.round_count}</span> รอบการดำเนิน</button>` : ''}
+            ${execCnt > 0 ? `<button class="expand-btn" onclick="ProjPage.toggleRounds('${p.project_id}',this)">${isExp?'▲':'▼'}<span class="cnt">×${execCnt}</span> ครั้งดำเนิน</button>` : ''}
           </div>
         </div>
       </td>
       <td class="col-num">${API.fmt.thb(total)}</td>
-      <td class="col-num ${isOver?'style="color:#B3261E;font-weight:700"':''}">${API.fmt.thb(actual)}
+      <td class="col-num" ${isOver?'style="color:#B3261E;font-weight:700"':''}>${API.fmt.thb(actual)}
         <div class="prog-mini"><div class="prog-mini-fill ${progClass}" style="width:${Math.min(pct,100)}%"></div></div>
       </td>
-      <td class="col-num ${isOver?'style="color:#B3261E;font-weight:700"':''}">${isOver?'<span class="overspend-badge">เกินงบ!</span> ':''} ${API.fmt.thb(rem)}</td>
+      <td class="col-num" ${isOver?'style="color:#B3261E;font-weight:700"':''}>${isOver?'<span class="overspend-badge">เกินงบ!</span> ':''}${API.fmt.thb(rem)}</td>
       <td class="col-src"><div class="bsrc-pills">${pills}</div></td>
       <td class="col-status"><span class="tag ${statusColor}">${API.fmt.statusLabel(p.status)}</span></td>
       <td class="col-audit">
@@ -597,8 +609,8 @@ window.ProjPage = (() => {
       </td>
       <td class="col-action">
         <div style="display:flex;gap:3px;justify-content:center">
+          <button class="btn sm" title="ดูรายละเอียด" onclick="openProjectDetail('${p.project_id}')">👁</button>
           <button class="btn sm" title="แก้ไข" onclick="ProjPage.openEdit('${p.project_id}')">✏</button>
-          <button class="btn sm" title="ประวัติ" onclick="ProjPage.openHistory('${p.project_id}')">📋</button>
           <button class="btn sm" title="ยกเลิก" onclick="ProjPage.openCancel('${p.project_id}')" style="color:#B3261E">✕</button>
         </div>
       </td>
@@ -606,24 +618,29 @@ window.ProjPage = (() => {
   }
 
   function _renderRoundRow(r, p) {
-    const isOver = Number(r.budget_remaining) < 0;
-    return `<tr class="round-row ${isOver?'overspend':''}" data-round="${r.round_id}">
-      <td class="col-no" style="text-align:center;color:var(--navy-400);font-size:11px">ครั้ง ${r.round_no}</td>
+    const isOver  = Number(r.budget_remaining) < 0;
+    const amount  = Number(r.amount_used || r.budget_used || 0);
+    const execDate = r.execution_date || r.exec_start_date || '';
+    const memo    = r.memo_number || r.remark || '';
+    const statusDone = (r.execution_status === 'completed' || r.round_status === 'completed');
+    return `<tr class="round-row ${isOver?'overspend':''}" data-round="${r.round_id}" style="cursor:pointer" onclick="openProjectDetail('${p.project_id}')">
+      <td class="col-no" style="text-align:center;color:var(--navy-400);font-size:11px;font-weight:700">ครั้งที่<br>${r.execution_no||r.round_no}</td>
       <td class="col-name round-label">
-        ${API.fmt.date(r.exec_start_date)} ${r.exec_end_date?'– '+API.fmt.date(r.exec_end_date):''}
-        ${r.round_status==='completed'?'<span class="tag teal" style="font-size:10px;padding:1px 5px">สิ้นสุด</span>':''}
-        ${r.remark?`<span style="font-size:11.5px;color:var(--ink-400);margin-left:6px">${_escHtml(r.remark)}</span>`:''}
+        <span style="font-weight:600">${API.fmt.date(execDate)}</span>
+        ${memo?`<span style="font-size:11.5px;color:var(--ink-400);margin-left:6px">${_escHtml(memo)}</span>`:''}
+        ${statusDone?'<span class="tag teal" style="font-size:10px;padding:1px 5px;margin-left:4px">สำเร็จ</span>':''}
+        ${r.memo_number?`<div style="font-size:11px;color:var(--navy-500);margin-top:1px">${_escHtml(r.memo_number)}</div>`:''}
       </td>
       <td class="col-num" style="color:var(--ink-400);font-size:12px">—</td>
-      <td class="col-num" style="font-weight:700">${API.fmt.thb(r.budget_used)}
-        <div style="font-size:10.5px;color:var(--ink-400)">สะสม ${API.fmt.thb(r.budget_cumulative)}</div>
+      <td class="col-num" style="font-weight:700">${API.fmt.thb(amount)}
+        <div style="font-size:10.5px;color:var(--ink-400)">${r.percent_used||0}% · สะสม ${API.fmt.thb(r.budget_cumulative||0)}</div>
       </td>
-      <td class="col-num ${isOver?'style="color:#B3261E;font-weight:700"':''}">
-        ${isOver?'<span class="overspend-badge">เกิน!</span> ':''}${API.fmt.thb(r.budget_remaining)}
+      <td class="col-num" ${isOver?'style="color:#B3261E;font-weight:700"':''}>
+        ${isOver?'<span class="overspend-badge">เกิน!</span> ':''}${API.fmt.thb(r.budget_remaining||0)}
       </td>
       <td class="col-src" style="font-size:11px;color:var(--ink-500)">
-        ${r.procurement_batch_no?`<div>พัสดุ: ${_escHtml(r.procurement_batch_no)}</div>`:''}
-        ${r.finance_disburse_no?`<div>การเงิน: ${_escHtml(r.finance_disburse_no)}</div>`:''}
+        ${r.supply_requisition_no||r.procurement_batch_no?`<div>พัสดุ: ${_escHtml(r.supply_requisition_no||r.procurement_batch_no||'')}</div>`:''}
+        ${r.finance_requisition_no||r.finance_disburse_no?`<div>การเงิน: ${_escHtml(r.finance_requisition_no||r.finance_disburse_no||'')}</div>`:'<span style="color:var(--ink-300)">—</span>'}
       </td>
       <td colspan="2"></td>
       <td class="col-action">

@@ -1,0 +1,477 @@
+<style>
+/* ── Project Detail Page ─────────────────────────────────── */
+.pd-back { display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--navy-600);font-weight:600;cursor:pointer;padding:5px 0;margin-bottom:14px;background:none;border:none; }
+.pd-back:hover { color:var(--navy-700); }
+
+.pd-header { background:white;border:1px solid var(--ink-100);border-radius:12px;padding:22px;margin-bottom:14px; }
+.pd-code-row { display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap; }
+.pd-code { font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;color:var(--navy-600);background:var(--navy-50);padding:3px 10px;border-radius:6px; }
+.pd-title { font-size:18px;font-weight:800;color:var(--ink-900);margin:0 0 6px;line-height:1.3; }
+.pd-meta { font-size:12.5px;color:var(--ink-500);margin-bottom:18px; }
+
+.pd-stats { display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px; }
+.pd-stat { text-align:center;padding:14px 10px;background:var(--ink-50);border-radius:10px; }
+.pd-stat .lbl { font-size:11px;font-weight:700;color:var(--ink-500);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px; }
+.pd-stat .val { font-size:17px;font-weight:800;font-family:'JetBrains Mono',monospace;color:var(--ink-900); }
+.pd-stat.blue .val  { color:#1d4ed8; }
+.pd-stat.green .val { color:#15803d; }
+.pd-stat.amber .val { color:#b45309; }
+
+.pd-src-row { display:flex;align-items:center;gap:10px;flex-wrap:wrap; }
+.pd-src-label { font-size:12px;font-weight:700;color:var(--ink-500); }
+
+.pd-prog { margin-top:14px; }
+.pd-prog-bar { height:8px;background:var(--ink-100);border-radius:4px;overflow:hidden; }
+.pd-prog-fill { height:100%;background:linear-gradient(90deg,#1d4ed8,#3b82f6);border-radius:4px;transition:width .4s; }
+.pd-prog-fill.warn   { background:linear-gradient(90deg,#b45309,#d97706); }
+.pd-prog-fill.danger { background:linear-gradient(90deg,#b91c1c,#ef4444); }
+.pd-prog-labels { display:flex;justify-content:space-between;font-size:11px;color:var(--ink-400);margin-top:4px; }
+
+/* ── Execution Section ───────────────────────────────────── */
+.exec-section { background:white;border:1px solid var(--ink-100);border-radius:12px;overflow:hidden; }
+.exec-section-head { display:flex;align-items:center;padding:16px 20px;border-bottom:1px solid var(--ink-100); }
+.exec-section-head h3 { margin:0;font-size:15px;font-weight:700;flex:1; }
+
+/* Execution Card */
+.exec-card { border-bottom:1px solid var(--ink-50);padding:16px 20px; }
+.exec-card:last-child { border-bottom:none; }
+.exec-card-head { display:flex;align-items:flex-start;gap:10px;margin-bottom:10px; }
+.exec-no { font-size:11px;font-weight:800;color:white;background:var(--navy-600);padding:3px 8px;border-radius:20px;white-space:nowrap;flex-shrink:0;margin-top:1px; }
+.exec-card-title { flex:1; }
+.exec-card-title .date { font-size:13.5px;font-weight:700;color:var(--ink-900); }
+.exec-card-title .memo { font-size:12px;color:var(--ink-500);margin-top:1px; }
+.exec-card-actions { display:flex;gap:6px;flex-shrink:0; }
+
+.exec-grid { display:grid;grid-template-columns:repeat(3,1fr);gap:10px; }
+.exec-field { }
+.exec-field .f-lbl { font-size:10.5px;font-weight:700;color:var(--ink-400);text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px; }
+.exec-field .f-val { font-size:13px;color:var(--ink-800); }
+.exec-field .f-val.num { font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--navy-700); }
+.exec-field .f-val.em { color:var(--ink-400); }
+
+/* Inline Form */
+.exec-form { padding:20px;background:#f8faff;border-top:2px solid var(--navy-100); }
+.exec-form h4 { margin:0 0 16px;font-size:14px;font-weight:700;color:var(--navy-700); }
+.exec-form-grid { display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px; }
+.exec-form-grid.three { grid-template-columns:1fr 1fr 1fr; }
+.exec-form-full { margin-bottom:14px; }
+.ef-row { display:flex;flex-direction:column;gap:4px; }
+.ef-row label { font-size:12px;font-weight:700;color:var(--ink-600); }
+.ef-row label .req { color:#e53e3e; }
+.ef-input { padding:8px 10px;border:1px solid var(--ink-200);border-radius:7px;font-size:13.5px;font-family:inherit;background:white; }
+.ef-input:focus { outline:none;border-color:var(--navy-500);box-shadow:0 0 0 3px rgba(29,58,115,.1); }
+.ef-note { font-size:11.5px;color:var(--ink-400);margin-top:3px; }
+.ef-warn { font-size:12px;color:#dc2626;margin-top:3px;display:none; }
+.exec-form-actions { display:flex;justify-content:flex-end;gap:8px;margin-top:4px; }
+
+/* Empty state */
+.exec-empty { padding:40px;text-align:center;color:var(--ink-400); }
+.exec-empty svg { margin-bottom:10px;opacity:.4; }
+
+@media(max-width:600px) {
+  .pd-stats { grid-template-columns:repeat(2,1fr); }
+  .exec-grid { grid-template-columns:repeat(2,1fr); }
+  .exec-form-grid, .exec-form-grid.three { grid-template-columns:1fr; }
+}
+</style>
+
+<div id="pd-root">
+  <button class="pd-back" onclick="loadPage('projects')">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+    จัดการโครงการ
+  </button>
+
+  <!-- Header (populated by JS) -->
+  <div id="pd-header-wrap"></div>
+
+  <!-- Execution Section -->
+  <div class="exec-section">
+    <div class="exec-section-head">
+      <h3>การดำเนินโครงการ (<span id="pd-exec-count">0</span> ครั้ง)</h3>
+      <button class="btn sm primary" id="pd-add-btn" onclick="ProjDetail.showAddForm()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        เพิ่มการดำเนิน
+      </button>
+    </div>
+
+    <!-- Inline Add/Edit Form -->
+    <div id="pd-form" style="display:none">
+      <div class="exec-form">
+        <h4 id="pd-form-title">+ เพิ่มการดำเนินโครงการ</h4>
+        <div class="exec-form-grid">
+          <div class="ef-row">
+            <label>วันที่ดำเนินโครงการ <span class="req">*</span></label>
+            <input type="date" id="ef-date" class="ef-input">
+          </div>
+          <div class="ef-row">
+            <label>หมายเลขบันทึกข้อความ <span class="req">*</span></label>
+            <input type="text" id="ef-memo" class="ef-input" placeholder="เช่น หนังสือ วอ.มสร. 001/2569">
+          </div>
+          <div class="ef-row">
+            <label>แหล่งงบประมาณ</label>
+            <select id="ef-src" class="ef-input">
+              <option value="lf">งบเรียนฟรี</option>
+              <option value="sub">งบดำเนินงาน (อุดหนุน)</option>
+              <option value="bk" selected>บกศ. (บำรุงการศึกษา)</option>
+              <option value="other">งบรายจ่ายอื่น</option>
+              <option value="central">งบส่วนกลาง สอศ.</option>
+            </select>
+          </div>
+          <div class="ef-row">
+            <label>ประเภทการใช้จ่าย</label>
+            <select id="ef-type" class="ef-input">
+              <option value="ค่าวัสดุ">ค่าวัสดุ</option>
+              <option value="ค่าครุภัณฑ์">ค่าครุภัณฑ์</option>
+              <option value="ค่าใช้สอย">ค่าใช้สอย</option>
+              <option value="ค่าจ้าง">ค่าจ้าง</option>
+              <option value="ค่าตอบแทน">ค่าตอบแทน</option>
+              <option value="ค่าสาธารณูปโภค">ค่าสาธารณูปโภค</option>
+              <option value="ค่าวัสดุและค่าแรง">ค่าวัสดุและค่าแรง</option>
+            </select>
+          </div>
+        </div>
+        <div class="exec-form-grid">
+          <div class="ef-row">
+            <label>จำนวนเงินที่ใช้ (บาท) <span class="req">*</span></label>
+            <input type="number" id="ef-amount" class="ef-input" placeholder="0" min="0" oninput="ProjDetail.checkBudget()">
+            <div class="ef-note" id="ef-remaining-note"></div>
+            <div class="ef-warn" id="ef-over-warn">⚠ จำนวนเงินเกินงบประมาณคงเหลือ</div>
+          </div>
+          <div class="ef-row">
+            <label>ผู้ดำเนินโครงการ</label>
+            <input type="text" id="ef-operators" class="ef-input" placeholder="ชื่อผู้ดำเนินการ (คั่นด้วยจุลภาค)">
+          </div>
+          <div class="ef-row">
+            <label>สถานะ</label>
+            <select id="ef-status" class="ef-input">
+              <option value="in_progress">กำลังดำเนินการ</option>
+              <option value="completed">สำเร็จแล้ว</option>
+              <option value="cancelled">ยกเลิก</option>
+            </select>
+          </div>
+        </div>
+        <div class="exec-form-grid three">
+          <div class="ef-row">
+            <label>เลขชุดเบิกพัสดุ</label>
+            <input type="text" id="ef-supply" class="ef-input" placeholder="พส.001/2569">
+          </div>
+          <div class="ef-row">
+            <label>เลขชุดเบิกการเงิน</label>
+            <input type="text" id="ef-finance" class="ef-input" placeholder="กง.001/2569">
+          </div>
+          <div class="ef-row">
+            <label>วันที่สำเร็จ</label>
+            <input type="date" id="ef-complete" class="ef-input">
+          </div>
+        </div>
+        <div class="exec-form-full ef-row">
+          <label>หมายเหตุ</label>
+          <textarea id="ef-notes" class="ef-input" rows="2" placeholder="รายละเอียดเพิ่มเติม..." style="resize:vertical"></textarea>
+        </div>
+        <input type="hidden" id="ef-exec-id">
+        <div class="exec-form-actions">
+          <button class="btn" onclick="ProjDetail.cancelForm()">ยกเลิก</button>
+          <button class="btn primary" onclick="ProjDetail.saveExecution()">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+            บันทึก
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Execution List -->
+    <div id="pd-exec-list">
+      <div class="exec-empty">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <p>กำลังโหลด...</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+window.ProjDetail = (() => {
+  let _project    = null;
+  let _executions = [];
+  let _editingId  = null;
+  const _SRC_LABELS = { lf:'เรียนฟรี', sub:'อุดหนุน', bk:'บกศ.', other:'รจ.อื่น', central:'ส่วนกลาง' };
+  const _STATUS_LABELS = { in_progress:'กำลังดำเนินการ', completed:'สำเร็จแล้ว', draft:'ร่าง', cancelled:'ยกเลิก' };
+  const _STATUS_TAGS   = { in_progress:'navy', completed:'teal', draft:'', cancelled:'rose' };
+
+  function _esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+  // ── Init ──────────────────────────────────────────────────
+  async function init() {
+    const pid = window.__detailProjectId;
+    if (!pid) { loadPage('projects'); return; }
+    _renderSkeleton();
+    const r = await API.executions.getProjectDetail({ project_id: pid });
+    if (!r.ok) {
+      document.getElementById('pd-header-wrap').innerHTML =
+        `<div class="panel" style="padding:30px;text-align:center;color:#dc2626">ไม่พบข้อมูลโครงการ</div>`;
+      return;
+    }
+    _project    = r.data;
+    _executions = r.data.executions || [];
+    _renderHeader();
+    _renderExecList();
+  }
+
+  function _renderSkeleton() {
+    document.getElementById('pd-header-wrap').innerHTML =
+      `<div class="pd-header" style="min-height:160px;display:flex;align-items:center;justify-content:center;color:var(--ink-400)">กำลังโหลด...</div>`;
+  }
+
+  // ── Header ─────────────────────────────────────────────────
+  function _renderHeader() {
+    const p      = _project;
+    const total  = Number(p.total_budget || 0);
+    const actual = _executions.reduce((s,e) => s + Number(e.amount_used||e.budget_used||0), 0);
+    const rem    = total - actual;
+    const pct    = total > 0 ? Math.round(actual / total * 100) : 0;
+    const progCls = pct >= 100 ? 'danger' : pct >= 80 ? 'warn' : '';
+
+    // Budget source pills
+    const srcMap = { lf:p.b_learning_free, sub:p.b_subsidy, bk:p.b_nonformal, other:p.b_other, central:p.b_central };
+    let srcPills = '';
+    Object.entries(srcMap).forEach(([k,v]) => {
+      if (Number(v) > 0) srcPills += `<span class="bpill ${k}">${_SRC_LABELS[k]} ${API.fmt.thb(v)}</span>`;
+    });
+    if (!srcPills) srcPills = '<span class="bpill">—</span>';
+
+    const statusColor = API.fmt.statusColor(p.status);
+    const statusLabel = API.fmt.statusLabel(p.status);
+
+    document.getElementById('pd-header-wrap').innerHTML = `
+      <div class="pd-header">
+        <div class="pd-code-row">
+          <span class="pd-code">${_esc(p.project_code || p.project_no)}</span>
+          <span class="tag" style="background:#e0f2fe;color:#0369a1;font-size:11px">ปีงบ ${p.fiscal_year || 2569}</span>
+          <span class="tag ${statusColor}">${statusLabel}</span>
+        </div>
+        <h2 class="pd-title">${_esc(p.project_name)}</h2>
+        <div class="pd-meta">${_esc(p.department)} · ${_esc(p.responsible_person||'—')}</div>
+
+        <div class="pd-stats">
+          <div class="pd-stat">
+            <div class="lbl">งบที่ได้รับ</div>
+            <div class="val">${API.fmt.thb(total)}</div>
+          </div>
+          <div class="pd-stat blue">
+            <div class="lbl">ใช้ไปแล้ว</div>
+            <div class="val">${API.fmt.thb(actual)}</div>
+          </div>
+          <div class="pd-stat green">
+            <div class="lbl">คงเหลือ</div>
+            <div class="val ${rem < 0 ? 'danger' : ''}">${API.fmt.thb(rem)}</div>
+          </div>
+          <div class="pd-stat amber">
+            <div class="lbl">% ใช้งาน</div>
+            <div class="val">${pct}%</div>
+          </div>
+        </div>
+
+        <div class="pd-src-row">
+          <span class="pd-src-label">แหล่งงบ:</span>
+          <div class="bsrc-pills">${srcPills}</div>
+        </div>
+
+        <div class="pd-prog">
+          <div class="pd-prog-bar"><div class="pd-prog-fill ${progCls}" style="width:${Math.min(pct,100)}%"></div></div>
+          <div class="pd-prog-labels"><span>${API.fmt.date(p.exec_start_date) || '1 ต.ค. 2568'}</span><span>${pct}% ใช้ไปแล้ว</span></div>
+        </div>
+      </div>`;
+  }
+
+  // ── Execution List ─────────────────────────────────────────
+  function _renderExecList() {
+    document.getElementById('pd-exec-count').textContent = _executions.length;
+    const listEl = document.getElementById('pd-exec-list');
+    if (!_executions.length) {
+      listEl.innerHTML = `<div class="exec-empty">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        <p>ยังไม่มีการบันทึกการดำเนินงาน<br><small>กดปุ่ม "+ เพิ่มการดำเนิน" เพื่อเริ่มต้น</small></p>
+      </div>`;
+      return;
+    }
+    listEl.innerHTML = _executions.map(e => _renderExecCard(e)).join('');
+  }
+
+  function _renderExecCard(e) {
+    const statusTag   = _STATUS_TAGS[e.execution_status || e.round_status === 'completed' ? 'completed' : 'in_progress'] || '';
+    const statusLabel = _STATUS_LABELS[e.execution_status] || (e.round_status === 'completed' ? 'สำเร็จแล้ว' : 'กำลังดำเนินการ');
+    const ops = Array.isArray(e.operators) ? e.operators.join(', ') : (e.operators || '—');
+    return `<div class="exec-card" id="exec-card-${e.execution_id||e.round_id}">
+      <div class="exec-card-head">
+        <span class="exec-no">ครั้งที่ ${e.execution_no||e.round_no}</span>
+        <div class="exec-card-title">
+          <div class="date">${API.fmt.date(e.execution_date||e.exec_start_date)}</div>
+          <div class="memo">${_esc(e.memo_number||'—')}</div>
+        </div>
+        <div class="exec-card-actions">
+          <span class="tag ${statusTag}" style="font-size:11px">${statusLabel}</span>
+          <button class="btn sm" title="แก้ไข" onclick="ProjDetail.editExecution('${e.execution_id||e.round_id}')">✏</button>
+          <button class="btn sm" style="color:#dc2626" title="ลบ" onclick="ProjDetail.deleteExecution('${e.execution_id||e.round_id}')">🗑</button>
+        </div>
+      </div>
+      <div class="exec-grid">
+        <div class="exec-field">
+          <div class="f-lbl">จำนวนเงิน</div>
+          <div class="f-val num">${API.fmt.thb(e.amount_used||e.budget_used||0)} <small style="font-weight:400;font-family:inherit;color:var(--ink-400)">(${e.percent_used||0}%)</small></div>
+        </div>
+        <div class="exec-field">
+          <div class="f-lbl">สะสม / คงเหลือ</div>
+          <div class="f-val num" style="font-size:12px">${API.fmt.thb(e.budget_cumulative||0)} / <span style="color:${(e.budget_remaining||0)<0?'#dc2626':'#15803d'}">${API.fmt.thb(e.budget_remaining||0)}</span></div>
+        </div>
+        <div class="exec-field">
+          <div class="f-lbl">แหล่งงบ / ประเภท</div>
+          <div class="f-val">${_SRC_LABELS[e.budget_source]||e.budget_source||'—'} · ${_esc(e.budget_type_expense||'—')}</div>
+        </div>
+        <div class="exec-field">
+          <div class="f-lbl">ผู้ดำเนินการ</div>
+          <div class="f-val ${!ops||ops==='—'?'em':''}">${_esc(ops)}</div>
+        </div>
+        <div class="exec-field">
+          <div class="f-lbl">เลขพัสดุ / การเงิน</div>
+          <div class="f-val">${_esc(e.supply_requisition_no||'—')} / ${_esc(e.finance_requisition_no||'—')}</div>
+        </div>
+        <div class="exec-field">
+          <div class="f-lbl">วันที่สำเร็จ / หมายเหตุ</div>
+          <div class="f-val ${!e.completion_date&&!e.notes?'em':''}">${e.completion_date?API.fmt.date(e.completion_date):'—'} ${e.notes?'· '+_esc(e.notes):''}</div>
+        </div>
+      </div>
+    </div>`;
+  }
+
+  // ── Add/Edit Form ──────────────────────────────────────────
+  function showAddForm() {
+    _editingId = null;
+    document.getElementById('pd-form-title').textContent = `+ เพิ่มการดำเนินโครงการ (ครั้งที่ ${_executions.length + 1})`;
+    ['ef-date','ef-memo','ef-operators','ef-supply','ef-finance','ef-notes'].forEach(id => { const el=document.getElementById(id); if(el) el.value=''; });
+    ['ef-src','ef-type','ef-status'].forEach(id => { const el=document.getElementById(id); if(el) el.selectedIndex=id==='ef-src'?2:0; });
+    document.getElementById('ef-amount').value = '';
+    document.getElementById('ef-exec-id').value = '';
+    document.getElementById('ef-over-warn').style.display = 'none';
+    _updateRemainingNote();
+    document.getElementById('pd-form').style.display = '';
+    document.getElementById('pd-form').scrollIntoView({ behavior:'smooth', block:'nearest' });
+  }
+
+  function editExecution(execId) {
+    const e = _executions.find(x => (x.execution_id||x.round_id) === execId);
+    if (!e) return;
+    _editingId = execId;
+    document.getElementById('pd-form-title').textContent = `แก้ไขการดำเนิน ครั้งที่ ${e.execution_no||e.round_no}`;
+    document.getElementById('ef-date').value      = e.execution_date || e.exec_start_date || '';
+    document.getElementById('ef-memo').value      = e.memo_number || '';
+    document.getElementById('ef-src').value       = e.budget_source || 'bk';
+    document.getElementById('ef-type').value      = e.budget_type_expense || 'ค่าวัสดุ';
+    document.getElementById('ef-amount').value    = e.amount_used || e.budget_used || '';
+    document.getElementById('ef-operators').value = Array.isArray(e.operators) ? e.operators.join(', ') : (e.operators||'');
+    document.getElementById('ef-status').value    = e.execution_status || 'in_progress';
+    document.getElementById('ef-supply').value    = e.supply_requisition_no || '';
+    document.getElementById('ef-finance').value   = e.finance_requisition_no || '';
+    document.getElementById('ef-complete').value  = e.completion_date || '';
+    document.getElementById('ef-notes').value     = e.notes || '';
+    document.getElementById('ef-exec-id').value   = execId;
+    document.getElementById('ef-over-warn').style.display = 'none';
+    _updateRemainingNote();
+    document.getElementById('pd-form').style.display = '';
+    document.getElementById('pd-form').scrollIntoView({ behavior:'smooth', block:'nearest' });
+  }
+
+  function cancelForm() {
+    document.getElementById('pd-form').style.display = 'none';
+    _editingId = null;
+  }
+
+  function checkBudget() {
+    const amount = Number(document.getElementById('ef-amount').value) || 0;
+    const total  = Number(_project.total_budget || 0);
+    const used   = _executions
+      .filter(e => (e.execution_id||e.round_id) !== _editingId)
+      .reduce((s,e) => s + Number(e.amount_used||e.budget_used||0), 0);
+    const rem = total - used;
+    document.getElementById('ef-over-warn').style.display = amount > rem ? '' : 'none';
+    return rem;
+  }
+
+  function _updateRemainingNote() {
+    const total  = Number(_project?.total_budget || 0);
+    const used   = _executions
+      .filter(e => (e.execution_id||e.round_id) !== _editingId)
+      .reduce((s,e) => s + Number(e.amount_used||e.budget_used||0), 0);
+    const rem = total - used;
+    const el  = document.getElementById('ef-remaining-note');
+    if (el) el.textContent = `งบคงเหลือที่ใช้ได้: ${API.fmt.thb(rem)}`;
+  }
+
+  async function saveExecution() {
+    const date   = document.getElementById('ef-date').value;
+    const memo   = document.getElementById('ef-memo').value.trim();
+    const amount = Number(document.getElementById('ef-amount').value);
+
+    if (!date)   { alert('กรุณาระบุวันที่ดำเนินโครงการ'); return; }
+    if (!memo)   { alert('กรุณาระบุหมายเลขบันทึกข้อความ'); return; }
+    if (!amount) { alert('กรุณาระบุจำนวนเงิน'); return; }
+
+    const opsRaw = document.getElementById('ef-operators').value;
+    const data = {
+      project_id:           _project.project_id,
+      execution_date:       date,
+      memo_number:          memo,
+      budget_source:        document.getElementById('ef-src').value,
+      budget_type_expense:  document.getElementById('ef-type').value,
+      amount_used:          amount,
+      operators:            opsRaw ? opsRaw.split(',').map(s=>s.trim()).filter(Boolean) : [],
+      execution_status:     document.getElementById('ef-status').value,
+      supply_requisition_no: document.getElementById('ef-supply').value.trim(),
+      finance_requisition_no: document.getElementById('ef-finance').value.trim(),
+      completion_date:      document.getElementById('ef-complete').value,
+      notes:                document.getElementById('ef-notes').value.trim()
+    };
+
+    const btn = document.querySelector('#pd-form .btn.primary');
+    btn.disabled = true; btn.textContent = 'กำลังบันทึก...';
+
+    let r;
+    if (_editingId) {
+      r = await API.executions.update(_editingId, data);
+    } else {
+      r = await API.executions.add(data);
+    }
+
+    btn.disabled = false; btn.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> บันทึก`;
+
+    if (!r.ok) { alert('เกิดข้อผิดพลาด: ' + (r.error||r.message||'ไม่ทราบสาเหตุ')); return; }
+
+    // Reload from DB
+    const fresh = await API.executions.getProjectDetail({ project_id: _project.project_id });
+    if (fresh.ok) { _project = fresh.data; _executions = fresh.data.executions || []; }
+
+    cancelForm();
+    _renderHeader();
+    _renderExecList();
+  }
+
+  async function deleteExecution(execId) {
+    const e = _executions.find(x => (x.execution_id||x.round_id) === execId);
+    if (!e) return;
+    const label = `ครั้งที่ ${e.execution_no||e.round_no} (${API.fmt.thb(e.amount_used||e.budget_used||0)})`;
+    if (!confirm(`ต้องการลบการดำเนิน "${label}" ใช่หรือไม่?`)) return;
+
+    const r = await API.executions.remove(execId);
+    if (!r.ok) { alert('ลบไม่สำเร็จ'); return; }
+
+    const fresh = await API.executions.getProjectDetail({ project_id: _project.project_id });
+    if (fresh.ok) { _project = fresh.data; _executions = fresh.data.executions || []; }
+    _renderHeader();
+    _renderExecList();
+    if (_editingId === execId) cancelForm();
+  }
+
+  return { init, showAddForm, editExecution, cancelForm, checkBudget, saveExecution, deleteExecution };
+})();
+
+ProjDetail.init();
+</script>

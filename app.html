@@ -637,6 +637,7 @@ const pages = {
   // โครงการ
   'propose-project':'pages/propose-project.html',
   projects:         'pages/projects.html',
+  'project-detail': 'pages/project-detail.html',
   activities:       'pages/activities.html',
   // งบประมาณ
   disbursement:     'pages/disbursement.html',
@@ -668,6 +669,7 @@ const labels = {
   kpi:              'ติดตาม KPI',
   'propose-project':'เสนอโครงการ',
   projects:         'จัดการโครงการ',
+  'project-detail': 'รายละเอียดโครงการ',
   activities:       'จัดการกิจกรรม',
   disbursement:     'สร้างคำขอใหม่',
   budget:           'ตัดงบประมาณ',
@@ -742,6 +744,14 @@ function loadPage(pageName) {
     });
 }
 
+// ── Project Detail Helper ───────────────────────────────────
+function openProjectDetail(projectId) {
+  window.__detailProjectId = projectId;
+  // Invalidate cache so the page always re-loads fresh data
+  delete _pageCache['project-detail'];
+  loadPage('project-detail');
+}
+
 // ── Navigation ─────────────────────────────────────────────
 document.querySelectorAll('.sb-item, .sb-solo').forEach(item => {
   item.addEventListener('click', e => {
@@ -761,7 +771,7 @@ function toggleGroup(id) {
 function _openGroupOf(pageName) {
   const map = {
     'strategic-plan':'grp-plan','annual-plan':'grp-plan','kpi':'grp-plan',
-    'propose-project':'grp-project','projects':'grp-project','activities':'grp-project',
+    'propose-project':'grp-project','projects':'grp-project','project-detail':'grp-project','activities':'grp-project',
     'disbursement':'grp-budget','budget':'grp-budget','repay':'grp-budget','budget-received':'grp-budget',
     'approve-deputy':'grp-approval','approve-director':'grp-approval','verify-docs':'grp-approval','approval':'grp-approval','all-requests':'grp-approval',
     'reports':'grp-reports','project-summary':'grp-reports','evaluation':'grp-reports','project-report':'grp-reports','history':'grp-reports','calendar':'grp-reports',

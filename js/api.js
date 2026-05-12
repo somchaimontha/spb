@@ -14,6 +14,7 @@ const API = (() => {
   // ตั้งค่า GAS_URL หลัง Deploy Apps Script
   const GAS_URL = window.__GAS_URL__ || null;
   const FISCAL_YEAR = 2569;
+  const _DEPT_CODES = { admin:'บห', plan:'ผค', student:'พน', academic:'วช', activity:'กจ' };
 
   // ── Session ───────────────────────────────────────────────
   let _token = localStorage.getItem('plan_token') || null;
@@ -146,7 +147,7 @@ const API = (() => {
 
   // ── MockDB (localStorage + seed) ─────────────────────────
   const Mock = (() => {
-    const DB_KEY = 'plan_mockdb_v5';
+    const DB_KEY = 'plan_mockdb_v6';
 
     function _load() {
       try { return JSON.parse(localStorage.getItem(DB_KEY) || 'null'); } catch { return null; }
@@ -165,9 +166,10 @@ const API = (() => {
     // ── Seed from real project data ─────────────────────────
     function _seed() {
       const projects = _buildProjects();
+      const rounds   = _seedRounds(projects);
       return {
         projects,
-        rounds:               [],
+        rounds,
         history:              [],
         disbursements:        [],
         budget_allocations:   _seedBudgetAllocations(),
@@ -180,6 +182,31 @@ const API = (() => {
 
     // ── Budget seed helpers ───────────────────────────────────
     // lf=311,030  sub=3,596,060  bk=3,352,400  other=10,000  central=3,850,000  total=11,119,490
+    // Seed sample execution for project บห-006-2569 (has actual:103610)
+    function _seedRounds(projects) {
+      const p6 = projects.find(p => p.project_no === '6');
+      if (!p6) return [];
+      p6.round_count = 1; p6.execution_count = 1;
+      return [{
+        round_id:'ex-p6-r1', execution_id:'ex-p6-r1',
+        project_id:p6.project_id, project_code:p6.project_code,
+        round_no:1, execution_no:1,
+        execution_date:'2026-01-15',
+        memo_number:'หนังสือ วอ.มสร. 001/2569',
+        budget_source:'bk', budget_type_expense:'ค่าวัสดุและค่าแรง',
+        amount_used:103610, budget_used:103610,
+        budget_cumulative:103610, budget_remaining:196390,
+        percent_used:34,
+        operators:['งานอาคารสถานที่'],
+        completion_date:'', supply_requisition_no:'พส.001/2569',
+        finance_requisition_no:'', notes:'วัสดุก่อสร้างงวดที่ 1',
+        execution_status:'in_progress', round_status:'active',
+        remark:'วัสดุก่อสร้างงวดที่ 1',
+        metadata:{}, created_by:'u1',
+        created_at:'2026-01-15T08:00:00.000Z', updated_at:'2026-01-15T08:00:00.000Z'
+      }];
+    }
+
     function _seedBudgetAllocations() {
       return [
         { alloc_id:'al1', alloc_no:1, alloc_date:'2025-10-01', memo_no:'สอศ.2568/3451', budget_type:'sub',     amount:1500000, quarter:1, fiscal_year:FISCAL_YEAR, note:'จัดสรรงบดำเนินงาน ครั้งที่ 1/2569',            created_by:'u1', created_at:'2025-10-01T00:00:00.000Z' },
@@ -339,44 +366,52 @@ const API = (() => {
         { no:'121', name:'โครงการเลือกตั้งประธานชมรมวิชาชีพช่างก่อสร้าง',                                        div:'activity', dept:'งานกิจกรรมพัฒนาผู้เรียน', total:0,     lf:0,     sub:0, bk:0, other:0, central:0, resp:'ชมรมช่างก่อสร้าง' },
       ];
 
-      return raw.map(r => ({
-        project_id:       _uid(),
-        project_no:       r.no,
-        project_name:     r.name,
-        responsible_person: r.resp,
-        division_code:    r.div,
-        department:       r.dept,
-        budget_category_code: '',
-        budget_type:      '',
-        total_budget:     r.total,
-        budget_planned:   r.total,
-        budget_actual:    r.actual || 0,
-        budget_remaining: r.total - (r.actual || 0),
-        b_learning_free:  r.lf,
-        b_subsidy:        r.sub,
-        b_nonformal:      r.bk,
-        b_other:          r.other,
-        b_central:        r.central,
-        status:           r.actual >= r.total ? 'completed' : r.actual > 0 ? 'active' : 'approved',
-        is_supplementary: false,
-        parent_project_id:'',
-        memo_ref_no:      '',
-        approval_date:    '',
-        exec_start_date:  '',
-        exec_end_date:    '',
-        cancel_reason:    '',
-        merged_into_id:   '',
-        audit_step1:      r.actual > 0,
-        audit_step2:      r.actual >= r.total * 0.5,
-        audit_step3:      r.actual >= r.total,
-        fiscal_year:      FISCAL_YEAR,
-        note:             '',
-        is_active:        true,
-        created_at:       '2025-10-01T00:00:00.000Z',
-        updated_at:       new Date().toISOString(),
-        created_by:       'u1',
-        round_count:      0
-      }));
+      const _deptSeq = {};
+      return raw.map(r => {
+        _deptSeq[r.div] = (_deptSeq[r.div] || 0) + 1;
+        const dc = _DEPT_CODES[r.div] || 'อน';
+        const project_code = `${dc}-${String(_deptSeq[r.div]).padStart(3,'0')}-${FISCAL_YEAR}`;
+        return {
+          project_id:       _uid(),
+          project_no:       r.no,
+          project_code,
+          project_name:     r.name,
+          responsible_person: r.resp,
+          division_code:    r.div,
+          department:       r.dept,
+          budget_category_code: '',
+          budget_type:      '',
+          total_budget:     r.total,
+          budget_planned:   r.total,
+          budget_actual:    r.actual || 0,
+          budget_remaining: r.total - (r.actual || 0),
+          b_learning_free:  r.lf,
+          b_subsidy:        r.sub,
+          b_nonformal:      r.bk,
+          b_other:          r.other,
+          b_central:        r.central,
+          status:           r.actual >= r.total ? 'completed' : r.actual > 0 ? 'active' : 'approved',
+          is_supplementary: false,
+          parent_project_id:'',
+          memo_ref_no:      '',
+          approval_date:    '',
+          exec_start_date:  '',
+          exec_end_date:    '',
+          cancel_reason:    '',
+          merged_into_id:   '',
+          audit_step1:      r.actual > 0,
+          audit_step2:      r.actual >= r.total * 0.5,
+          audit_step3:      r.actual >= r.total,
+          fiscal_year:      FISCAL_YEAR,
+          note:             '',
+          is_active:        true,
+          created_at:       '2025-10-01T00:00:00.000Z',
+          updated_at:       new Date().toISOString(),
+          created_by:       'u1',
+          round_count:      0,
+          execution_count:  0
+        };
+      });
     }
 
     function _defaultSettings() {
@@ -405,7 +440,10 @@ const API = (() => {
       let rows = [...db.projects];
       if (p.division_code) rows = rows.filter(r => r.division_code === p.division_code);
       if (p.status)        rows = rows.filter(r => r.status === p.status);
-      if (p.q)             rows = rows.filter(r => r.project_name.includes(p.q) || r.project_no.includes(p.q));
+      if (p.fiscal_year)   rows = rows.filter(r => r.fiscal_year === Number(p.fiscal_year));
+      if (p.q)             rows = rows.filter(r =>
+        r.project_name.includes(p.q) || String(r.project_no).includes(p.q) ||
+        (r.project_code && r.project_code.includes(p.q)));
       return { ok:true, data: rows };
     }
 
@@ -421,8 +459,15 @@ const API = (() => {
     function createProject(p) {
       const db = _getDB();
       if (db.projects.find(r => r.project_no === p.project_no)) return { error:'DUPLICATE_PROJECT_NO' };
+      // Auto-generate project_code if not provided
+      if (!p.project_code) {
+        const div = p.division_code || 'other';
+        const dc  = _DEPT_CODES[div] || 'อน';
+        const cnt = db.projects.filter(r => r.division_code === div && r.fiscal_year === FISCAL_YEAR).length + 1;
+        p.project_code = `${dc}-${String(cnt).padStart(3,'0')}-${FISCAL_YEAR}`;
+      }
       const proj = { project_id: _uid(), fiscal_year: FISCAL_YEAR, is_active: true, created_at: _now(),
-        budget_actual: 0, budget_remaining: Number(p.total_budget)||0, round_count: 0, ...p };
+        budget_actual: 0, budget_remaining: Number(p.total_budget)||0, round_count: 0, execution_count: 0, ...p };
       db.projects.push(proj); _save(db);
       return { ok:true, data: proj };
     }
@@ -495,6 +540,113 @@ const API = (() => {
       rounds.forEach((r,i) => { cum += Number(r.budget_used||0); r.round_no=i+1; r.budget_cumulative=cum; r.budget_remaining=Number(proj.total_budget)-cum; });
       if (proj) { proj.budget_actual=cum; proj.budget_remaining=Number(proj.total_budget)-cum; proj.round_count=rounds.length; }
       _save(db); return { ok:true };
+    }
+
+    // ── Execution (Project Tracking) ─────────────────────────
+    function _findProj(db, p) {
+      if (p.project_id)   return db.projects.find(r => r.project_id === p.project_id);
+      if (p.project_code) return db.projects.find(r => r.project_code === p.project_code);
+      return null;
+    }
+
+    function getProjectDetail(p) {
+      const db   = _getDB();
+      const proj = _findProj(db, p);
+      if (!proj) return { error:'NOT_FOUND' };
+      const executions = (db.rounds||[]).filter(r => r.project_id === proj.project_id)
+                           .sort((a,b) => a.execution_no - b.execution_no);
+      const history = db.history.filter(h => h.project_id === proj.project_id);
+      return { ok:true, data: { ...proj, executions, history } };
+    }
+
+    function getExecutions(p) {
+      const db   = _getDB();
+      const proj = _findProj(db, p);
+      if (!proj) return { ok:true, data:[] };
+      const rows = (db.rounds||[]).filter(r => r.project_id === proj.project_id)
+                    .sort((a,b) => a.execution_no - b.execution_no);
+      return { ok:true, data: rows };
+    }
+
+    function addExecution(p) {
+      const db   = _getDB();
+      const proj = _findProj(db, p);
+      if (!proj) return { error:'NOT_FOUND' };
+      if (!db.rounds) db.rounds = [];
+      const existing  = db.rounds.filter(r => r.project_id === proj.project_id);
+      const prevCum   = existing.reduce((s,r) => s + Number(r.amount_used||r.budget_used||0), 0);
+      const thisUsed  = Number(p.amount_used) || 0;
+      const cumulative = prevCum + thisUsed;
+      const remaining  = Number(proj.total_budget) - cumulative;
+      const no = existing.length + 1;
+      const id = _uid();
+      const exec = {
+        round_id: id, execution_id: id,
+        project_id: proj.project_id, project_code: proj.project_code || '',
+        round_no: no, execution_no: no,
+        execution_date: p.execution_date || '',
+        memo_number: p.memo_number || '',
+        budget_source: p.budget_source || '',
+        budget_type_expense: p.budget_type_expense || '',
+        amount_used: thisUsed, budget_used: thisUsed,
+        budget_cumulative: cumulative, budget_remaining: remaining,
+        percent_used: proj.total_budget > 0 ? Math.round(thisUsed / Number(proj.total_budget) * 100) : 0,
+        operators: p.operators || [],
+        completion_date: p.completion_date || '',
+        supply_requisition_no: p.supply_requisition_no || '',
+        finance_requisition_no: p.finance_requisition_no || '',
+        notes: p.notes || '',
+        execution_status: p.execution_status || 'in_progress',
+        round_status: p.execution_status === 'completed' ? 'completed' : 'active',
+        remark: p.notes || '',
+        metadata: p.metadata || {},
+        created_by: 'u1', created_at: _now(), updated_at: _now()
+      };
+      db.rounds.push(exec);
+      proj.budget_actual = cumulative; proj.budget_remaining = remaining;
+      proj.round_count = no; proj.execution_count = no;
+      if (p.execution_status === 'completed' || p.execution_date) proj.status = 'active';
+      _save(db);
+      return { ok:true, data: exec, overspend: remaining < 0 };
+    }
+
+    function updateExecution(p) {
+      const db  = _getDB();
+      const idx = (db.rounds||[]).findIndex(r => r.round_id === p.execution_id || r.execution_id === p.execution_id);
+      if (idx === -1) return { error:'NOT_FOUND' };
+      const exec = db.rounds[idx];
+      ['execution_date','memo_number','budget_source','budget_type_expense','operators',
+       'completion_date','supply_requisition_no','finance_requisition_no','notes','execution_status']
+        .forEach(f => { if (p[f] !== undefined) exec[f] = p[f]; });
+      if (p.amount_used !== undefined) {
+        exec.amount_used = Number(p.amount_used); exec.budget_used = exec.amount_used;
+        const proj = db.projects.find(r => r.project_id === exec.project_id);
+        if (proj) {
+          const rows = db.rounds.filter(r => r.project_id === proj.project_id).sort((a,b) => a.execution_no - b.execution_no);
+          let cum = 0;
+          rows.forEach(r => { cum += Number(r.amount_used||r.budget_used||0); r.budget_cumulative = cum; r.budget_remaining = Number(proj.total_budget) - cum; r.percent_used = proj.total_budget > 0 ? Math.round(Number(r.amount_used||0)/Number(proj.total_budget)*100) : 0; });
+          proj.budget_actual = cum; proj.budget_remaining = Number(proj.total_budget) - cum;
+        }
+      }
+      if (p.execution_status) exec.round_status = p.execution_status === 'completed' ? 'completed' : 'active';
+      exec.updated_at = _now();
+      _save(db);
+      return { ok:true, data: exec };
+    }
+
+    function deleteExecution(p) {
+      const db   = _getDB();
+      const exec = (db.rounds||[]).find(r => r.round_id === p.execution_id || r.execution_id === p.execution_id);
+      if (!exec) return { error:'NOT_FOUND' };
+      const projectId = exec.project_id;
+      db.rounds = db.rounds.filter(r => r.round_id !== p.execution_id && r.execution_id !== p.execution_id);
+      const proj = db.projects.find(r => r.project_id === projectId);
+      const rows = db.rounds.filter(r => r.project_id === projectId).sort((a,b) => a.execution_no - b.execution_no);
+      let cum = 0;
+      rows.forEach((r,i) => { r.round_no = i+1; r.execution_no = i+1; cum += Number(r.amount_used||r.budget_used||0); r.budget_cumulative = cum; if(proj) r.budget_remaining = Number(proj.total_budget) - cum; });
+      if (proj) { proj.budget_actual = cum; proj.budget_remaining = Number(proj.total_budget) - cum; proj.round_count = rows.length; proj.execution_count = rows.length; }
+      _save(db);
+      return { ok:true };
     }
 
     // ── Budget functions ──────────────────────────────────────
@@ -643,7 +795,9 @@ const API = (() => {
     }
 
     return { login, getProjects, getProject, createProject, updateProject, cancelProject,
-             getRounds, addRound, deleteRound, getDashboardKPIs, getSettings, updateSettings, getUsers,
+             getRounds, addRound, deleteRound,
+             getProjectDetail, getExecutions, addExecution, updateExecution, deleteExecution,
+             getDashboardKPIs, getSettings, updateSettings, getUsers,
              getDisbursements: ()=>({ok:true,data:[]}), createDisbursement:()=>({ok:true}),
              approveDisbursement:()=>({ok:true}),
              getBudgetEstimates, getBudgetAllocations, createBudgetAllocation, deleteBudgetAllocation,
@@ -652,5 +806,13 @@ const API = (() => {
              exportReport:()=>({ok:true}), resetDB };
   })();
 
-  return { auth, dashboard, projects, budget, settings, fmt, Mock };
+  const executions = {
+    async getProjectDetail(params)  { return _call('getProjectDetail', params); },
+    async list(params = {})         { return _call('getExecutions', params); },
+    async add(data)                 { return _call('addExecution', data); },
+    async update(execId, data)      { return _call('updateExecution', { execution_id: execId, ...data }); },
+    async remove(execId)            { return _call('deleteExecution', { execution_id: execId }); }
+  };
+
+  return { auth, dashboard, projects, executions, budget, settings, fmt, Mock };
 })();
