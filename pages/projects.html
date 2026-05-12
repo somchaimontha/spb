@@ -393,7 +393,7 @@
 // ─────────────────────────────────────────────────────────────
 // ProjPage — Project Registry Controller
 // ─────────────────────────────────────────────────────────────
-const ProjPage = (() => {
+window.ProjPage = (() => {
   let _projects   = [];
   let _expanded   = new Set();  // project_ids with rounds visible
   let _roundsData = {};         // projectId → rounds[]
