@@ -1,204 +1,170 @@
-# 🎉 Implementation Summary
-## ระบบงานแผนและงบประมาณ · วก.แม่สะเรียง
+# Implementation Summary — ระบบงานนโยบายและแผน v2.0
+### วิทยาลัยการอาชีพแม่สะเรียง
 
 ---
 
-## ✅ What's Been Implemented
+## v2.0 Redesign (12 พ.ค. 2569)
 
-### **Application Structure**
-- ✅ **index.html** - Entry point with auto-redirect
-- ✅ **signin.html** - Sign-in page with email/password & Google login
-- ✅ **app.html** - Main application shell with sidebar navigation
-- ✅ **styles.css** - Shared design system (navy/gold/paper theme)
+### สิ่งที่เปลี่ยนแปลงหลัก
 
-### **6 Main Pages**
-1. ✅ **Dashboard** - Overview with stats, budget progress charts, and alerts
-2. ✅ **ทะเบียนโครงการ (Projects)** - Project registry grouped by department  
-3. ✅ **บัญชีคุมงบ (Budget Control)** - Budget heatmap and control dashboard
-4. ✅ **ขอเบิก (Disbursement)** - Request form with file upload
-5. ✅ **กล่องอนุมัติ (Approval)** - Approval inbox with action buttons
-6. ✅ **รายงาน (Reports)** - Comprehensive reporting with data tables
+**เป้าหมาย:** ปรับระบบให้เหมือนระบบอ้างอิง "ระบบงานนโยบายและแผน v2.0" ทั้งหมด โดยคงข้อมูลเดิม
 
-### **Key Features**
-- ✅ Responsive sidebar navigation
-- ✅ Single Page App (SPA) routing with dynamic page loading
-- ✅ Authentication system (localStorage-based for MVP)
-- ✅ Session management with logout
-- ✅ Thai language support throughout
-- ✅ Professional design with navy/gold color scheme
-- ✅ Tabular data display with proper formatting
-- ✅ Statistics cards and KPI displays
-- ✅ Form inputs for data entry
-- ✅ Alert/warning system for important notifications
+#### 1. Sidebar ใหม่ (app.html)
+- สีพื้น `#0f2044` (dark navy) เข้มกว่าเดิม
+- Version badge `v2.0`
+- เมนูแบบ **Collapsible groups** 5 หมวด
+- Logout button ในแถบผู้ใช้
+
+| หมวด | รายการเมนู |
+|------|-----------|
+| แผนงาน | แผนกลยุทธ์, แผนปฏิบัติการ, ติดตาม KPI |
+| โครงการ | เสนอโครงการ, จัดการโครงการ, จัดการกิจกรรม |
+| งบประมาณ | สร้างคำขอใหม่, ตัดงบประมาณ, คืนเงินยืม, ดูยอดคงเหลือ |
+| กล่องอนุมัติ | อนุมัติ รอง ผอ., อนุมัติ ผอ., ตรวจสอบเอกสาร, ตรวจสอบโครงการ, คำขอทั้งหมด |
+| รายงาน | สรุปภาพรวม, สรุปโครงการ, ประเมินผล, รายงานโครงการ, ประวัติดำเนินการ, ปฏิทิน |
+| ผู้ดูแลระบบ *(admin only)* | Audit Log, จัดการผู้ใช้, ตั้งค่าระบบ |
+
+#### 2. Dashboard ใหม่ (pages/dashboard.html)
+- **4 Budget-type cards** พร้อม progress bar:
+  - เงินอุดหนุน (12,605,470)
+  - กิจกรรมพัฒนาผู้เรียน (3,379,965)
+  - เงินบำรุงการศึกษา (29,948,820)
+  - รายได้สถานศึกษา (18,251)
+- Panel สถานะคำขอ (รออนุมัติ/อนุมัติ/ไม่อนุมัติ + รายการล่าสุด)
+- แผนภูมิแท่งการใช้จ่ายตามหมวด
+- ตารางกิจกรรมล่าสุด 5 รายการ
+
+#### 3. หน้าใหม่ 16 หน้า
+
+| หน้า | ฟีเจอร์หลัก |
+|------|------------|
+| `strategic-plan.html` | 4 กลยุทธ์ collapsible, KPI table + progress bar ต่อโครงการ |
+| `annual-plan.html` | Gantt 12 เดือน, filter กลยุทธ์/ประเภทงบ, legend สี |
+| `kpi.html` | KPI summary 4 cards, table พร้อม progress + status |
+| `propose-project.html` | 5-step form: ข้อมูล → งบ → กิจกรรม → เอกสาร → ส่ง; month selector; budget breakdown table |
+| `activities.html` | Card grid พร้อมสีประเภท, meta: วันที่/ผู้รับผิดชอบ/งบ |
+| `repay.html` | ตารางยืมที่ค้างชำระ + แบบฟอร์มคืนเงิน |
+| `approve-deputy.html` | Expandable cards, ความเห็น, approve/reject buttons |
+| `approve-director.html` | รายการที่ผ่านรอง ผอ. แล้ว, อนุมัติ ผอ. ขั้นสุดท้าย |
+| `verify-docs.html` | Preview PDF/IMG/XLS, checklist ตรวจสอบ, แจ้งแก้ไข |
+| `all-requests.html` | ตาราง filter หลายมิติ, pagination |
+| `evaluation.html` | CIPP Model (Context/Input/Process/Product), star scoring, summary card |
+| `project-summary.html` | Stats 4 cards, chart by budget type/strategy, project list |
+| `project-report.html` | Project detail, disbursement history, CIPP summary |
+| `history.html` | Timeline พร้อม dot color ตาม action type |
+| `calendar.html` | Monthly grid 7x5, event chips สี, legend |
+| `audit-log.html` | ตาราง action log ทุก event, filter by action/user/date |
+
+#### 4. Settings เพิ่ม 2 แท็บ
+- **การแจ้งเตือน:** Telegram Bot (token + chat_id + ทดสอบส่งจริง) + Email
+- **ความปลอดภัย:** Developer Mode toggle + Login history table
 
 ---
 
-## 📊 Pages Overview
+## v1.x History
 
-| Page | Features | Status |
-|------|----------|--------|
-| **Dashboard** | 4 stat cards, budget progress bars, alerts, activity log | ✅ Complete |
-| **Projects** | Search/filter, department grouping, status badges | ✅ Complete |
-| **Budget** | Heatmap display, category overview, department stats | ✅ Complete |
-| **Disbursement** | Form with dropdowns, file upload, buttons | ✅ Complete |
-| **Approval** | Card-based layout, approve/reject buttons, status tracking | ✅ Complete |
-| **Reports** | Data tables, summary statistics, export buttons | ✅ Complete |
+### v1.3 — Security System (พ.ค. 2569)
+- `js/security.js` — Session Integrity Guard (FNV-1a hash)
+- `js/tamper-guard.js` — DevTools deterrent
+- Developer Mode toggle (Admin only) ใน Settings
+- Google Sign-In (GSI library, domain @msr.ac.th)
+- GAS `loginWithGoogle()` + domain check `payload.hd !== 'msr.ac.th'`
+
+### v1.2 — Data & Budget (พ.ค. 2569)
+- MockDB: 121 โครงการจริง ปีงบประมาณ 2569
+- 4 หน้างบประมาณ: ประมาณการ, รายการจัดสรร, งปม.เข้า, จัดสรร งปม.
+- DB status indicator (online/mock/error)
+
+### v1.1 — Core Pages
+- Projects: ตาราง dept-group, audit 3 ขั้น, 5 modals, running balance
+- Settings: 5 แท็บ (ทั่วไป, สถานะ, ฝ่าย, ผู้มีอำนาจ, ผู้ใช้)
+- GAS Backend v1: Auth, Projects, Budget, Settings
+
+### v1.0 — Foundation
+- SPA routing (loadPage)
+- Login + session localStorage
+- Sidebar nav + Topbar + DB status
 
 ---
 
-## 🎨 Design Details
+## Design System
 
 ### Color Palette
-```
-Navy Blue:    #142850  (Primary brand color)
-Gold:         #d4a017  (Accent color)
-Paper:        #fbfaf6  (Background)
-Ink Dark:     #0b1726  (Text)
-Ink Light:    #475467  (Subtext)
+```css
+--ink-900:  #0b1726   /* Text หลัก */
+--ink-700:  #1e2a3a
+--ink-500:  #475467   /* Subtext */
+--ink-200:  #d0d5dd   /* Border */
+--ink-100:  #eaecf0
+--ink-50:   #f5f7fa
+--paper:    #fbfaf6   /* Background */
+--gold-500: #d4a017   /* Accent */
+--navy-700: #142850   /* Brand */
+--navy-500: #27518f
+--navy-100: #e3ecf8
+/* v2.0 Sidebar */
+Sidebar BG: #0f2044
 ```
 
 ### Typography
-- **Thai Text:** Sarabun font (300-800 weights)
-- **Monospace:** JetBrains Mono (for codes, numbers)
-- **System Fallback:** San-serif stack
+- Thai: **Sarabun** (300–800) — Google Fonts
+- Mono: **JetBrains Mono** — codes, numbers
 
-### Layout
-- Sidebar navigation (240px wide, navy background)
-- Top bar with breadcrumbs and user info
-- Content area with padding and white panels
-- Grid-based responsive layout
-
----
-
-## 🚀 How to Use
-
-### **Quick Start**
-```bash
-# Option 1: Open directly in browser
-open index.html
-# OR
-open signin.html
-
-# Option 2: Local Python server
-cd /Users/admin/Desktop/planwork\ webapp
-python3 -m http.server 8000
-# Visit: http://localhost:8000
+### Component Classes
 ```
-
-### **Test Account**
-- Email: `example@msc.ac.th`
-- Password: `password123`
-- Or click "ล็อกอินด้วย Google"
-
-### **Navigation**
-- Click sidebar items to navigate
-- Dashboard loads automatically on first login
-- Session stored in `localStorage`
-- Click "ออกจากระบบ" (top right) to logout
-
----
-
-## 📁 File Structure
-
-```
-planwork-webapp/
-├── index.html                 ← Start here (redirects to signin)
-├── signin.html                ← Authentication page
-├── app.html                   ← Main app (with sidebar & routing)
-├── styles.css                 ← Shared CSS design tokens
-├── GUIDE.md                   ← User guide (Thai)
-├── README.md                  ← Original documentation
-├── Plan.html                  ← Full technical spec (archived)
-├── Plan-original.html         ← Full technical spec (archived)
-├── Mockup.html                ← Design mockups (reference)
-├── design-canvas.jsx          ← React component (reference)
-├── pages/                      ← Page content
-│   ├── dashboard.html         ← Dashboard page
-│   ├── projects.html          ← Project registry
-│   ├── budget.html            ← Budget control
-│   ├── disbursement.html      ← Request form
-│   ├── approval.html          ← Approval inbox
-│   └── reports.html           ← Reports
-└── uploads/                   ← Reference data files
+.btn / .btn.primary / .btn.gold / .btn.ghost / .btn.sm
+.tag / .tag.navy / .tag.gold / .tag.green / .tag.rose / .tag.amber / .tag.teal
+.card   .stat   .panel   .callout.rose
 ```
 
 ---
 
-## 🔌 Next Steps (Future Work)
+## Routing Architecture (SPA)
 
-### **Phase 2: Backend Integration**
-- [ ] Connect to Google Apps Script API
-- [ ] Replace mock data with live data from Sheets
-- [ ] Implement real file upload to Google Drive
-- [ ] Add approval workflow with email notifications
-
-### **Phase 3: Enhanced Features**
-- [ ] Project details page with full CRUD
-- [ ] Real-time budget calculations
-- [ ] PDF export of reports
-- [ ] Mobile responsive design improvements
-- [ ] Dark mode support
-
-### **Phase 4: Security & Deployment**
-- [ ] Google OAuth2 authentication
-- [ ] Role-based access control (RBAC)
-- [ ] Audit logging
-- [ ] Deploy to GitHub Pages
-- [ ] Set up custom domain (plan.msc.ac.th)
+```javascript
+// app.html — 25 routes
+const pages = {
+  dashboard, 'strategic-plan', 'annual-plan', kpi,
+  'propose-project', projects, activities,
+  disbursement, budget, repay, 'budget-received',
+  'approve-deputy', 'approve-director', 'verify-docs', approval, 'all-requests',
+  reports, 'project-summary', evaluation, 'project-report', history, calendar,
+  'audit-log', users, settings
+};
+// loadPage() → fetch → inject HTML → re-exec <script> tags → cache
+```
 
 ---
 
-## 💡 Technical Notes
+## Authentication Flow
 
-### Architecture
-- **Frontend:** Vanilla HTML5/CSS3/JavaScript
-- **Routing:** Client-side SPA with fetch()
-- **State:** localStorage for session management
-- **Backend:** Ready to connect to Apps Script (not yet wired)
+```
+signin.html
+  ├── Email/Password → API.auth.login() → GAS Auth.gs
+  │     verify hash(SALT+password) → create session → token+user
+  └── Google Sign-In (GSI) → handleGoogleCredentialResponse()
+        → GAS loginWithGoogle() → verify tokeninfo → check hd=msr.ac.th
 
-### Browser Compatibility
-- Chrome/Edge: ✅ Full support
-- Firefox: ✅ Full support  
-- Safari: ✅ Full support
-- IE11: ⚠️ May need polyfills
-
-### Performance
-- All pages load instantly (no build step needed)
-- Single CSS file (no dependencies)
-- Lightweight form interactions
-- Ready for service worker caching
+app.html checkAuth()
+  1. Security.enforce() — verify plan_sig (FNV-1a)
+  2. parse plan_user from localStorage
+  3. set window.__currentUser
+```
 
 ---
 
-## 📞 Support
+## GAS API Pattern
 
-### For Questions
-- Check [GUIDE.md](GUIDE.md) for user instructions
-- Review original [Plan.html](Plan.html) for technical specifications
-- Contact: งานแผนและงบประมาณ วิทยาลัยการอาชีพแม่สะเรียง
+```javascript
+// Frontend: GET only (no CORS preflight)
+fetch(GAS_URL + '?action=X&token=Y&param=Z')
 
-### Version Info
-- **Version:** 0.1 (MVP)
-- **Date:** May 8, 2569
-- **Status:** Ready for user testing
-- **Next Review:** After Phase 1 feedback
-
----
-
-## 📚 Documentation Files
-
-| File | Purpose |
-|------|---------|
-| **GUIDE.md** | User guide in Thai (how to use each page) |
-| **README.md** | Project overview and roadmap |
-| **Plan.html** | Full 14-part technical specification |  
-| **Mockup.html** | Design mockups and screen layouts |
-| **DEPLOY.md** (this file) | Implementation summary |
+// GAS Code.gs doGet(e)
+// Public: ping, login, loginWithGoogle
+// Protected: listProjects, getSettings, approve, ...
+// Fallback: if UNAUTHORIZED → MockDB (plan_mockdb_v5)
+```
 
 ---
 
-**The web application is ready to use! Start by opening `index.html` in your browser.** 🎉
-
----
-
-*Designed and developed by งานแผนและงบประมาณ · May 2569*
+*อัปเดต: 12 พฤษภาคม 2569 | v2.0 redesign complete*

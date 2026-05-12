@@ -1,0 +1,317 @@
+<style>
+.eval-toolbar {
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 20px; flex-wrap: wrap;
+}
+.eval-toolbar h2 { margin:0; font-size:18px; font-weight:700; flex:1; }
+
+.cipp-intro {
+  background: white; border: 1px solid var(--ink-100);
+  border-radius: 12px; padding: 20px; margin-bottom: 20px;
+}
+.cipp-intro h3 { margin:0 0 10px; font-size:15px; font-weight:700; }
+.cipp-model {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;
+  margin-top: 14px;
+}
+.cipp-item {
+  text-align: center; padding: 16px 12px;
+  border-radius: 10px; border: 1px solid var(--ink-100);
+}
+.cipp-letter {
+  font-size: 32px; font-weight: 800; line-height: 1;
+  margin-bottom: 6px;
+}
+.cipp-name { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+.cipp-desc { font-size: 11.5px; color: var(--ink-500); line-height: 1.4; }
+
+.cipp-item.c { background: #eff6ff; border-color: #bfdbfe; }
+.cipp-item.c .cipp-letter { color: #1d4ed8; }
+.cipp-item.i { background: #f0fdf4; border-color: #bbf7d0; }
+.cipp-item.i .cipp-letter { color: #15803d; }
+.cipp-item.p2 { background: #fefce8; border-color: #fde68a; }
+.cipp-item.p2 .cipp-letter { color: #b45309; }
+.cipp-item.pr { background: #fdf4ff; border-color: #e9d5ff; }
+.cipp-item.pr .cipp-letter { color: #7c3aed; }
+
+/* Eval form */
+.eval-card {
+  background: white; border: 1px solid var(--ink-100);
+  border-radius: 12px; margin-bottom: 14px; overflow: hidden;
+}
+.eval-card .ec-header {
+  padding: 14px 20px; border-bottom: 1px solid var(--ink-100);
+  display: flex; align-items: center; gap: 12px;
+  font-weight: 700; font-size: 14.5px;
+}
+.ec-badge {
+  padding: 3px 12px; border-radius: 20px;
+  font-size: 13px; font-weight: 800;
+}
+.eval-card .ec-body { padding: 20px; }
+
+.score-row {
+  display: flex; align-items: center; gap: 14px;
+  margin-bottom: 14px; flex-wrap: wrap;
+}
+.score-label { flex: 1; min-width: 180px; font-size: 13.5px; }
+.score-stars {
+  display: flex; gap: 4px;
+}
+.star-btn {
+  width: 30px; height: 30px; border-radius: 6px;
+  border: 1px solid var(--ink-200); background: white;
+  cursor: pointer; font-size: 14px;
+  display: grid; place-items: center;
+  transition: all .15s;
+}
+.star-btn:hover, .star-btn.sel { background: #fef3c7; border-color: #f59e0b; }
+.score-num { font-size: 13px; font-weight: 700; color: var(--ink-500); min-width: 60px; }
+.score-comment {
+  width: 100%; padding: 7px 10px;
+  border: 1px solid var(--ink-200); border-radius: 6px;
+  font-family: inherit; font-size: 13px; resize: vertical;
+  margin-top: 6px;
+}
+
+.eval-summary {
+  display: grid; grid-template-columns: 1fr 280px; gap: 16px;
+  margin-top: 20px;
+}
+.eval-total-card {
+  background: var(--navy-700); color: white;
+  border-radius: 12px; padding: 24px; text-align: center;
+}
+.eval-total-card .et-score { font-size: 48px; font-weight: 800; }
+.eval-total-card .et-max { font-size: 18px; opacity: .7; }
+.eval-total-card .et-grade {
+  font-size: 20px; font-weight: 700;
+  margin-top: 10px; color: #d4a017;
+}
+
+@media (max-width:768px) { .cipp-model { grid-template-columns: repeat(2,1fr); } .eval-summary { grid-template-columns: 1fr; } }
+@media (max-width:480px) { .cipp-model { grid-template-columns: 1fr; } }
+</style>
+
+<div>
+  <div class="eval-toolbar">
+    <h2>ประเมินผลโครงการ (CIPP Model)</h2>
+    <select style="padding:7px 12px;border:1px solid var(--ink-200);border-radius:7px;font-size:13px;font-family:inherit">
+      <option>-- เลือกโครงการ --</option>
+      <option>โครงการปรับปรุงห้องเรียนอุ้มน้อย</option>
+      <option>อบรมครูพัฒนาสื่อดิจิทัล</option>
+      <option>กิจกรรมสนามกีฬาพัฒนาผู้เรียน</option>
+    </select>
+    <button class="btn sm primary">โหลดข้อมูล</button>
+  </div>
+
+  <!-- CIPP Model Intro -->
+  <div class="cipp-intro">
+    <h3>รูปแบบการประเมิน CIPP Model</h3>
+    <p style="font-size:13px;color:var(--ink-600);margin:0">การประเมินโครงการตามรูปแบบ CIPP ของ Stufflebeam (1971) เป็นกรอบการประเมินที่ครอบคลุม 4 ด้าน เพื่อให้ได้ข้อมูลที่เป็นประโยชน์ในการตัดสินใจและพัฒนาโครงการ</p>
+    <div class="cipp-model">
+      <div class="cipp-item c">
+        <div class="cipp-letter">C</div>
+        <div class="cipp-name">Context</div>
+        <div class="cipp-desc">ประเมินบริบท ความต้องการ ปัญหา เป้าหมายของโครงการ</div>
+      </div>
+      <div class="cipp-item i">
+        <div class="cipp-letter">I</div>
+        <div class="cipp-name">Input</div>
+        <div class="cipp-desc">ประเมินทรัพยากร บุคลากร งบประมาณ แผนงาน</div>
+      </div>
+      <div class="cipp-item p2">
+        <div class="cipp-letter">P</div>
+        <div class="cipp-name">Process</div>
+        <div class="cipp-desc">ประเมินกระบวนการดำเนินงาน การบริหารจัดการ</div>
+      </div>
+      <div class="cipp-item pr">
+        <div class="cipp-letter">P</div>
+        <div class="cipp-name">Product</div>
+        <div class="cipp-desc">ประเมินผลผลิต ผลลัพธ์ ความสำเร็จของโครงการ</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- C: Context -->
+  <div class="eval-card">
+    <div class="ec-header">
+      <span class="ec-badge" style="background:#eff6ff;color:#1d4ed8">C</span>
+      Context — ด้านบริบท
+    </div>
+    <div class="ec-body">
+      <div class="score-row">
+        <span class="score-label">1. ความสอดคล้องกับนโยบายสถานศึกษา</span>
+        <div class="score-stars">
+          <button class="star-btn sel" onclick="scoreClick(this,1)">1</button>
+          <button class="star-btn sel" onclick="scoreClick(this,2)">2</button>
+          <button class="star-btn sel" onclick="scoreClick(this,3)">3</button>
+          <button class="star-btn sel" onclick="scoreClick(this,4)">4</button>
+          <button class="star-btn" onclick="scoreClick(this,5)">5</button>
+        </div>
+        <span class="score-num">4 / 5</span>
+      </div>
+      <div class="score-row">
+        <span class="score-label">2. ตอบสนองความต้องการของผู้เรียน</span>
+        <div class="score-stars">
+          <button class="star-btn sel" onclick="scoreClick(this,1)">1</button>
+          <button class="star-btn sel" onclick="scoreClick(this,2)">2</button>
+          <button class="star-btn sel" onclick="scoreClick(this,3)">3</button>
+          <button class="star-btn sel" onclick="scoreClick(this,4)">4</button>
+          <button class="star-btn sel" onclick="scoreClick(this,5)">5</button>
+        </div>
+        <span class="score-num">5 / 5</span>
+      </div>
+      <div class="score-row">
+        <span class="score-label">3. ความชัดเจนของวัตถุประสงค์</span>
+        <div class="score-stars">
+          <button class="star-btn sel" onclick="scoreClick(this,1)">1</button>
+          <button class="star-btn sel" onclick="scoreClick(this,2)">2</button>
+          <button class="star-btn sel" onclick="scoreClick(this,3)">3</button>
+          <button class="star-btn" onclick="scoreClick(this,4)">4</button>
+          <button class="star-btn" onclick="scoreClick(this,5)">5</button>
+        </div>
+        <span class="score-num">3 / 5</span>
+      </div>
+      <textarea class="score-comment" rows="2" placeholder="ข้อเสนอแนะด้านบริบท..."></textarea>
+      <div style="text-align:right;margin-top:8px;font-size:13px;font-weight:700;color:#1d4ed8">คะแนนรวม: 12 / 15 คะแนน</div>
+    </div>
+  </div>
+
+  <!-- I: Input -->
+  <div class="eval-card">
+    <div class="ec-header">
+      <span class="ec-badge" style="background:#f0fdf4;color:#15803d">I</span>
+      Input — ด้านปัจจัยนำเข้า
+    </div>
+    <div class="ec-body">
+      <div class="score-row">
+        <span class="score-label">1. ความเพียงพอของงบประมาณ</span>
+        <div class="score-stars">
+          <button class="star-btn sel">1</button><button class="star-btn sel">2</button>
+          <button class="star-btn sel">3</button><button class="star-btn sel">4</button>
+          <button class="star-btn">5</button>
+        </div>
+        <span class="score-num">4 / 5</span>
+      </div>
+      <div class="score-row">
+        <span class="score-label">2. ความพร้อมของบุคลากร</span>
+        <div class="score-stars">
+          <button class="star-btn sel">1</button><button class="star-btn sel">2</button>
+          <button class="star-btn sel">3</button><button class="star-btn">4</button>
+          <button class="star-btn">5</button>
+        </div>
+        <span class="score-num">3 / 5</span>
+      </div>
+      <textarea class="score-comment" rows="2" placeholder="ข้อเสนอแนะด้านปัจจัยนำเข้า..."></textarea>
+      <div style="text-align:right;margin-top:8px;font-size:13px;font-weight:700;color:#15803d">คะแนนรวม: 7 / 10 คะแนน</div>
+    </div>
+  </div>
+
+  <!-- P: Process -->
+  <div class="eval-card">
+    <div class="ec-header">
+      <span class="ec-badge" style="background:#fefce8;color:#b45309">P</span>
+      Process — ด้านกระบวนการ
+    </div>
+    <div class="ec-body">
+      <div class="score-row">
+        <span class="score-label">1. การดำเนินงานตามแผน</span>
+        <div class="score-stars">
+          <button class="star-btn sel">1</button><button class="star-btn sel">2</button>
+          <button class="star-btn sel">3</button><button class="star-btn sel">4</button>
+          <button class="star-btn">5</button>
+        </div>
+        <span class="score-num">4 / 5</span>
+      </div>
+      <div class="score-row">
+        <span class="score-label">2. การบริหารจัดการและประสานงาน</span>
+        <div class="score-stars">
+          <button class="star-btn sel">1</button><button class="star-btn sel">2</button>
+          <button class="star-btn sel">3</button><button class="star-btn sel">4</button>
+          <button class="star-btn sel">5</button>
+        </div>
+        <span class="score-num">5 / 5</span>
+      </div>
+      <textarea class="score-comment" rows="2" placeholder="ข้อเสนอแนะด้านกระบวนการ..."></textarea>
+      <div style="text-align:right;margin-top:8px;font-size:13px;font-weight:700;color:#b45309">คะแนนรวม: 9 / 10 คะแนน</div>
+    </div>
+  </div>
+
+  <!-- Product -->
+  <div class="eval-card">
+    <div class="ec-header">
+      <span class="ec-badge" style="background:#fdf4ff;color:#7c3aed">P</span>
+      Product — ด้านผลผลิต/ผลลัพธ์
+    </div>
+    <div class="ec-body">
+      <div class="score-row">
+        <span class="score-label">1. บรรลุเป้าหมายที่กำหนด</span>
+        <div class="score-stars">
+          <button class="star-btn sel">1</button><button class="star-btn sel">2</button>
+          <button class="star-btn sel">3</button><button class="star-btn sel">4</button>
+          <button class="star-btn">5</button>
+        </div>
+        <span class="score-num">4 / 5</span>
+      </div>
+      <div class="score-row">
+        <span class="score-label">2. ผู้เรียน/บุคลากรมีความพึงพอใจ</span>
+        <div class="score-stars">
+          <button class="star-btn sel">1</button><button class="star-btn sel">2</button>
+          <button class="star-btn sel">3</button><button class="star-btn sel">4</button>
+          <button class="star-btn">5</button>
+        </div>
+        <span class="score-num">4 / 5</span>
+      </div>
+      <textarea class="score-comment" rows="2" placeholder="ข้อเสนอแนะด้านผลผลิต..."></textarea>
+      <div style="text-align:right;margin-top:8px;font-size:13px;font-weight:700;color:#7c3aed">คะแนนรวม: 8 / 10 คะแนน</div>
+    </div>
+  </div>
+
+  <!-- Summary -->
+  <div class="eval-summary">
+    <div style="background:white;border:1px solid var(--ink-100);border-radius:12px;padding:20px">
+      <h3 style="margin:0 0 14px;font-size:15px;font-weight:700">สรุปผลการประเมิน</h3>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div style="display:flex;justify-content:space-between;padding:10px;background:#eff6ff;border-radius:8px">
+          <span style="font-weight:600">C — ด้านบริบท</span>
+          <span style="font-weight:700;color:#1d4ed8">12 / 15 (80%)</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;padding:10px;background:#f0fdf4;border-radius:8px">
+          <span style="font-weight:600">I — ด้านปัจจัย</span>
+          <span style="font-weight:700;color:#15803d">7 / 10 (70%)</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;padding:10px;background:#fefce8;border-radius:8px">
+          <span style="font-weight:600">P — ด้านกระบวนการ</span>
+          <span style="font-weight:700;color:#b45309">9 / 10 (90%)</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;padding:10px;background:#fdf4ff;border-radius:8px">
+          <span style="font-weight:600">P — ด้านผลผลิต</span>
+          <span style="font-weight:700;color:#7c3aed">8 / 10 (80%)</span>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:16px">
+        <button class="btn sm primary" style="flex:1">บันทึกผลประเมิน</button>
+        <button class="btn sm">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+          PDF
+        </button>
+      </div>
+    </div>
+    <div class="eval-total-card">
+      <div style="font-size:13px;opacity:.7;margin-bottom:8px">คะแนนรวม CIPP</div>
+      <div class="et-score">36<span class="et-max">/45</span></div>
+      <div style="font-size:13px;opacity:.6;margin:4px 0">80% ของคะแนนเต็ม</div>
+      <div class="et-grade">ระดับ: ดีมาก</div>
+      <div style="font-size:12px;opacity:.5;margin-top:8px">โครงการปรับปรุงห้องเรียนอุ้มน้อย</div>
+    </div>
+  </div>
+</div>
+
+<script>
+function scoreClick(btn, val) {
+  const row = btn.closest('.score-stars');
+  const btns = row.querySelectorAll('.star-btn');
+  btns.forEach((b, i) => b.classList.toggle('sel', i < val));
+}
+</script>

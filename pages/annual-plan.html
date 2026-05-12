@@ -1,0 +1,173 @@
+<style>
+.ap-toolbar {
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 20px; flex-wrap: wrap;
+}
+.ap-toolbar h2 { margin:0; font-size:18px; font-weight:700; flex:1; }
+
+.ap-filter-row {
+  display: flex; align-items: center; gap: 8px;
+  margin-bottom: 16px; flex-wrap: wrap;
+}
+.ap-filter-row select, .ap-filter-row input {
+  padding: 7px 12px; border: 1px solid var(--ink-200);
+  border-radius: 7px; font-family: inherit; font-size: 13px;
+  background: white; color: var(--ink-800); outline: none;
+}
+
+.ap-plan-table { width:100%; border-collapse:collapse; font-size:13px; }
+.ap-plan-table th {
+  padding: 10px 12px; text-align:center;
+  font-weight: 600; font-size: 11.5px; color: var(--ink-600);
+  background: #0f2044; color: white;
+  border: 1px solid rgba(255,255,255,.1);
+  white-space: nowrap;
+}
+.ap-plan-table th.left { text-align: left; }
+.ap-plan-table td {
+  padding: 9px 12px;
+  border: 1px solid var(--ink-100);
+  vertical-align: middle;
+}
+.ap-plan-table tbody tr:hover td { background: var(--navy-100); }
+.ap-plan-table .proj-name { font-weight: 600; color: var(--ink-900); }
+.ap-plan-table .proj-budget { font-size:12px; color:var(--ink-500); }
+
+.month-cell {
+  width: 34px; text-align: center; padding: 6px 4px !important;
+}
+.month-dot {
+  width: 18px; height: 18px; border-radius: 4px;
+  margin: 0 auto; transition: transform .1s;
+}
+.month-dot.planned { background: #bfdbfe; }
+.month-dot.active  { background: #1d4ed8; }
+.month-dot.done    { background: #22c55e; }
+
+.strat-badge {
+  display: inline-block; padding: 2px 8px; border-radius: 4px;
+  font-size: 10.5px; font-weight: 700;
+  background: var(--navy-100); color: var(--navy-700);
+}
+
+.ap-legend {
+  display: flex; gap: 16px; align-items: center;
+  margin-bottom: 14px; font-size: 12px; color: var(--ink-600);
+}
+.legend-dot {
+  width: 14px; height: 14px; border-radius: 3px; flex-shrink: 0;
+}
+</style>
+
+<div>
+  <div class="ap-toolbar">
+    <h2>แผนปฏิบัติการ ปีงบประมาณ 2569</h2>
+    <button class="btn sm">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+      ส่งออก PDF
+    </button>
+    <button class="btn sm primary" onclick="loadPage('propose-project')">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+      เพิ่มโครงการ
+    </button>
+  </div>
+
+  <div class="ap-filter-row">
+    <select>
+      <option>กลยุทธ์ทั้งหมด</option>
+      <option>กลยุทธ์ที่ 1</option>
+      <option>กลยุทธ์ที่ 2</option>
+      <option>กลยุทธ์ที่ 3</option>
+      <option>กลยุทธ์ที่ 4</option>
+    </select>
+    <select>
+      <option>ประเภทงบทั้งหมด</option>
+      <option>เงินอุดหนุน</option>
+      <option>กิจกรรมพัฒนาผู้เรียน</option>
+      <option>เงินบำรุงการศึกษา</option>
+    </select>
+    <select>
+      <option>สถานะทั้งหมด</option>
+      <option>กำลังดำเนินการ</option>
+      <option>เสร็จสิ้น</option>
+      <option>รออนุมัติ</option>
+    </select>
+    <input type="text" placeholder="ค้นหาโครงการ..." style="flex:1;min-width:180px">
+  </div>
+
+  <div class="ap-legend">
+    <div style="display:flex;align-items:center;gap:5px"><div class="legend-dot" style="background:#bfdbfe"></div> แผนงาน</div>
+    <div style="display:flex;align-items:center;gap:5px"><div class="legend-dot" style="background:#1d4ed8"></div> กำลังดำเนินการ</div>
+    <div style="display:flex;align-items:center;gap:5px"><div class="legend-dot" style="background:#22c55e"></div> เสร็จสิ้น</div>
+  </div>
+
+  <div style="overflow-x:auto">
+    <table class="ap-plan-table">
+      <thead>
+        <tr>
+          <th class="left" style="width:32px">#</th>
+          <th class="left" style="min-width:220px">ชื่อโครงการ</th>
+          <th style="min-width:80px">กลยุทธ์</th>
+          <th style="min-width:90px">งบ (บาท)</th>
+          <th style="min-width:80px">สถานะ</th>
+          <!-- 12 months -->
+          <th class="month-cell">ต.ค.</th><th class="month-cell">พ.ย.</th><th class="month-cell">ธ.ค.</th>
+          <th class="month-cell">ม.ค.</th><th class="month-cell">ก.พ.</th><th class="month-cell">มี.ค.</th>
+          <th class="month-cell">เม.ย.</th><th class="month-cell">พ.ค.</th><th class="month-cell">มิ.ย.</th>
+          <th class="month-cell">ก.ค.</th><th class="month-cell">ส.ค.</th><th class="month-cell">ก.ย.</th>
+        </tr>
+      </thead>
+      <tbody id="apTableBody">
+        <!-- Filled by JS -->
+      </tbody>
+    </table>
+  </div>
+
+  <div style="margin-top:14px;display:flex;justify-content:space-between;align-items:center;font-size:12.5px;color:var(--ink-500)">
+    <span>แสดง 1–15 จาก 121 โครงการ</span>
+    <div style="display:flex;gap:6px">
+      <button class="btn sm">← ก่อนหน้า</button>
+      <button class="btn sm primary">ถัดไป →</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+  // Sample data for display
+  const rows = [
+    { id:'69-001', name:'โครงการปรับปรุงห้องเรียนอุ้มน้อย', strat:1, budget:'250,000', status:'active', months:[0,0,1,1,2,2,0,0,0,0,0,0] },
+    { id:'69-002', name:'อบรมครูพัฒนาสื่อดิจิทัล', strat:2, budget:'45,000', status:'done', months:[1,1,0,0,0,0,0,0,0,0,0,0] },
+    { id:'69-003', name:'กิจกรรมสนามกีฬาพัฒนาผู้เรียน', strat:1, budget:'120,000', status:'planned', months:[0,0,0,1,1,1,0,0,0,0,0,0] },
+    { id:'69-004', name:'ปรับปรุงระบบน้ำดื่มสะอาด', strat:3, budget:'80,000', status:'active', months:[0,0,0,0,1,1,1,0,0,0,0,0] },
+    { id:'69-005', name:'ป้ายประชาสัมพันธ์สถานศึกษา', strat:4, budget:'18,000', status:'planned', months:[0,0,0,0,0,1,0,0,0,0,0,0] },
+    { id:'69-006', name:'อบรมครูคณิตศาสตร์', strat:2, budget:'30,000', status:'done', months:[1,0,0,0,0,0,0,0,0,0,0,0] },
+    { id:'69-007', name:'โครงการลดการออกกลางคัน', strat:1, budget:'95,000', status:'active', months:[0,0,0,0,0,0,1,1,1,0,0,0] },
+    { id:'69-008', name:'ค่าสาธารณูปโภค ปี 2569', strat:4, budget:'180,000', status:'active', months:[1,1,1,1,1,1,1,1,1,1,1,1] },
+  ];
+  const colors = { 0:'', 1:'planned', 2:'active', 3:'done' };
+  // convert: 0=none,1=planned,2=active,3=done
+  const statusMap = { planned:'<span class="tag" style="font-size:10.5px">วางแผน</span>', active:'<span class="tag navy" style="font-size:10.5px">ดำเนินการ</span>', done:'<span class="tag green" style="font-size:10.5px">เสร็จสิ้น</span>' };
+
+  const tbody = document.getElementById('apTableBody');
+  rows.forEach((r, i) => {
+    const monthCells = r.months.map(m => {
+      const cls = m === 1 ? 'planned' : m === 2 ? 'active' : m === 3 ? 'done' : '';
+      return `<td class="month-cell"><div class="month-dot ${cls}"></div></td>`;
+    }).join('');
+    tbody.insertAdjacentHTML('beforeend', `
+      <tr>
+        <td style="font-size:11.5px;color:var(--ink-400);text-align:center">${i+1}</td>
+        <td>
+          <div class="proj-name">${r.name}</div>
+          <div class="proj-budget">${r.id}</div>
+        </td>
+        <td style="text-align:center"><span class="strat-badge">กลยุทธ์ ${r.strat}</span></td>
+        <td style="text-align:right;font-variant-numeric:tabular-nums">${r.budget}</td>
+        <td style="text-align:center">${statusMap[r.status]||''}</td>
+        ${monthCells}
+      </tr>
+    `);
+  });
+})();
+</script>

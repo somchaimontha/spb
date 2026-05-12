@@ -461,6 +461,18 @@
       </svg>
       ผู้ใช้งาน
     </button>
+    <button class="set-tab" data-tab="notifications">
+      <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0"/>
+      </svg>
+      การแจ้งเตือน
+    </button>
+    <button class="set-tab" data-tab="security">
+      <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+      </svg>
+      ความปลอดภัย
+    </button>
   </div>
 
   <!-- ── Tab: General ── -->
@@ -906,6 +918,162 @@
   </div>
 </div>
 
+<!-- ── Tab: Notifications ── -->
+  <div class="set-panel" id="tab-notifications">
+    <!-- Telegram Bot -->
+    <div class="set-card">
+      <div class="set-card-head">
+        <div>
+          <h3>
+            <span style="display:inline-flex;align-items:center;gap:8px">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="#2CA5E0"><path d="M11.944 0A12 12 0 000 12a12 12 0 0012 12 12 12 0 0012-12A12 12 0 0012 0a12 12 0 00-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 01.171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
+              Telegram Bot แจ้งเตือน
+            </span>
+          </h3>
+          <div class="desc">ตั้งค่า Bot Token และ Chat ID สำหรับการแจ้งเตือนผ่าน Telegram</div>
+        </div>
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer">
+          <input type="checkbox" id="tg-enabled" style="width:18px;height:18px;cursor:pointer">
+          <span style="font-size:13px;font-weight:600;color:var(--ink-700)">เปิดใช้งาน</span>
+        </label>
+      </div>
+      <div class="set-card-body">
+        <div class="set-grid" style="margin-bottom:14px">
+          <div class="set-field">
+            <label>Bot Token</label>
+            <input type="text" id="tg-token" placeholder="1234567890:ABCdefGhIJKlmNoPQRsTUVwXYZ">
+            <div class="set-field-note">รับจาก @BotFather บน Telegram</div>
+          </div>
+          <div class="set-field">
+            <label>Chat ID / Group ID</label>
+            <input type="text" id="tg-chatid" placeholder="-100xxxxxxxxxx">
+            <div class="set-field-note">ใช้ @userinfobot เพื่อดู Chat ID</div>
+          </div>
+        </div>
+        <div style="margin-bottom:16px">
+          <label style="font-size:12px;font-weight:600;color:var(--ink-600);display:block;margin-bottom:8px">แจ้งเตือนเมื่อ</label>
+          <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px">
+            <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer">
+              <input type="checkbox" checked style="cursor:pointer"> มีคำขอใหม่รออนุมัติ
+            </label>
+            <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer">
+              <input type="checkbox" checked style="cursor:pointer"> มีการอนุมัติ/ไม่อนุมัติ
+            </label>
+            <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer">
+              <input type="checkbox" style="cursor:pointer"> เพิ่มโครงการใหม่
+            </label>
+            <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer">
+              <input type="checkbox" style="cursor:pointer"> งบประมาณใกล้หมด (< 10%)
+            </label>
+          </div>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="btn sm" onclick="testTelegram()">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13M22 2L15 22l-4-9-9-4 20-7z"/></svg>
+            ทดสอบการส่ง
+          </button>
+          <button class="btn sm primary" onclick="saveTelegram()">บันทึก</button>
+        </div>
+        <div id="tg-result" style="margin-top:10px;font-size:12.5px"></div>
+      </div>
+    </div>
+
+    <!-- Email notification -->
+    <div class="set-card">
+      <div class="set-card-head">
+        <div>
+          <h3>อีเมลแจ้งเตือน</h3>
+          <div class="desc">ส่งอีเมลสรุปรายงานประจำสัปดาห์และการแจ้งเตือนสำคัญ</div>
+        </div>
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer">
+          <input type="checkbox" id="email-enabled" style="width:18px;height:18px;cursor:pointer">
+          <span style="font-size:13px;font-weight:600;color:var(--ink-700)">เปิดใช้งาน</span>
+        </label>
+      </div>
+      <div class="set-card-body">
+        <div class="set-grid">
+          <div class="set-field">
+            <label>อีเมลผู้รับหลัก</label>
+            <input type="email" placeholder="admin@msr.ac.th">
+          </div>
+          <div class="set-field">
+            <label>อีเมลผู้รับสำรอง</label>
+            <input type="email" placeholder="backup@msr.ac.th">
+          </div>
+        </div>
+        <div style="margin-top:12px;display:flex;gap:8px">
+          <button class="btn sm primary" onclick="alert('บันทึกการตั้งค่าอีเมลแล้ว')">บันทึก</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Tab: Security ── -->
+  <div class="set-panel" id="tab-security">
+    <div class="set-card" id="devmode-card">
+      <div class="set-card-head">
+        <div>
+          <h3>โหมดนักพัฒนา (Developer Mode)</h3>
+          <div class="desc">ปิดการป้องกัน Inspect / DevTools ชั่วคราว สำหรับผู้ดูแลระบบเท่านั้น</div>
+        </div>
+      </div>
+      <div class="set-card-body">
+        <div style="display:flex;align-items:center;gap:14px;margin-bottom:14px">
+          <label style="display:flex;align-items:center;gap:10px;cursor:pointer">
+            <input type="checkbox" id="devModeToggle" style="width:18px;height:18px;cursor:pointer" onchange="toggleDevMode()">
+            <span style="font-size:14px;font-weight:600">เปิดโหมดนักพัฒนา</span>
+          </label>
+          <span id="devmodeStatus" style="font-size:12px;color:var(--ink-400)">ปิดอยู่</span>
+        </div>
+        <div style="background:var(--ink-50);border-radius:8px;padding:14px;font-size:12.5px;color:var(--ink-600)">
+          <strong>ข้อควรระวัง:</strong> เมื่อเปิดโหมดนักพัฒนา การป้องกันการแก้ไข localStorage ผ่าน DevTools จะถูกปิดใช้งาน ควรปิดหลังการพัฒนาเสร็จสิ้น
+        </div>
+        <div style="margin-top:14px">
+          <div style="font-size:12px;font-weight:600;color:var(--ink-500);margin-bottom:8px;text-transform:uppercase;letter-spacing:.06em">Security Status</div>
+          <div id="securityStatusPanel" style="background:#0f2044;color:#94a3b8;border-radius:8px;padding:12px;font-family:monospace;font-size:12px;line-height:1.7">
+            กำลังโหลด...
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="set-card">
+      <div class="set-card-head">
+        <div>
+          <h3>ประวัติการเข้าสู่ระบบ</h3>
+          <div class="desc">บันทึกการ Login/Logout ล่าสุด</div>
+        </div>
+      </div>
+      <div class="set-card-body">
+        <table style="width:100%;border-collapse:collapse;font-size:13px">
+          <thead>
+            <tr style="background:var(--ink-50);border-bottom:1px solid var(--ink-100)">
+              <th style="padding:9px 12px;text-align:left;font-size:11.5px;color:var(--ink-500)">เวลา</th>
+              <th style="padding:9px 12px;text-align:left;font-size:11.5px;color:var(--ink-500)">ผู้ใช้</th>
+              <th style="padding:9px 12px;text-align:left;font-size:11.5px;color:var(--ink-500)">การกระทำ</th>
+              <th style="padding:9px 12px;text-align:left;font-size:11.5px;color:var(--ink-500)">IP</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="border-bottom:1px solid var(--ink-50)">
+              <td style="padding:9px 12px;color:var(--ink-400);font-size:12px">12 พ.ค. 2569 13:05</td>
+              <td style="padding:9px 12px;font-weight:600">admin@msr.ac.th</td>
+              <td style="padding:9px 12px"><span class="tag green" style="font-size:11px">Login</span></td>
+              <td style="padding:9px 12px;font-family:monospace;font-size:12px;color:var(--ink-400)">192.168.1.x</td>
+            </tr>
+            <tr>
+              <td style="padding:9px 12px;color:var(--ink-400);font-size:12px">11 พ.ค. 2569 16:30</td>
+              <td style="padding:9px 12px;font-weight:600">admin@msr.ac.th</td>
+              <td style="padding:9px 12px"><span class="tag" style="font-size:11px">Logout</span></td>
+              <td style="padding:9px 12px;font-family:monospace;font-size:12px;color:var(--ink-400)">192.168.1.x</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</div>
+
 <script>
 const SettingsPage = (() => {
 
@@ -994,6 +1162,9 @@ const SettingsPage = (() => {
       document.getElementById('userBody').innerHTML =
         '<tr><td colspan="8" style="text-align:center;padding:20px;color:var(--ink-400)">เฉพาะ Admin เท่านั้น</td></tr>';
     }
+
+    // Auto-switch to users tab when navigated via "จัดการผู้ใช้" menu
+    if (window.__settingsTab) switchTab(window.__settingsTab);
   }
 
   // ── Developer Mode ─────────────────────────────────────────
@@ -1484,4 +1655,70 @@ document.getElementById('userModal').addEventListener('click', function(e) {
 });
 
 SettingsPage.init();
+
+// ── Notification tab helpers ────────────────────────────────
+function testTelegram() {
+  const token = document.getElementById('tg-token').value.trim();
+  const chatId = document.getElementById('tg-chatid').value.trim();
+  const res = document.getElementById('tg-result');
+  if (!token || !chatId) {
+    res.innerHTML = '<span style="color:#dc2626">⚠ กรุณากรอก Token และ Chat ID</span>';
+    return;
+  }
+  res.innerHTML = '<span style="color:var(--ink-400)">กำลังทดสอบ...</span>';
+  const url = `https://api.telegram.org/bot${token}/sendMessage`;
+  fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ chat_id: chatId, text: '✅ ทดสอบการแจ้งเตือนจากระบบงานนโยบายและแผน วก.แม่สะเรียง v2.0' })
+  }).then(r => r.json()).then(data => {
+    if (data.ok) {
+      res.innerHTML = '<span style="color:#16a34a">✅ ส่งสำเร็จ! ตรวจสอบข้อความใน Telegram</span>';
+    } else {
+      res.innerHTML = `<span style="color:#dc2626">❌ ผิดพลาด: ${data.description}</span>`;
+    }
+  }).catch(() => {
+    res.innerHTML = '<span style="color:#dc2626">❌ เชื่อมต่อไม่ได้ ตรวจสอบ Token อีกครั้ง</span>';
+  });
+}
+
+function saveTelegram() {
+  const token = document.getElementById('tg-token').value.trim();
+  const chatId = document.getElementById('tg-chatid').value.trim();
+  const enabled = document.getElementById('tg-enabled').checked;
+  localStorage.setItem('plan_tg_settings', JSON.stringify({ token, chatId, enabled }));
+  const res = document.getElementById('tg-result');
+  res.innerHTML = '<span style="color:#16a34a">✅ บันทึกการตั้งค่าแล้ว</span>';
+  setTimeout(() => { res.innerHTML = ''; }, 3000);
+}
+
+// Load saved telegram settings
+(function() {
+  try {
+    const s = JSON.parse(localStorage.getItem('plan_tg_settings') || '{}');
+    if (s.token) document.getElementById('tg-token').value = s.token;
+    if (s.chatId) document.getElementById('tg-chatid').value = s.chatId;
+    if (s.enabled) document.getElementById('tg-enabled').checked = true;
+  } catch {}
+})();
+
+// ── Security tab helpers ────────────────────────────────────
+function toggleDevMode() {
+  const enabled = document.getElementById('devModeToggle').checked;
+  SettingsPage.toggleDevMode(enabled);
+  document.getElementById('devmodeStatus').textContent = enabled ? '🟡 เปิดอยู่' : '🟢 ปิดอยู่';
+}
+
+(function initSecTab() {
+  const dm = localStorage.getItem('plan_devmode') === '1';
+  const cb = document.getElementById('devModeToggle');
+  if (cb) { cb.checked = dm; document.getElementById('devmodeStatus').textContent = dm ? '🟡 เปิดอยู่' : '🟢 ปิดอยู่'; }
+  try {
+    const d = typeof Security !== 'undefined' ? Security._debug() : null;
+    const el = document.getElementById('securityStatusPanel');
+    if (el && d) {
+      el.innerHTML = `Session Token: ${d.token ? d.token.substring(0,16)+'...' : '—'}\nRole: ${d.role || '—'}\nSig Valid: ${d.sigValid}\nDevMode: ${d.devMode}`;
+    } else if (el) { el.textContent = 'Security module not loaded'; }
+  } catch {}
+})();
 </script>

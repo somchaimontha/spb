@@ -1,290 +1,419 @@
+<style>
+/* ── Dashboard v2.0 ─────────────────────────────────────── */
+.dash-year-bar {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 20px;
+}
+.dash-year-bar h2 { margin:0; font-size:19px; font-weight:700; color:var(--ink-900); }
+.dash-year-sel {
+  display: flex; align-items: center; gap: 8px;
+  background: white; border: 1px solid var(--ink-200);
+  border-radius: 8px; padding: 6px 14px;
+  font-size: 13px; font-weight: 600; cursor: pointer;
+}
+
+/* Budget type cards */
+.budget-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-bottom: 20px;
+}
+.budget-card {
+  background: white;
+  border: 1px solid var(--ink-100);
+  border-radius: 12px;
+  padding: 18px 18px 14px;
+  position: relative;
+  overflow: hidden;
+  transition: box-shadow .2s, transform .15s;
+}
+.budget-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,.08); transform: translateY(-1px); }
+.budget-card::before {
+  content: '';
+  position: absolute; top:0; left:0; right:0; height:3px;
+}
+.budget-card.c1::before { background: #3b82f6; }
+.budget-card.c2::before { background: #10b981; }
+.budget-card.c3::before { background: #f59e0b; }
+.budget-card.c4::before { background: #8b5cf6; }
+
+.budget-card .bc-label {
+  font-size: 11.5px; font-weight: 700; letter-spacing: .06em;
+  text-transform: uppercase; margin-bottom: 10px;
+}
+.budget-card.c1 .bc-label { color: #1d4ed8; }
+.budget-card.c2 .bc-label { color: #065f46; }
+.budget-card.c3 .bc-label { color: #92400e; }
+.budget-card.c4 .bc-label { color: #5b21b6; }
+
+.budget-card .bc-amount {
+  font-size: 22px; font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink-900); line-height: 1.2;
+  margin-bottom: 8px;
+}
+.budget-card .bc-sub {
+  font-size: 11.5px; color: var(--ink-500);
+  display: flex; flex-direction: column; gap: 4px;
+}
+.budget-card .bc-row {
+  display: flex; justify-content: space-between; align-items: center;
+}
+.budget-card .bc-used { color: var(--ink-700); font-weight: 600; }
+
+.bc-progress {
+  height: 5px; background: var(--ink-100); border-radius: 3px;
+  margin-top: 10px; overflow: hidden;
+}
+.bc-progress-fill {
+  height: 100%; border-radius: 3px; transition: width .4s;
+}
+.budget-card.c1 .bc-progress-fill { background: #3b82f6; }
+.budget-card.c2 .bc-progress-fill { background: #10b981; }
+.budget-card.c3 .bc-progress-fill { background: #f59e0b; }
+.budget-card.c4 .bc-progress-fill { background: #8b5cf6; }
+
+/* Row of two panels */
+.dash-row {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+/* Request status panel */
+.req-panel {
+  background: white;
+  border: 1px solid var(--ink-100);
+  border-radius: 12px;
+  padding: 20px;
+}
+.req-panel h3 {
+  margin: 0 0 16px; font-size: 14.5px; font-weight: 700;
+  display: flex; justify-content: space-between; align-items: center;
+}
+.req-panel h3 .view-all {
+  font-size: 11.5px; font-weight: 500; color: var(--navy-500);
+  cursor: pointer; text-decoration: none;
+}
+.req-panel h3 .view-all:hover { text-decoration: underline; }
+
+.req-stat-row {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 10px; margin-bottom: 16px;
+}
+.req-stat {
+  text-align: center; padding: 12px 8px;
+  border-radius: 8px; background: var(--ink-50);
+}
+.req-stat .rs-num { font-size: 24px; font-weight: 800; line-height: 1; }
+.req-stat .rs-lbl { font-size: 11px; color: var(--ink-500); margin-top: 4px; }
+.req-stat.pending { background: #fef3c7; }
+.req-stat.pending .rs-num { color: #92400e; }
+.req-stat.approved { background: #dcfce7; }
+.req-stat.approved .rs-num { color: #14532d; }
+.req-stat.rejected { background: #fee2e2; }
+.req-stat.rejected .rs-num { color: #7f1d1d; }
+
+.req-list { display: flex; flex-direction: column; gap: 8px; }
+.req-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 12px;
+  background: var(--ink-50); border-radius: 8px;
+  font-size: 12.5px;
+}
+.req-item .ri-dot {
+  width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+}
+.ri-dot.pending { background: #f59e0b; }
+.ri-dot.approved { background: #22c55e; }
+.ri-dot.rejected { background: #ef4444; }
+
+.req-item .ri-title { flex: 1; font-weight: 500; color: var(--ink-800); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.req-item .ri-budget { font-size: 11.5px; color: var(--ink-500); white-space: nowrap; }
+.req-item .ri-tag { flex-shrink: 0; }
+
+/* Chart panel */
+.chart-panel {
+  background: white;
+  border: 1px solid var(--ink-100);
+  border-radius: 12px;
+  padding: 20px;
+}
+.chart-panel h3 {
+  margin: 0 0 16px; font-size: 14.5px; font-weight: 700;
+  display: flex; justify-content: space-between; align-items: center;
+}
+.chart-panel h3 .sub { font-size: 11.5px; font-weight: 400; color: var(--ink-400); }
+
+.bar-chart2 { display: flex; flex-direction: column; gap: 14px; }
+.bar-row2 { display: flex; flex-direction: column; gap: 4px; }
+.bar-row2 .br-header { display: flex; justify-content: space-between; font-size: 12.5px; }
+.bar-row2 .br-label { color: var(--ink-700); font-weight: 500; }
+.bar-row2 .br-val { color: var(--ink-500); font-size: 11.5px; }
+.bar-track2 { height: 8px; background: var(--ink-100); border-radius: 4px; overflow: hidden; }
+.bar-fill2 { height: 100%; border-radius: 4px; transition: width .5s ease; }
+
+/* Recent activity */
+.activity-panel {
+  background: white;
+  border: 1px solid var(--ink-100);
+  border-radius: 12px;
+  overflow: hidden;
+}
+.activity-panel .ap-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--ink-100);
+  display: flex; justify-content: space-between; align-items: center;
+}
+.activity-panel .ap-header h3 { margin:0; font-size:14.5px; font-weight:700; }
+.activity-table { width:100%; border-collapse:collapse; font-size:13px; }
+.activity-table th {
+  padding: 10px 16px;
+  text-align: left; font-weight: 600;
+  color: var(--ink-500); font-size: 11.5px;
+  text-transform: uppercase; letter-spacing: .05em;
+  background: var(--ink-50);
+  border-bottom: 1px solid var(--ink-100);
+}
+.activity-table td {
+  padding: 11px 16px;
+  border-bottom: 1px solid var(--ink-50);
+  color: var(--ink-800);
+  vertical-align: middle;
+}
+.activity-table tbody tr:last-child td { border-bottom: none; }
+.activity-table tbody tr:hover td { background: var(--ink-50); }
+
+@media (max-width: 1100px) { .budget-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 900px)  { .dash-row { grid-template-columns: 1fr; } .req-panel { order: -1; } }
+@media (max-width: 600px)  { .budget-grid { grid-template-columns: 1fr; } .req-stat-row { grid-template-columns: repeat(3, 1fr); } }
+</style>
+
 <div>
-  <div class="stat-grid">
-    <div class="stat">
-      <div class="lbl">งบประมาณทั้งหมด</div>
-      <div class="val">฿45,850,000</div>
-      <div class="delta">ปีงบประมาณ 2569</div>
-    </div>
-    <div class="stat">
-      <div class="lbl">เบิกใช้แล้ว</div>
-      <div class="val">฿18,725,400</div>
-      <div class="delta up">↑ 15% จากไตรมาสที่แล้ว</div>
-    </div>
-    <div class="stat">
-      <div class="lbl">คงเหลือ</div>
-      <div class="val">฿27,124,600</div>
-      <div class="delta">59.2% ของทั้งสิ้น</div>
-    </div>
-    <div class="stat accent">
-      <div class="lbl">รออนุมัติ</div>
-      <div class="val">12</div>
-      <div class="delta">เรียร์ใกล้วันสิ้นไตรมาส</div>
+  <!-- Year bar -->
+  <div class="dash-year-bar">
+    <h2>ภาพรวมงบประมาณ ปีงบประมาณ 2569</h2>
+    <div class="dash-year-sel">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      ปีงบประมาณ 2569
     </div>
   </div>
-  
-  <div class="row-grid">
-    <div class="panel">
-      <h3>ความก้าวหน้าตามหมวดงบ<span class="more">2569 Q1–Q2</span></h3>
-      <div class="bar-chart">
-        <div class="bar-row">
-          <span>ค่าใช้สอย</span>
-          <div class="bar-track"><div class="bar-fill" style="width: 65%"></div></div>
-          <span class="num">฿8.2M</span>
+
+  <!-- 4 Budget Type Cards -->
+  <div class="budget-grid">
+    <div class="budget-card c1">
+      <div class="bc-label">เงินอุดหนุน</div>
+      <div class="bc-amount">12,605,470</div>
+      <div class="bc-sub">
+        <div class="bc-row">
+          <span>เบิกใช้แล้ว</span>
+          <span class="bc-used">4,820,000</span>
         </div>
-        <div class="bar-row">
-          <span>ครุภัณฑ์</span>
-          <div class="bar-track"><div class="bar-fill gold" style="width: 42%"></div></div>
-          <span class="num">฿5.3M</span>
+        <div class="bc-row">
+          <span>คงเหลือ</span>
+          <span>7,785,470</span>
         </div>
-        <div class="bar-row">
-          <span>อบรม/ประชุม</span>
-          <div class="bar-track"><div class="bar-fill teal" style="width: 28%"></div></div>
-          <span class="num">฿1.8M</span>
+      </div>
+      <div class="bc-progress"><div class="bc-progress-fill" style="width:38%"></div></div>
+    </div>
+    <div class="budget-card c2">
+      <div class="bc-label">กิจกรรมพัฒนาผู้เรียน</div>
+      <div class="bc-amount">3,379,965</div>
+      <div class="bc-sub">
+        <div class="bc-row">
+          <span>เบิกใช้แล้ว</span>
+          <span class="bc-used">1,250,000</span>
         </div>
-        <div class="bar-row">
-          <span>สิ่งก่อสร้าง</span>
-          <div class="bar-track"><div class="bar-fill rose" style="width: 15%"></div></div>
-          <span class="num">฿0.9M</span>
+        <div class="bc-row">
+          <span>คงเหลือ</span>
+          <span>2,129,965</span>
+        </div>
+      </div>
+      <div class="bc-progress"><div class="bc-progress-fill" style="width:37%"></div></div>
+    </div>
+    <div class="budget-card c3">
+      <div class="bc-label">เงินบำรุงการศึกษา</div>
+      <div class="bc-amount">29,948,820</div>
+      <div class="bc-sub">
+        <div class="bc-row">
+          <span>เบิกใช้แล้ว</span>
+          <span class="bc-used">12,655,400</span>
+        </div>
+        <div class="bc-row">
+          <span>คงเหลือ</span>
+          <span>17,293,420</span>
+        </div>
+      </div>
+      <div class="bc-progress"><div class="bc-progress-fill" style="width:42%"></div></div>
+    </div>
+    <div class="budget-card c4">
+      <div class="bc-label">รายได้สถานศึกษา</div>
+      <div class="bc-amount">18,251</div>
+      <div class="bc-sub">
+        <div class="bc-row">
+          <span>เบิกใช้แล้ว</span>
+          <span class="bc-used">0</span>
+        </div>
+        <div class="bc-row">
+          <span>คงเหลือ</span>
+          <span>18,251</span>
+        </div>
+      </div>
+      <div class="bc-progress"><div class="bc-progress-fill" style="width:0%"></div></div>
+    </div>
+  </div>
+
+  <!-- Row: Chart + Requests -->
+  <div class="dash-row">
+    <!-- Bar chart: spending by category -->
+    <div class="chart-panel">
+      <h3>
+        การใช้จ่ายตามหมวดงบประมาณ
+        <span class="sub">ปีงบประมาณ 2569</span>
+      </h3>
+      <div class="bar-chart2">
+        <div class="bar-row2">
+          <div class="br-header">
+            <span class="br-label">ค่าใช้สอย</span>
+            <span class="br-val">฿8,200,000 (65%)</span>
+          </div>
+          <div class="bar-track2"><div class="bar-fill2" style="width:65%;background:#3b82f6"></div></div>
+        </div>
+        <div class="bar-row2">
+          <div class="br-header">
+            <span class="br-label">ค่าครุภัณฑ์</span>
+            <span class="br-val">฿5,300,000 (42%)</span>
+          </div>
+          <div class="bar-track2"><div class="bar-fill2" style="width:42%;background:#10b981"></div></div>
+        </div>
+        <div class="bar-row2">
+          <div class="br-header">
+            <span class="br-label">ค่าอบรม/ประชุม</span>
+            <span class="br-val">฿1,800,000 (28%)</span>
+          </div>
+          <div class="bar-track2"><div class="bar-fill2" style="width:28%;background:#f59e0b"></div></div>
+        </div>
+        <div class="bar-row2">
+          <div class="br-header">
+            <span class="br-label">สิ่งก่อสร้าง</span>
+            <span class="br-val">฿900,000 (15%)</span>
+          </div>
+          <div class="bar-track2"><div class="bar-fill2" style="width:15%;background:#8b5cf6"></div></div>
+        </div>
+        <div class="bar-row2">
+          <div class="br-header">
+            <span class="br-label">ค่าวัสดุ</span>
+            <span class="br-val">฿2,525,400 (20%)</span>
+          </div>
+          <div class="bar-track2"><div class="bar-fill2" style="width:20%;background:#ef4444"></div></div>
         </div>
       </div>
     </div>
-    
-    <div class="panel">
-      <h3>เตือนการบริหาร</h3>
-      <div class="alert-list">
-        <div class="alert">
-          <div class="icon">⚠</div>
-          <div>
-            <strong>ไตรมาส Q3 ใกล้หมด (15 วัน)</strong><br>
-            โครงการ 23 รายยังไม่ปิด
-          </div>
+
+    <!-- Request status -->
+    <div class="req-panel">
+      <h3>
+        สถานะคำขอ
+        <a class="view-all" href="#" onclick="loadPage('all-requests');return false;">ดูทั้งหมด →</a>
+      </h3>
+      <div class="req-stat-row">
+        <div class="req-stat pending">
+          <div class="rs-num">12</div>
+          <div class="rs-lbl">รออนุมัติ</div>
         </div>
-        <div class="alert rose">
-          <div class="icon">✕</div>
-          <div>
-            <strong>โครงการเกินงบ</strong><br>
-            โครงการอุ้มน้อย 0 เรื่อง (ยังไม่มี)
-          </div>
+        <div class="req-stat approved">
+          <div class="rs-num">87</div>
+          <div class="rs-lbl">อนุมัติแล้ว</div>
         </div>
-        <div class="alert">
-          <div class="icon">ℹ</div>
-          <div>
-            <strong>ไฟล์แนบรออนุมัติ</strong><br>
-            5 เอกสาร × 3 โครงการ
-          </div>
+        <div class="req-stat rejected">
+          <div class="rs-num">3</div>
+          <div class="rs-lbl">ไม่อนุมัติ</div>
+        </div>
+      </div>
+      <div class="req-list">
+        <div class="req-item">
+          <div class="ri-dot pending"></div>
+          <span class="ri-title">โครงการปรับปรุงห้องเรียน 69-001</span>
+          <span class="ri-budget">฿250,000</span>
+          <span class="tag amber ri-tag" style="font-size:10.5px">รออนุมัติ</span>
+        </div>
+        <div class="req-item">
+          <div class="ri-dot approved"></div>
+          <span class="ri-title">ค่าอาหารว่างประชุม ก.ค.69</span>
+          <span class="ri-budget">฿3,600</span>
+          <span class="tag green ri-tag" style="font-size:10.5px">อนุมัติ</span>
+        </div>
+        <div class="req-item">
+          <div class="ri-dot pending"></div>
+          <span class="ri-title">ป้ายประชาสัมพันธ์ 2569</span>
+          <span class="ri-budget">฿18,000</span>
+          <span class="tag amber ri-tag" style="font-size:10.5px">รออนุมัติ</span>
+        </div>
+        <div class="req-item">
+          <div class="ri-dot rejected"></div>
+          <span class="ri-title">วัสดุสำนักงาน ส.ค. 2569</span>
+          <span class="ri-budget">฿7,800</span>
+          <span class="tag rose ri-tag" style="font-size:10.5px">ไม่อนุมัติ</span>
         </div>
       </div>
     </div>
   </div>
-  
-  <div class="panel">
-    <h3>กิจกรรมล่าสุด</h3>
-    <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
+
+  <!-- Recent activity table -->
+  <div class="activity-panel">
+    <div class="ap-header">
+      <h3>กิจกรรมล่าสุด</h3>
+      <a href="#" class="view-all" onclick="loadPage('history');return false;" style="font-size:12px;color:var(--navy-500)">ดูประวัติทั้งหมด →</a>
+    </div>
+    <table class="activity-table">
       <thead>
-        <tr style="background: var(--ink-50); border-bottom: 1px solid var(--ink-100);">
-          <th style="padding: 10px; text-align: left; font-weight: 600; color: var(--ink-600); text-transform: uppercase; font-size: 11px;">เวลา</th>
-          <th style="padding: 10px; text-align: left; font-weight: 600; color: var(--ink-600); text-transform: uppercase; font-size: 11px;">เหตุการณ์</th>
-          <th style="padding: 10px; text-align: left; font-weight: 600; color: var(--ink-600); text-transform: uppercase; font-size: 11px;">โครงการ</th>
-          <th style="padding: 10px; text-align: left; font-weight: 600; color: var(--ink-600); text-transform: uppercase; font-size: 11px;">ผู้ทำการ</th>
+        <tr>
+          <th>เวลา</th>
+          <th>ประเภท</th>
+          <th>โครงการ / รายการ</th>
+          <th>ผู้ดำเนินการ</th>
+          <th>สถานะ</th>
         </tr>
       </thead>
       <tbody>
-        <tr style="border-bottom: 1px solid var(--ink-100);">
-          <td style="padding: 10px;">10:45 วันนี้</td>
-          <td style="padding: 10px;"><span class="tag navy">อนุมัติ</span></td>
-          <td style="padding: 10px;">โครงการปรับปรุงห้องเรียนอุ้มน้อย</td>
-          <td style="padding: 10px;">สุจิตรา ศิลป์</td>
+        <tr>
+          <td style="color:var(--ink-500);font-size:12px">10:45 วันนี้</td>
+          <td><span class="tag navy" style="font-size:11px">อนุมัติ</span></td>
+          <td>โครงการปรับปรุงห้องเรียนอุ้มน้อย</td>
+          <td>สุจิตรา ศิลป์</td>
+          <td><span class="tag green" style="font-size:11px">สำเร็จ</span></td>
         </tr>
-        <tr style="border-bottom: 1px solid var(--ink-100);">
-          <td style="padding: 10px;">09:30 วันนี้</td>
-          <td style="padding: 10px;"><span class="tag gold">ส่งขอเบิก</span></td>
-          <td style="padding: 10px;">ป้ายประชาสัมพันธ์ 2569</td>
-          <td style="padding: 10px;">ใจจริง ใจ</td>
+        <tr>
+          <td style="color:var(--ink-500);font-size:12px">09:30 วันนี้</td>
+          <td><span class="tag gold" style="font-size:11px">ส่งขอเบิก</span></td>
+          <td>ป้ายประชาสัมพันธ์ 2569</td>
+          <td>ใจจริง ใจ</td>
+          <td><span class="tag amber" style="font-size:11px">รอดำเนินการ</span></td>
         </tr>
-        <tr style="border-bottom: 1px solid var(--ink-100);">
-          <td style="padding: 10px;">เมื่อวาน</td>
-          <td style="padding: 10px;"><span class="tag teal">ปิด</span></td>
-          <td style="padding: 10px;">อบรมครูรหัส 2569</td>
-          <td style="padding: 10px;">สมศรี อุ่มสวาง</td>
+        <tr>
+          <td style="color:var(--ink-500);font-size:12px">เมื่อวาน</td>
+          <td><span class="tag teal" style="font-size:11px">ปิดโครงการ</span></td>
+          <td>อบรมครูรหัส 2569</td>
+          <td>สมศรี อุ่มสวาง</td>
+          <td><span class="tag green" style="font-size:11px">สำเร็จ</span></td>
         </tr>
-        <tr style="border-bottom: 1px solid var(--ink-100);">
-          <td style="padding: 10px;">2 วันที่แล้ว</td>
-          <td style="padding: 10px;"><span class="tag">เพิ่ม</span></td>
-          <td style="padding: 10px;">เครื่องขยายเสียง 2569</td>
-          <td style="padding: 10px;">นวมินทร์ นมซอย</td>
+        <tr>
+          <td style="color:var(--ink-500);font-size:12px">2 วันที่แล้ว</td>
+          <td><span class="tag" style="font-size:11px">เพิ่มโครงการ</span></td>
+          <td>เครื่องขยายเสียง 2569</td>
+          <td>นวมินทร์ นมซอย</td>
+          <td><span class="tag navy" style="font-size:11px">ดำเนินการ</span></td>
+        </tr>
+        <tr>
+          <td style="color:var(--ink-500);font-size:12px">3 วันที่แล้ว</td>
+          <td><span class="tag amber" style="font-size:11px">แก้ไข</span></td>
+          <td>ค่าสาธารณูปโภค ก.ค. 2569</td>
+          <td>มนัสวี บุญมา</td>
+          <td><span class="tag green" style="font-size:11px">สำเร็จ</span></td>
         </tr>
       </tbody>
     </table>
   </div>
-  
-  <style>
-    .stat-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 16px;
-      margin-bottom: 24px;
-    }
-    
-    .stat {
-      background: white;
-      border: 1px solid var(--ink-100);
-      border-radius: var(--radius);
-      padding: 18px 20px;
-      transition: box-shadow .2s;
-    }
-    
-    .stat:hover {
-      box-shadow: 0 2px 8px rgba(0,0,0,.06);
-    }
-    
-    .stat.accent {
-      background: var(--navy-700);
-      border-color: var(--navy-700);
-      color: white;
-    }
-    
-    .stat .lbl {
-      font-size: 11.5px;
-      color: var(--ink-500);
-      letter-spacing: .06em;
-      text-transform: uppercase;
-      font-weight: 600;
-    }
-    
-    .stat.accent .lbl {
-      color: rgba(255,255,255,.7);
-    }
-    
-    .stat .val {
-      font-size: 26px;
-      font-weight: 800;
-      margin: 8px 0 4px;
-      font-variant-numeric: tabular-nums;
-    }
-    
-    .stat.accent .val {
-      color: white;
-    }
-    
-    .stat .delta {
-      font-size: 11.5px;
-      color: var(--ink-500);
-      margin-top: 4px;
-    }
-    
-    .stat .delta.up {
-      color: var(--green-600);
-    }
-    
-    .row-grid {
-      display: grid;
-      grid-template-columns: 2fr 1fr;
-      gap: 18px;
-      margin-bottom: 18px;
-    }
-    
-    .panel {
-      background: white;
-      border: 1px solid var(--ink-100);
-      border-radius: var(--radius);
-      padding: 20px;
-      transition: box-shadow .2s;
-    }
-    
-    .panel:hover {
-      box-shadow: var(--shadow-sm);
-    }
-    
-    .panel h3 {
-      margin: 0 0 16px;
-      font-size: 15px;
-      font-weight: 700;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    
-    .panel h3 .more {
-      font-size: 11px;
-      color: var(--ink-500);
-      font-weight: 400;
-      text-transform: uppercase;
-    }
-    
-    .bar-chart {
-      display: grid;
-      grid-template-rows: repeat(4, 1fr);
-      gap: 12px;
-      height: 220px;
-    }
-    
-    .bar-row {
-      display: grid;
-      grid-template-columns: 100px 1fr 70px;
-      gap: 12px;
-      align-items: center;
-      font-size: 13px;
-      color: var(--ink-700);
-    }
-    
-    .bar-track {
-      background: var(--ink-50);
-      border-radius: 4px;
-      height: 22px;
-      position: relative;
-      overflow: hidden;
-    }
-    
-    .bar-fill {
-      height: 100%;
-      background: var(--navy-500);
-      border-radius: 4px;
-      transition: width .3s;
-    }
-    
-    .bar-fill.gold { background: var(--gold-500); }
-    .bar-fill.teal { background: var(--teal-600); }
-    .bar-fill.rose { background: var(--rose-600); }
-    
-    .bar-row .num {
-      font-variant-numeric: tabular-nums;
-      text-align: right;
-      font-size: 11.5px;
-      color: var(--ink-700);
-      font-weight: 600;
-    }
-    
-    .alert-list {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-    
-    .alert {
-      display: flex;
-      gap: 12px;
-      padding: 12px 14px;
-      background: #fef3c7;
-      border-left: 3px solid var(--amber-600);
-      border-radius: 6px;
-      font-size: 12.5px;
-      line-height: 1.5;
-    }
-    
-    .alert.rose {
-      background: #fee2e2;
-      border-color: var(--rose-600);
-    }
-    
-    .alert .icon {
-      font-size: 16px;
-      font-weight: 700;
-      flex-shrink: 0;
-    }
-    
-    .alert strong {
-      color: var(--ink-900);
-      display: block;
-    }
-  </style>
 </div>

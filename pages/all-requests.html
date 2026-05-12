@@ -1,0 +1,102 @@
+<style>
+.req-toolbar { display:flex; align-items:center; gap:10px; margin-bottom:20px; flex-wrap:wrap; }
+.req-toolbar h2 { margin:0; font-size:18px; font-weight:700; flex:1; }
+
+.filter-row { display:flex; gap:8px; margin-bottom:16px; flex-wrap:wrap; }
+.filter-row select, .filter-row input {
+  padding:7px 12px; border:1px solid var(--ink-200);
+  border-radius:7px; font-family:inherit; font-size:13px;
+  background:white; color:var(--ink-800); outline:none;
+}
+
+.req-table { width:100%; border-collapse:collapse; font-size:13px; }
+.req-table th { padding:10px 14px; text-align:left; font-weight:600; font-size:11.5px; color:var(--ink-500); background:var(--ink-50); border-bottom:1px solid var(--ink-100); }
+.req-table td { padding:11px 14px; border-bottom:1px solid var(--ink-50); vertical-align:middle; }
+.req-table tbody tr:last-child td { border-bottom:none; }
+.req-table tbody tr:hover td { background:var(--ink-50); }
+</style>
+
+<div>
+  <div class="req-toolbar">
+    <h2>คำขอทั้งหมด</h2>
+    <button class="btn sm">ส่งออก Excel</button>
+  </div>
+
+  <div class="filter-row">
+    <select><option>ประเภทคำขอทั้งหมด</option><option>คำขอเบิก</option><option>เสนอโครงการ</option><option>คืนเงิน</option></select>
+    <select><option>สถานะทั้งหมด</option><option>รออนุมัติ</option><option>อนุมัติแล้ว</option><option>ไม่อนุมัติ</option></select>
+    <select><option>ประเภทงบทั้งหมด</option><option>เงินอุดหนุน</option><option>เงินบำรุง</option></select>
+    <input type="text" placeholder="ค้นหา..." style="flex:1;min-width:180px">
+  </div>
+
+  <div style="background:white;border:1px solid var(--ink-100);border-radius:12px;overflow:hidden">
+    <table class="req-table">
+      <thead>
+        <tr>
+          <th>เลขที่คำขอ</th><th>ประเภท</th><th>รายการ / โครงการ</th>
+          <th>ผู้ยื่น</th><th>จำนวนเงิน</th><th>วันที่ยื่น</th>
+          <th>สถานะ</th><th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="mono" style="font-size:12px;color:var(--ink-400)">REQ-2569-001</td>
+          <td><span class="tag navy" style="font-size:11px">คำขอเบิก</span></td>
+          <td style="font-weight:600">โครงการปรับปรุงห้องเรียนอุ้มน้อย</td>
+          <td>สุจิตรา ศิลป์</td>
+          <td style="font-variant-numeric:tabular-nums;font-weight:600">250,000</td>
+          <td style="color:var(--ink-500);font-size:12px">12 พ.ค. 69</td>
+          <td><span class="tag amber" style="font-size:11px">รออนุมัติ</span></td>
+          <td><button class="btn sm ghost">ดูรายละเอียด</button></td>
+        </tr>
+        <tr>
+          <td class="mono" style="font-size:12px;color:var(--ink-400)">REQ-2569-002</td>
+          <td><span class="tag" style="font-size:11px">เสนอโครงการ</span></td>
+          <td style="font-weight:600">อบรมครูพัฒนาสื่อดิจิทัล</td>
+          <td>นิรมล รักดี</td>
+          <td style="font-variant-numeric:tabular-nums;font-weight:600">45,000</td>
+          <td style="color:var(--ink-500);font-size:12px">10 พ.ค. 69</td>
+          <td><span class="tag amber" style="font-size:11px">รออนุมัติ</span></td>
+          <td><button class="btn sm ghost">ดูรายละเอียด</button></td>
+        </tr>
+        <tr>
+          <td class="mono" style="font-size:12px;color:var(--ink-400)">REQ-2569-003</td>
+          <td><span class="tag navy" style="font-size:11px">คำขอเบิก</span></td>
+          <td style="font-weight:600">ค่าอาหารว่างประชุม ก.ค. 69</td>
+          <td>มนัสวี บุญมา</td>
+          <td style="font-variant-numeric:tabular-nums;font-weight:600">3,600</td>
+          <td style="color:var(--ink-500);font-size:12px">8 พ.ค. 69</td>
+          <td><span class="tag green" style="font-size:11px">อนุมัติแล้ว</span></td>
+          <td><button class="btn sm ghost">ดูรายละเอียด</button></td>
+        </tr>
+        <tr>
+          <td class="mono" style="font-size:12px;color:var(--ink-400)">REQ-2569-004</td>
+          <td><span class="tag navy" style="font-size:11px">คำขอเบิก</span></td>
+          <td style="font-weight:600">วัสดุสำนักงาน ส.ค. 2569</td>
+          <td>ใจจริง ใจ</td>
+          <td style="font-variant-numeric:tabular-nums;font-weight:600">7,800</td>
+          <td style="color:var(--ink-500);font-size:12px">5 พ.ค. 69</td>
+          <td><span class="tag rose" style="font-size:11px">ไม่อนุมัติ</span></td>
+          <td><button class="btn sm ghost">ดูรายละเอียด</button></td>
+        </tr>
+        <tr>
+          <td class="mono" style="font-size:12px;color:var(--ink-400)">REQ-2569-005</td>
+          <td><span class="tag" style="font-size:11px">เสนอโครงการ</span></td>
+          <td style="font-weight:600">กิจกรรมสนามกีฬาพัฒนาผู้เรียน</td>
+          <td>สมศรี อุ่มสวาง</td>
+          <td style="font-variant-numeric:tabular-nums;font-weight:600">120,000</td>
+          <td style="color:var(--ink-500);font-size:12px">2 พ.ค. 69</td>
+          <td><span class="tag green" style="font-size:11px">อนุมัติแล้ว</span></td>
+          <td><button class="btn sm ghost">ดูรายละเอียด</button></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div style="margin-top:12px;display:flex;justify-content:space-between;align-items:center;font-size:12.5px;color:var(--ink-500)">
+    <span>แสดง 1–5 จาก 102 รายการ</span>
+    <div style="display:flex;gap:6px">
+      <button class="btn sm">← ก่อนหน้า</button>
+      <button class="btn sm primary">ถัดไป →</button>
+    </div>
+  </div>
+</div>

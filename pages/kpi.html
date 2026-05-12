@@ -1,0 +1,100 @@
+<style>
+.kpi-toolbar { display:flex; align-items:center; gap:10px; margin-bottom:20px; flex-wrap:wrap; }
+.kpi-toolbar h2 { margin:0; font-size:18px; font-weight:700; flex:1; }
+
+.kpi-summary { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:20px; }
+.kpi-stat { background:white; border:1px solid var(--ink-100); border-radius:10px; padding:16px; }
+.kpi-stat .ks-num { font-size:28px; font-weight:800; }
+.kpi-stat .ks-lbl { font-size:12px; color:var(--ink-500); margin-top:4px; }
+.kpi-stat.achieved .ks-num { color:#16a34a; }
+.kpi-stat.ontrack .ks-num  { color:#2563eb; }
+.kpi-stat.behind .ks-num   { color:#f59e0b; }
+.kpi-stat.risk .ks-num     { color:#dc2626; }
+
+.kpi-table { width:100%; border-collapse:collapse; font-size:13px; }
+.kpi-table th { padding:10px 14px; text-align:left; font-weight:600; font-size:11.5px; color:var(--ink-500); background:var(--ink-50); border-bottom:1px solid var(--ink-100); }
+.kpi-table td { padding:12px 14px; border-bottom:1px solid var(--ink-50); vertical-align:middle; }
+.kpi-table tbody tr:last-child td { border-bottom:none; }
+.kpi-table tbody tr:hover td { background:var(--ink-50); }
+
+.kpi-bar { height:8px; background:var(--ink-100); border-radius:4px; overflow:hidden; min-width:100px; }
+.kpi-fill { height:100%; border-radius:4px; }
+.kpi-fill.achieved { background:#22c55e; }
+.kpi-fill.ontrack  { background:#3b82f6; }
+.kpi-fill.behind   { background:#f59e0b; }
+.kpi-fill.risk     { background:#ef4444; }
+
+@media (max-width:768px) { .kpi-summary { grid-template-columns:repeat(2,1fr); } }
+</style>
+
+<div>
+  <div class="kpi-toolbar">
+    <h2>ติดตาม KPI ปีงบประมาณ 2569</h2>
+    <select style="padding:7px 12px;border:1px solid var(--ink-200);border-radius:7px;font-family:inherit;font-size:13px">
+      <option>กลยุทธ์ทั้งหมด</option><option>กลยุทธ์ที่ 1</option><option>กลยุทธ์ที่ 2</option>
+      <option>กลยุทธ์ที่ 3</option><option>กลยุทธ์ที่ 4</option>
+    </select>
+    <button class="btn sm">ส่งออก PDF</button>
+  </div>
+
+  <div class="kpi-summary">
+    <div class="kpi-stat achieved"><div class="ks-num">8</div><div class="ks-lbl">บรรลุเป้าหมาย</div></div>
+    <div class="kpi-stat ontrack"><div class="ks-num">5</div><div class="ks-lbl">กำลังดำเนินการ</div></div>
+    <div class="kpi-stat behind"><div class="ks-num">3</div><div class="ks-lbl">ต่ำกว่าเป้า</div></div>
+    <div class="kpi-stat risk"><div class="ks-num">1</div><div class="ks-lbl">เสี่ยง</div></div>
+  </div>
+
+  <div style="background:white;border:1px solid var(--ink-100);border-radius:12px;overflow:hidden">
+    <div style="padding:16px 20px;border-bottom:1px solid var(--ink-100);font-weight:700;font-size:14.5px">ตัวชี้วัดทั้งหมด</div>
+    <table class="kpi-table">
+      <thead>
+        <tr>
+          <th>ตัวชี้วัด</th><th>กลยุทธ์</th><th>เป้าหมาย</th>
+          <th>ผลปัจจุบัน</th><th>ความก้าวหน้า</th><th>สถานะ</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="font-weight:600">ผลสัมฤทธิ์การเรียนผ่านเกณฑ์</td>
+          <td><span style="background:var(--navy-100);color:var(--navy-700);padding:2px 8px;border-radius:4px;font-size:11px;font-weight:700">1</span></td>
+          <td>70%</td>
+          <td style="font-weight:700;color:#2563eb">65%</td>
+          <td><div class="kpi-bar"><div class="kpi-fill ontrack" style="width:65%"></div></div></td>
+          <td><span class="tag navy" style="font-size:11px">กำลังดำเนินการ</span></td>
+        </tr>
+        <tr>
+          <td style="font-weight:600">อัตราการออกกลางคัน</td>
+          <td><span style="background:var(--navy-100);color:var(--navy-700);padding:2px 8px;border-radius:4px;font-size:11px;font-weight:700">1</span></td>
+          <td>≤ 2%</td>
+          <td style="font-weight:700;color:#16a34a">1.8%</td>
+          <td><div class="kpi-bar"><div class="kpi-fill achieved" style="width:90%"></div></div></td>
+          <td><span class="tag green" style="font-size:11px">บรรลุเป้าหมาย</span></td>
+        </tr>
+        <tr>
+          <td style="font-weight:600">ครูผ่านการอบรมพัฒนาตนเอง</td>
+          <td><span style="background:var(--navy-100);color:var(--navy-700);padding:2px 8px;border-radius:4px;font-size:11px;font-weight:700">2</span></td>
+          <td>100%</td>
+          <td style="font-weight:700;color:#f59e0b">78%</td>
+          <td><div class="kpi-bar"><div class="kpi-fill behind" style="width:78%"></div></div></td>
+          <td><span class="tag amber" style="font-size:11px">ต่ำกว่าเป้า</span></td>
+        </tr>
+        <tr>
+          <td style="font-weight:600">ห้องเรียนผ่านมาตรฐาน</td>
+          <td><span style="background:var(--navy-100);color:var(--navy-700);padding:2px 8px;border-radius:4px;font-size:11px;font-weight:700">3</span></td>
+          <td>90%</td>
+          <td style="font-weight:700;color:#2563eb">84%</td>
+          <td><div class="kpi-bar"><div class="kpi-fill ontrack" style="width:84%"></div></div></td>
+          <td><span class="tag navy" style="font-size:11px">กำลังดำเนินการ</span></td>
+        </tr>
+        <tr>
+          <td style="font-weight:600">ระบบงบประมาณโปร่งใส</td>
+          <td><span style="background:var(--navy-100);color:var(--navy-700);padding:2px 8px;border-radius:4px;font-size:11px;font-weight:700">4</span></td>
+          <td>100%</td>
+          <td style="font-weight:700;color:#16a34a">100%</td>
+          <td><div class="kpi-bar"><div class="kpi-fill achieved" style="width:100%"></div></div></td>
+          <td><span class="tag green" style="font-size:11px">บรรลุเป้าหมาย</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

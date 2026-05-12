@@ -1,0 +1,141 @@
+<style>
+.ps-toolbar { display:flex; align-items:center; gap:10px; margin-bottom:20px; flex-wrap:wrap; }
+.ps-toolbar h2 { margin:0; font-size:18px; font-weight:700; flex:1; }
+
+.ps-summary { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:20px; }
+.ps-stat { background:white; border:1px solid var(--ink-100); border-radius:10px; padding:16px; }
+.ps-stat .pss-num { font-size:28px; font-weight:800; }
+.ps-stat .pss-lbl { font-size:12px; color:var(--ink-500); margin-top:4px; }
+
+.ps-table { width:100%; border-collapse:collapse; font-size:13px; }
+.ps-table th { padding:10px 14px; text-align:left; font-weight:600; font-size:11.5px; color:var(--ink-500); background:var(--ink-50); border-bottom:1px solid var(--ink-100); }
+.ps-table td { padding:11px 14px; border-bottom:1px solid var(--ink-50); vertical-align:middle; }
+.ps-table tbody tr:last-child td { border-bottom:none; }
+.ps-table tbody tr:hover td { background:var(--ink-50); }
+
+.prog-bar { height:6px; background:var(--ink-100); border-radius:3px; overflow:hidden; min-width:80px; }
+.prog-fill { height:100%; border-radius:3px; }
+
+@media (max-width:768px) { .ps-summary { grid-template-columns:repeat(2,1fr); } }
+</style>
+
+<div>
+  <div class="ps-toolbar">
+    <h2>สรุปโครงการที่เสนอ ปีงบประมาณ 2569</h2>
+    <button class="btn sm">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+      ส่งออก PDF
+    </button>
+  </div>
+
+  <div class="ps-summary">
+    <div class="ps-stat"><div class="pss-num">121</div><div class="pss-lbl">โครงการทั้งหมด</div></div>
+    <div class="ps-stat"><div class="pss-num" style="color:#22c55e">87</div><div class="pss-lbl">อนุมัติแล้ว</div></div>
+    <div class="ps-stat"><div class="pss-num" style="color:#f59e0b">12</div><div class="pss-lbl">รออนุมัติ</div></div>
+    <div class="ps-stat"><div class="pss-num" style="color:#ef4444">22</div><div class="pss-lbl">กำลังดำเนินการ</div></div>
+  </div>
+
+  <!-- By budget type -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px">
+    <div style="background:white;border:1px solid var(--ink-100);border-radius:12px;padding:20px">
+      <h3 style="margin:0 0 16px;font-size:14.5px;font-weight:700">จำแนกตามประเภทงบประมาณ</h3>
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <div>
+          <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px">
+            <span>เงินอุดหนุน</span><span style="font-weight:700">45 โครงการ (฿12.6M)</span>
+          </div>
+          <div class="prog-bar"><div class="prog-fill" style="width:37%;background:#3b82f6"></div></div>
+        </div>
+        <div>
+          <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px">
+            <span>เงินบำรุงการศึกษา</span><span style="font-weight:700">52 โครงการ (฿29.9M)</span>
+          </div>
+          <div class="prog-bar"><div class="prog-fill" style="width:65%;background:#10b981"></div></div>
+        </div>
+        <div>
+          <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px">
+            <span>กิจกรรมพัฒนาผู้เรียน</span><span style="font-weight:700">23 โครงการ (฿3.4M)</span>
+          </div>
+          <div class="prog-bar"><div class="prog-fill" style="width:19%;background:#f59e0b"></div></div>
+        </div>
+        <div>
+          <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px">
+            <span>รายได้สถานศึกษา</span><span style="font-weight:700">1 โครงการ (฿18K)</span>
+          </div>
+          <div class="prog-bar"><div class="prog-fill" style="width:1%;background:#8b5cf6"></div></div>
+        </div>
+      </div>
+    </div>
+    <div style="background:white;border:1px solid var(--ink-100);border-radius:12px;padding:20px">
+      <h3 style="margin:0 0 16px;font-size:14.5px;font-weight:700">จำแนกตามกลยุทธ์</h3>
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <div>
+          <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px">
+            <span>กลยุทธ์ที่ 1 (ผู้เรียน)</span><span style="font-weight:700">32 โครงการ</span>
+          </div>
+          <div class="prog-bar"><div class="prog-fill" style="width:26%;background:#3b82f6"></div></div>
+        </div>
+        <div>
+          <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px">
+            <span>กลยุทธ์ที่ 2 (ครู)</span><span style="font-weight:700">28 โครงการ</span>
+          </div>
+          <div class="prog-bar"><div class="prog-fill" style="width:23%;background:#10b981"></div></div>
+        </div>
+        <div>
+          <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px">
+            <span>กลยุทธ์ที่ 3 (สิ่งแวดล้อม)</span><span style="font-weight:700">35 โครงการ</span>
+          </div>
+          <div class="prog-bar"><div class="prog-fill" style="width:29%;background:#f59e0b"></div></div>
+        </div>
+        <div>
+          <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px">
+            <span>กลยุทธ์ที่ 4 (บริหาร)</span><span style="font-weight:700">26 โครงการ</span>
+          </div>
+          <div class="prog-bar"><div class="prog-fill" style="width:21%;background:#8b5cf6"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Project list -->
+  <div style="background:white;border:1px solid var(--ink-100);border-radius:12px;overflow:hidden">
+    <div style="padding:16px 20px;border-bottom:1px solid var(--ink-100);display:flex;justify-content:space-between;align-items:center">
+      <h3 style="margin:0;font-size:14.5px;font-weight:700">รายการโครงการทั้งหมด</h3>
+      <input type="text" placeholder="ค้นหาโครงการ..." style="padding:6px 12px;border:1px solid var(--ink-200);border-radius:7px;font-family:inherit;font-size:13px;width:220px;outline:none">
+    </div>
+    <table class="ps-table">
+      <thead>
+        <tr><th>#</th><th>ชื่อโครงการ</th><th>ประเภทงบ</th><th>กลยุทธ์</th><th>งบประมาณ</th><th>ความก้าวหน้า</th><th>สถานะ</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="color:var(--ink-400);font-size:12px">69-001</td>
+          <td style="font-weight:600">ปรับปรุงห้องเรียนอุ้มน้อย</td>
+          <td><span style="font-size:11px;color:var(--ink-500)">เงินบำรุง</span></td>
+          <td style="text-align:center"><span style="background:var(--navy-100);color:var(--navy-700);padding:2px 7px;border-radius:4px;font-size:10.5px;font-weight:700">3</span></td>
+          <td style="font-variant-numeric:tabular-nums;text-align:right">250,000</td>
+          <td><div class="prog-bar" style="min-width:70px"><div class="prog-fill" style="width:40%;background:#3b82f6"></div></div></td>
+          <td><span class="tag navy" style="font-size:10.5px">ดำเนินการ</span></td>
+        </tr>
+        <tr>
+          <td style="color:var(--ink-400);font-size:12px">69-002</td>
+          <td style="font-weight:600">อบรมครูพัฒนาสื่อดิจิทัล</td>
+          <td><span style="font-size:11px;color:var(--ink-500)">เงินอุดหนุน</span></td>
+          <td style="text-align:center"><span style="background:var(--navy-100);color:var(--navy-700);padding:2px 7px;border-radius:4px;font-size:10.5px;font-weight:700">2</span></td>
+          <td style="font-variant-numeric:tabular-nums;text-align:right">45,000</td>
+          <td><div class="prog-bar" style="min-width:70px"><div class="prog-fill" style="width:100%;background:#22c55e"></div></div></td>
+          <td><span class="tag green" style="font-size:10.5px">เสร็จสิ้น</span></td>
+        </tr>
+        <tr>
+          <td style="color:var(--ink-400);font-size:12px">69-003</td>
+          <td style="font-weight:600">กิจกรรมสนามกีฬาพัฒนาผู้เรียน</td>
+          <td><span style="font-size:11px;color:var(--ink-500)">กิจกรรมพัฒนาฯ</span></td>
+          <td style="text-align:center"><span style="background:var(--navy-100);color:var(--navy-700);padding:2px 7px;border-radius:4px;font-size:10.5px;font-weight:700">1</span></td>
+          <td style="font-variant-numeric:tabular-nums;text-align:right">120,000</td>
+          <td><div class="prog-bar" style="min-width:70px"><div class="prog-fill" style="width:25%;background:#3b82f6"></div></div></td>
+          <td><span class="tag amber" style="font-size:10.5px">รออนุมัติ</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

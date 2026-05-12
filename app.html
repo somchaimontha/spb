@@ -2,7 +2,7 @@
 <html lang="th">
 <head>
 <meta charset="utf-8">
-<title>ระบบงานแผน · วก.แม่สะเรียง</title>
+<title>ระบบงานนโยบายและแผน v2.0 · วก.แม่สะเรียง</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="icon" type="image/png" href="logo-msr.png">
 <link rel="apple-touch-icon" href="logo-msr.png">
@@ -14,468 +14,563 @@
 <script src="js/api.js"></script>
 <script src="js/tamper-guard.js" defer></script>
 <style>
-  body { margin: 0; display: flex; min-height: 100vh; background: var(--paper); }
-  
-  .app-frame {
-    display: grid;
-    grid-template-columns: 240px 1fr;
-    width: 100%;
-    min-height: 100vh;
-  }
-  
+body { margin:0; display:flex; min-height:100vh; background:var(--paper); }
+
+/* ── Layout ──────────────────────────────────────────────── */
+.app-frame {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  width: 100%;
+  min-height: 100vh;
+}
+
+/* ── Sidebar ─────────────────────────────────────────────── */
+.sidebar {
+  background: #0f2044;
+  color: #94a3b8;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  z-index: 50;
+}
+
+.sb-header {
+  padding: 18px 16px 14px;
+  border-bottom: 1px solid rgba(255,255,255,.07);
+  flex-shrink: 0;
+}
+
+.sb-brand {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+}
+
+.sb-brand .logo {
+  width: 42px; height: 42px;
+  border-radius: 10px;
+  background: white;
+  display: grid; place-items: center;
+  flex-shrink: 0;
+  overflow: hidden;
+  border: 2px solid #d4a017;
+}
+.sb-brand .logo img { width:100%; height:100%; object-fit:cover; }
+
+.sb-brand .info .name {
+  color: white;
+  font-weight: 700;
+  font-size: 13.5px;
+  line-height: 1.25;
+}
+.sb-brand .info .sub {
+  font-size: 11px;
+  color: rgba(255,255,255,.45);
+  line-height: 1.25;
+}
+
+.sb-version {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 10px;
+  padding: 3px 8px;
+  background: rgba(212,160,23,.15);
+  border: 1px solid rgba(212,160,23,.3);
+  border-radius: 20px;
+  font-size: 10.5px;
+  color: #d4a017;
+  font-weight: 600;
+  letter-spacing: .04em;
+}
+
+/* ── Sidebar Nav ──────────────────────────────────────────── */
+.sb-scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px 10px 16px;
+}
+.sb-scroll::-webkit-scrollbar { width: 4px; }
+.sb-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,.12); border-radius: 2px; }
+
+/* Section group */
+.sb-group { margin-bottom: 4px; }
+
+.sb-group-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 7px 8px;
+  cursor: pointer;
+  border-radius: 7px;
+  user-select: none;
+  transition: background .15s;
+}
+.sb-group-header:hover { background: rgba(255,255,255,.05); }
+
+.sb-group-label {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,.5);
+}
+.sb-group-label .g-ic {
+  width: 16px; height: 16px;
+  flex-shrink: 0;
+  opacity: .7;
+}
+
+.sb-chevron {
+  width: 14px; height: 14px;
+  opacity: .4;
+  transition: transform .2s;
+  flex-shrink: 0;
+}
+.sb-group.open .sb-chevron { transform: rotate(180deg); }
+
+.sb-children {
+  overflow: hidden;
+  max-height: 0;
+  transition: max-height .25s ease;
+}
+.sb-group.open .sb-children { max-height: 800px; }
+
+/* Single nav item */
+.sb-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 8px 8px 14px;
+  border-radius: 7px;
+  cursor: pointer;
+  font-size: 13.5px;
+  color: #94a3b8;
+  transition: all .15s;
+  text-decoration: none;
+  border-left: 2px solid transparent;
+  margin-bottom: 1px;
+}
+.sb-item:hover { background: rgba(255,255,255,.07); color: #e2e8f0; }
+.sb-item.active {
+  background: rgba(39,81,143,.35);
+  color: white;
+  border-left-color: #d4a017;
+}
+.sb-item .ic {
+  width: 16px; height: 16px;
+  flex-shrink: 0;
+  opacity: .65;
+}
+.sb-item.active .ic { opacity: 1; }
+
+/* Top-level single item (no group) */
+.sb-solo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 8px;
+  border-radius: 7px;
+  cursor: pointer;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #94a3b8;
+  transition: all .15s;
+  text-decoration: none;
+  border-left: 2px solid transparent;
+  margin-bottom: 2px;
+}
+.sb-solo:hover { background: rgba(255,255,255,.07); color: #e2e8f0; }
+.sb-solo.active {
+  background: rgba(39,81,143,.35);
+  color: white;
+  border-left-color: #d4a017;
+}
+.sb-solo .ic { width:18px; height:18px; flex-shrink:0; opacity:.7; }
+.sb-solo.active .ic { opacity:1; }
+
+/* Badge */
+.sb-badge {
+  margin-left: auto;
+  background: #d4a017;
+  color: #0f2044;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 10px;
+  flex-shrink: 0;
+}
+
+/* ── Sidebar footer ───────────────────────────────────────── */
+.sb-footer {
+  padding: 12px 14px;
+  border-top: 1px solid rgba(255,255,255,.07);
+  flex-shrink: 0;
+}
+
+.sb-user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px;
+  border-radius: 8px;
+  cursor: default;
+}
+.sb-user .av {
+  width: 34px; height: 34px;
+  border-radius: 50%;
+  background: #d4a017;
+  color: #0f2044;
+  display: grid; place-items: center;
+  font-weight: 700;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+.sb-user .info { flex:1; min-width:0; }
+.sb-user .nm { color:white; font-size:13px; font-weight:600; line-height:1.2; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.sb-user .rl { font-size:10.5px; color:rgba(255,255,255,.45); line-height:1.2; }
+
+.sb-logout {
+  padding: 6px 8px;
+  background: none;
+  border: none;
+  color: rgba(255,255,255,.4);
+  cursor: pointer;
+  border-radius: 6px;
+  transition: all .15s;
+  flex-shrink: 0;
+}
+.sb-logout:hover { background: rgba(239,68,68,.15); color: #fca5a5; }
+
+/* ── Main area ────────────────────────────────────────────── */
+.main { display:flex; flex-direction:column; overflow:hidden; min-height:100vh; }
+
+/* ── Topbar ───────────────────────────────────────────────── */
+.topbar {
+  display: flex;
+  align-items: center;
+  padding: 12px 24px;
+  border-bottom: 1px solid var(--ink-100);
+  background: white;
+  gap: 12px;
+  box-shadow: 0 1px 4px rgba(0,0,0,.05);
+  flex-shrink: 0;
+  position: sticky;
+  top: 0;
+  z-index: 40;
+}
+
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12.5px;
+  color: var(--ink-500);
+}
+.breadcrumb .sep { color: var(--ink-300); }
+.breadcrumb .cur { color: var(--ink-800); font-weight: 600; }
+
+.topbar-title { margin:0; font-size:18px; font-weight:700; color:var(--ink-900); }
+.grow { flex:1; }
+
+.db-status {
+  display: flex; align-items: center; gap: 6px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 11.5px;
+  font-weight: 600;
+  border: 1px solid;
+  white-space: nowrap;
+  transition: all .3s;
+}
+.db-status.mock   { background:#fef3c7; color:#92400e; border-color:#fde68a; }
+.db-status.online { background:#dcfce7; color:#14532d; border-color:#86efac; }
+.db-status.error  { background:#fee2e2; color:#7f1d1d; border-color:#fca5a5; }
+.db-status.loading{ background:var(--ink-50); color:var(--ink-500); border-color:var(--ink-200); }
+.db-dot { width:7px; height:7px; border-radius:50%; flex-shrink:0; }
+.db-status.mock .db-dot   { background:#f59e0b; }
+.db-status.online .db-dot { background:#22c55e; animation:pulse-dot 2s infinite; }
+.db-status.error .db-dot  { background:#ef4444; }
+.db-status.loading .db-dot{ background:var(--ink-400); }
+@keyframes pulse-dot { 0%,100%{opacity:1} 50%{opacity:.35} }
+
+/* ── Content ──────────────────────────────────────────────── */
+.content {
+  flex: 1;
+  padding: 24px 28px;
+  overflow-y: auto;
+  background: var(--paper);
+}
+
+/* ── Mobile ───────────────────────────────────────────────── */
+.menu-toggle {
+  display: none; align-items: center; justify-content: center;
+  background: none; border: none; color: var(--ink-700);
+  cursor: pointer; padding: 6px; border-radius: 6px;
+}
+.menu-toggle:hover { background: var(--ink-100); }
+
+.sidebar-overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,.55); z-index: 90;
+}
+.sidebar-overlay.open { display: block; }
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+@media (max-width: 900px) {
+  .app-frame { grid-template-columns: 230px 1fr; }
+}
+@media (max-width: 768px) {
+  .app-frame { grid-template-columns: 1fr; }
   .sidebar {
-    background: var(--navy-700);
-    color: #cbd5e1;
-    display: flex;
-    flex-direction: column;
-    padding: 20px 14px;
-    border-right: 1px solid rgba(0,0,0,.1);
-    overflow-y: auto;
-    box-shadow: 2px 0 8px rgba(0,0,0,.08);
+    position: fixed; top:0; left:0; bottom:0; width:280px;
+    z-index:100; transform:translateX(-100%);
+    transition:transform .25s ease; height:100vh;
   }
-  
-  .sb-brand {
-    display: flex;
-    gap: 10px;
-    align-items: center;
-    margin-bottom: 28px;
-  }
-  
-  .sb-brand .logo {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background: white;
-    display: grid;
-    place-items: center;
-    flex-shrink: 0;
-    overflow: hidden;
-    border: 2px solid var(--gold-500);
-  }
-
-  .sb-brand .logo img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-  
-  .sb-brand .info {
-    flex: 1;
-    min-width: 0;
-  }
-  
-  .sb-brand .name {
-    color: white;
-    font-weight: 700;
-    font-size: 14px;
-    line-height: 1.2;
-  }
-  
-  .sb-brand .sub {
-    font-size: 11px;
-    color: rgba(255,255,255,.55);
-    line-height: 1.2;
-  }
-  
-  .sb-section {
-    font-size: 10.5px;
-    letter-spacing: .14em;
-    color: rgba(255,255,255,.4);
-    text-transform: uppercase;
-    margin: 18px 8px 8px;
-    font-weight: 600;
-  }
-  
-  .sb-nav {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    flex: 1;
-  }
-  
-  .sb-item {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 10px 12px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 14px;
-    color: #cbd5e1;
-    transition: all .2s ease;
-    text-decoration: none;
-    border-left: 3px solid transparent;
-  }
-  
-  .sb-item:hover {
-    background: rgba(255,255,255,.08);
-    color: white;
-  }
-  
-  .sb-item.active {
-    background: rgba(255,255,255,.12);
-    color: white;
-    border-left-color: var(--gold-500);
-    padding-left: 9px;
-  }
-  
-  .sb-item .ic {
-    width: 18px;
-    height: 18px;
-    flex-shrink: 0;
-    opacity: .7;
-  }
-  
-  .sb-spacer {
-    flex: 1;
-  }
-  
-  .sb-user {
-    border-top: 1px solid rgba(255,255,255,.08);
-    padding-top: 14px;
-    display: flex;
-    gap: 10px;
-    align-items: center;
-  }
-  
-  .sb-user .av {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    background: var(--gold-500);
-    color: var(--navy-700);
-    display: grid;
-    place-items: center;
-    font-weight: 700;
-    font-size: 14px;
-    flex-shrink: 0;
-  }
-  
-  .sb-user .info {
-    flex: 1;
-    min-width: 0;
-  }
-  
-  .sb-user .nm {
-    color: white;
-    font-size: 13px;
-    font-weight: 600;
-    line-height: 1.2;
-  }
-  
-  .sb-user .rl {
-    font-size: 10.5px;
-    color: rgba(255,255,255,.5);
-    line-height: 1.2;
-  }
-  
-  .main {
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-  }
-  
-  .topbar {
-    display: flex;
-    align-items: center;
-    padding: 16px 24px;
-    border-bottom: 1px solid var(--ink-100);
-    background: white;
-    gap: 16px;
-    box-shadow: 0 1px 3px rgba(0,0,0,.04);
-  }
-  
-  .topbar .breadcrumb {
-    font-size: 12px;
-    color: var(--ink-500);
-    display: flex;
-    gap: 8px;
-    align-items: center;
-  }
-  
-  .topbar .breadcrumb span {
-    display: flex;
-    gap: 8px;
-    align-items: center;
-  }
-  
-  .topbar .breadcrumb span::before {
-    content: '/';
-    color: var(--ink-300);
-  }
-  
-  .topbar .breadcrumb span:first-child::before {
-    content: none;
-  }
-  
-  .topbar h1 {
-    margin: 0;
-    font-size: 20px;
-    font-weight: 700;
-    color: var(--ink-900);
-  }
-  
-  .topbar .grow {
-    flex: 1;
-  }
-  
-  .content {
-    flex: 1;
-    padding: 28px 32px;
-    overflow-y: auto;
-    background: var(--paper);
-  }
-  
-  /* Scrollbar styling */
-  .sidebar::-webkit-scrollbar,
-  .content::-webkit-scrollbar {
-    width: 6px;
-  }
-
-  .sidebar::-webkit-scrollbar-track,
-  .content::-webkit-scrollbar-track {
-    background: transparent;
-  }
-
-  .sidebar::-webkit-scrollbar-thumb,
-  .content::-webkit-scrollbar-thumb {
-    background: rgba(255,255,255,.2);
-    border-radius: 3px;
-  }
-
-  .sidebar::-webkit-scrollbar-thumb:hover,
-  .content::-webkit-scrollbar-thumb:hover {
-    background: rgba(255,255,255,.3);
-  }
-
-  /* ── DB Connection Status ── */
-  .db-status {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 5px 12px;
-    border-radius: 20px;
-    font-size: 12px;
-    font-weight: 600;
-    border: 1px solid;
-    white-space: nowrap;
-    transition: all .3s;
-  }
-  .db-status.mock    { background: #fef3c7; color: #92400e; border-color: #fde68a; }
-  .db-status.online  { background: #dcfce7; color: #14532d; border-color: #86efac; }
-  .db-status.error   { background: #fee2e2; color: #7f1d1d; border-color: #fca5a5; }
-  .db-status.loading { background: var(--ink-50); color: var(--ink-500); border-color: var(--ink-200); }
-
-  .db-dot {
-    width: 7px; height: 7px;
-    border-radius: 50%;
-    flex-shrink: 0;
-  }
-  .db-status.mock .db-dot    { background: #f59e0b; }
-  .db-status.online .db-dot  { background: #22c55e; animation: pulse-dot 2s infinite; }
-  .db-status.error .db-dot   { background: #ef4444; }
-  .db-status.loading .db-dot { background: var(--ink-400); }
-
-  @keyframes pulse-dot {
-    0%,100% { opacity: 1; }
-    50%      { opacity: .35; }
-  }
-
-  /* ── Mobile sidebar toggle ── */
-  .menu-toggle {
-    display: none;
-    align-items: center;
-    justify-content: center;
-    background: none;
-    border: none;
-    color: var(--ink-700);
-    cursor: pointer;
-    padding: 6px;
-    border-radius: 6px;
-    flex-shrink: 0;
-  }
-  .menu-toggle:hover { background: var(--ink-100); }
-
-  .sidebar-overlay {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,.5);
-    z-index: 90;
-  }
-  .sidebar-overlay.open { display: block; }
-
-  /* ── Responsive breakpoints ── */
-  @media (max-width: 900px) {
-    .app-frame { grid-template-columns: 200px 1fr; }
-    .content { padding: 20px; }
-  }
-
-  @media (max-width: 768px) {
-    .app-frame { grid-template-columns: 1fr; }
-
-    .sidebar {
-      position: fixed;
-      top: 0; left: 0; bottom: 0;
-      width: 268px;
-      z-index: 100;
-      transform: translateX(-100%);
-      transition: transform .25s ease;
-      padding: 16px 12px;
-    }
-    .sidebar.open { transform: translateX(0); }
-
-    .menu-toggle { display: flex; }
-    .topbar { padding: 12px 16px; }
-    .content { padding: 16px; }
-
-    .db-status { display: none; }
-  }
-
-  @media (max-width: 480px) {
-    .content { padding: 12px; }
-    .topbar .breadcrumb { display: none; }
-  }
-
-  /* ── Responsive utilities for child pages ── */
-  @media (max-width: 768px) {
-    /* Override fixed stat-grid columns from sub-pages */
-    .stat-grid { grid-template-columns: repeat(2, 1fr) !important; }
-    /* Settings tabs wrap */
-    .set-tabs { flex-wrap: wrap; }
-    .set-tab  { flex: 0 0 calc(50% - 4px); }
-    /* Settings grid */
-    .set-grid.cols-3 { grid-template-columns: 1fr 1fr !important; }
-    /* Auth grid */
-    .auth-grid { grid-template-columns: 1fr !important; }
-    /* Row grid in dashboard */
-    .row-grid { grid-template-columns: 1fr !important; }
-    /* Disbursement form */
-    form[style*="grid-template-columns: 1fr 1fr"] { grid-template-columns: 1fr !important; }
-    /* Tables — allow horizontal scroll */
-    .proj-table-wrap, .user-table, .div-table { overflow-x: auto; display: block; }
-  }
-
-  @media (max-width: 480px) {
-    .stat-grid { grid-template-columns: 1fr !important; }
-    .set-grid { grid-template-columns: 1fr !important; }
-    .set-tab  { flex: 0 0 100%; }
-  }
+  .sidebar.open { transform:translateX(0); }
+  .menu-toggle { display: flex; }
+  .topbar { padding: 10px 16px; }
+  .content { padding: 16px; }
+  .db-status { display: none; }
+  .app-frame { min-height: 100vh; }
+}
+@media (max-width: 480px) {
+  .content { padding: 12px; }
+  .breadcrumb { display: none; }
+}
 </style>
 </head>
 <body>
 
 <div class="app-frame">
-  
-  <!-- Sidebar -->
-  <aside class="sidebar">
-    <div class="sb-brand">
-      <div class="logo"><img src="logo-msr.png" alt="วก.แม่สะเรียง"></div>
-      <div class="info">
-        <div class="name">แผนและงบ</div>
-        <div class="sub">วก.แม่สะเรียง</div>
+
+  <!-- ── Sidebar ── -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sb-header">
+      <div class="sb-brand">
+        <div class="logo"><img src="logo-msr.png" alt="วก.แม่สะเรียง"></div>
+        <div class="info">
+          <div class="name">งานนโยบายและแผน</div>
+          <div class="sub">วก.แม่สะเรียง</div>
+        </div>
+      </div>
+      <div class="sb-version">
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+        v2.0
       </div>
     </div>
-    
-    <div class="sb-section">หลัก</div>
-    <nav class="sb-nav">
-      <a href="#" class="sb-item active" data-page="dashboard">
-        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
-          <rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
-        </svg>
-        <span>Dashboard</span>
-      </a>
-      <a href="#" class="sb-item" data-page="projects">
-        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M9 11l3 3L22 4"/><path d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-        </svg>
-        <span>โครงการ</span>
-      </a>
-    </nav>
-    
-    <div class="sb-section">งบประมาณ</div>
-    <nav class="sb-nav">
-      <a href="#" class="sb-item" data-page="budget-estimate">
-        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/>
-          <line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/>
-        </svg>
-        <span>ประมาณการรายจ่าย</span>
-      </a>
-      <a href="#" class="sb-item" data-page="allocation-list">
-        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/>
-          <line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="9" x2="9" y2="21"/>
-        </svg>
-        <span>รายการจัดสรร</span>
-      </a>
-      <a href="#" class="sb-item" data-page="budget-received">
-        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/>
-        </svg>
-        <span>งปม.เข้า</span>
-      </a>
-      <a href="#" class="sb-item" data-page="budget-allocate">
-        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/>
-        </svg>
-        <span>จัดสรร งปม.</span>
-      </a>
-    </nav>
 
-    <div class="sb-section">การบริหาร</div>
-    <nav class="sb-nav">
-      <a href="#" class="sb-item" data-page="budget">
+    <div class="sb-scroll">
+
+      <!-- Dashboard -->
+      <a href="#" class="sb-solo active" data-page="dashboard">
         <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <rect x="2" y="11" width="20" height="2"/><path d="M2 4h20v16a2 2 0 01-2 2H4a2 2 0 01-2-2V4z"/>
+          <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
+          <rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/>
         </svg>
-        <span>บัญชีคุมงบ</span>
+        <span>หน้าหลัก</span>
       </a>
-      <a href="#" class="sb-item" data-page="disbursement">
-        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <polyline points="12 1 12 23M17.2 4.2a2 2 0 010 2.83l-5.39 5.39a1 1 0 01-1.42 0L4.8 7a2 2 0 112.83-2.83l1.13 1.13 1.13-1.13a2 2 0 012.83 0z"/>
-        </svg>
-        <span>ขอเบิก</span>
-      </a>
-      <a href="#" class="sb-item" data-page="approval">
-        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="12" cy="12" r="10"/><path d="M8 12l2 2 4-4"/>
-        </svg>
-        <span>อนุมัติ</span>
-      </a>
-    </nav>
-    
-    <div class="sb-section">อื่นๆ</div>
-    <nav class="sb-nav">
-      <a href="#" class="sb-item" data-page="reports">
-        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>
-        </svg>
-        <span>รายงาน</span>
-      </a>
-      <a href="#" class="sb-item admin-only" data-page="settings" style="display:none">
-        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="12" cy="12" r="3"/>
-          <path d="M19.07 4.93a10 10 0 0 0-14.14 0M4.93 19.07a10 10 0 0 0 14.14 0"/>
-          <path d="M12 2v3M12 19v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M2 12h3M19 12h3M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12"/>
-        </svg>
-        <span>ตั้งค่าระบบ</span>
-      </a>
-    </nav>
-    
-    <div class="sb-spacer"></div>
-    
-    <div class="sb-user">
-      <div class="av" id="sb-av">?</div>
-      <div class="info">
-        <div class="nm" id="sb-name">—</div>
-        <div class="rl" id="sb-role">—</div>
+
+      <!-- แผนงาน -->
+      <div class="sb-group open" id="grp-plan">
+        <div class="sb-group-header" onclick="toggleGroup('grp-plan')">
+          <span class="sb-group-label">
+            <svg class="g-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+            </svg>
+            แผนงาน
+          </span>
+          <svg class="sb-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+        <div class="sb-children">
+          <a href="#" class="sb-item" data-page="strategic-plan">
+            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3h18v18H3zM3 9h18M3 15h18M9 3v18"/></svg>
+            แผนกลยุทธ์
+          </a>
+          <a href="#" class="sb-item" data-page="annual-plan">
+            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            แผนปฏิบัติการ
+          </a>
+          <a href="#" class="sb-item" data-page="kpi">
+            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+            ติดตาม KPI
+          </a>
+        </div>
+      </div>
+
+      <!-- โครงการ -->
+      <div class="sb-group open" id="grp-project">
+        <div class="sb-group-header" onclick="toggleGroup('grp-project')">
+          <span class="sb-group-label">
+            <svg class="g-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>
+            โครงการ
+          </span>
+          <svg class="sb-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+        <div class="sb-children">
+          <a href="#" class="sb-item" data-page="propose-project">
+            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+            เสนอโครงการ
+          </a>
+          <a href="#" class="sb-item" data-page="projects">
+            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            จัดการโครงการ
+          </a>
+          <a href="#" class="sb-item" data-page="activities">
+            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>
+            จัดการกิจกรรม
+          </a>
+        </div>
+      </div>
+
+      <!-- งบประมาณ -->
+      <div class="sb-group open" id="grp-budget">
+        <div class="sb-group-header" onclick="toggleGroup('grp-budget')">
+          <span class="sb-group-label">
+            <svg class="g-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 100 20A10 10 0 0012 2zm0 0v20M2 12h20"/><path d="M12 7v2m0 6v2"/></svg>
+            งบประมาณ
+          </span>
+          <svg class="sb-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+        <div class="sb-children">
+          <a href="#" class="sb-item" data-page="disbursement">
+            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            สร้างคำขอใหม่
+          </a>
+          <a href="#" class="sb-item" data-page="budget">
+            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+            ตัดงบประมาณ
+          </a>
+          <a href="#" class="sb-item" data-page="repay">
+            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg>
+            คืนเงินยืม
+          </a>
+          <a href="#" class="sb-item" data-page="budget-received">
+            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+            ดูยอดคงเหลือ
+          </a>
+        </div>
+      </div>
+
+      <!-- กล่องอนุมัติ -->
+      <div class="sb-group" id="grp-approval">
+        <div class="sb-group-header" onclick="toggleGroup('grp-approval')">
+          <span class="sb-group-label">
+            <svg class="g-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 12l2 2 4-4"/></svg>
+            กล่องอนุมัติ
+          </span>
+          <svg class="sb-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+        <div class="sb-children">
+          <a href="#" class="sb-item" data-page="approve-deputy">
+            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            อนุมัติ (รอง ผอ.)
+          </a>
+          <a href="#" class="sb-item admin-only" data-page="approve-director" style="display:none">
+            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+            อนุมัติ (ผอ.)
+          </a>
+          <a href="#" class="sb-item" data-page="verify-docs">
+            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+            ตรวจสอบเอกสาร
+          </a>
+          <a href="#" class="sb-item" data-page="approval">
+            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
+            ตรวจสอบโครงการ
+          </a>
+          <a href="#" class="sb-item" data-page="all-requests">
+            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+            คำขอทั้งหมด
+          </a>
+        </div>
+      </div>
+
+      <!-- รายงาน -->
+      <div class="sb-group" id="grp-reports">
+        <div class="sb-group-header" onclick="toggleGroup('grp-reports')">
+          <span class="sb-group-label">
+            <svg class="g-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
+            รายงาน
+          </span>
+          <svg class="sb-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+        <div class="sb-children">
+          <a href="#" class="sb-item" data-page="reports">
+            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
+            สรุปภาพรวม
+          </a>
+          <a href="#" class="sb-item" data-page="project-summary">
+            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            สรุปโครงการที่เสนอ
+          </a>
+          <a href="#" class="sb-item" data-page="evaluation">
+            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            ประเมินผลโครงการ
+          </a>
+          <a href="#" class="sb-item" data-page="project-report">
+            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            รายงานโครงการ
+          </a>
+          <a href="#" class="sb-item" data-page="history">
+            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3h18v18H3zM3 9h18M9 9v9"/></svg>
+            ประวัติดำเนินการ
+          </a>
+          <a href="#" class="sb-item" data-page="calendar">
+            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            ปฏิทินกิจกรรม
+          </a>
+        </div>
+      </div>
+
+      <!-- ผู้ดูแลระบบ -->
+      <div class="sb-group admin-only" id="grp-admin" style="display:none">
+        <div class="sb-group-header" onclick="toggleGroup('grp-admin')">
+          <span class="sb-group-label">
+            <svg class="g-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            ผู้ดูแลระบบ
+          </span>
+          <svg class="sb-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+        <div class="sb-children">
+          <a href="#" class="sb-item" data-page="audit-log">
+            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/></svg>
+            Audit Log
+          </a>
+          <a href="#" class="sb-item" data-page="users">
+            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+            จัดการผู้ใช้
+          </a>
+          <a href="#" class="sb-item" data-page="settings">
+            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 00-14.14 0M4.93 19.07a10 10 0 0014.14 0"/><path d="M12 2v3M12 19v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M2 12h3M19 12h3M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12"/></svg>
+            ตั้งค่าระบบ
+          </a>
+        </div>
+      </div>
+
+    </div><!-- end sb-scroll -->
+
+    <div class="sb-footer">
+      <div class="sb-user">
+        <div class="av" id="sb-av">?</div>
+        <div class="info">
+          <div class="nm" id="sb-name">—</div>
+          <div class="rl" id="sb-role">—</div>
+        </div>
+        <button class="sb-logout" onclick="logout()" title="ออกจากระบบ">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+        </button>
       </div>
     </div>
   </aside>
-  
-  <!-- Main content -->
+
+  <!-- ── Main ── -->
   <div class="main">
     <header class="topbar">
       <button class="menu-toggle" onclick="toggleSidebar()" aria-label="เมนู">
@@ -485,40 +580,34 @@
       </button>
       <div class="breadcrumb">
         <span>หน้าแรก</span>
-        <span id="topbar-title">Dashboard</span>
+        <span class="sep">/</span>
+        <span class="cur" id="topbar-title">หน้าหลัก</span>
       </div>
+      <h1 class="topbar-title" style="display:none" id="topbar-h1">หน้าหลัก</h1>
       <div class="grow"></div>
-      <div class="db-status loading" id="dbStatus" title="สถานะการเชื่อมต่อฐานข้อมูล">
+      <div class="db-status loading" id="dbStatus">
         <span class="db-dot"></span>
         <span id="dbStatusText">กำลังตรวจสอบ...</span>
       </div>
-      <button class="btn sm ghost" onclick="logout(); return false;">ออกจากระบบ</button>
     </header>
-    <div class="content" id="app-content">
-      <!-- Content loaded here -->
-    </div>
+    <div class="content" id="app-content"></div>
   </div>
 
 </div>
 
-<!-- Mobile sidebar overlay -->
 <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
 
 <script>
 // ── Auth ───────────────────────────────────────────────────
 function checkAuth() {
   try {
-    // Integrity check first — detects if plan_user was edited via DevTools
     if (typeof Security !== 'undefined' && !Security.enforce('signin.html')) return null;
     const raw = localStorage.getItem('plan_user');
     if (!raw) { window.location.href = 'signin.html'; return null; }
     const u = JSON.parse(raw);
     if (!u || !u.email) { window.location.href = 'signin.html'; return null; }
     return u;
-  } catch {
-    window.location.href = 'signin.html';
-    return null;
-  }
+  } catch { window.location.href = 'signin.html'; return null; }
 }
 
 function logout() {
@@ -532,59 +621,85 @@ function logout() {
 const currentUser = checkAuth();
 if (currentUser) {
   const displayName = currentUser.display_name || currentUser.name || currentUser.email || '?';
-  const initials    = displayName.charAt(0).toUpperCase();
-  const roleLabels  = { admin: 'ผู้ดูแลระบบ', officer: 'เจ้าหน้าที่', viewer: 'ผู้ใช้' };
-
-  document.getElementById('sb-av').textContent   = initials;
+  const roleLabels  = { admin:'ผู้ดูแลระบบ', officer:'เจ้าหน้าที่แผน', viewer:'ผู้ดูแลทั่วไป' };
+  document.getElementById('sb-av').textContent   = displayName.charAt(0).toUpperCase();
   document.getElementById('sb-name').textContent = displayName;
   document.getElementById('sb-role').textContent = roleLabels[currentUser.role] || currentUser.role || 'Staff';
-
-  // Show Settings menu only for admin
   if (currentUser.role === 'admin') {
     document.querySelectorAll('.admin-only').forEach(el => el.style.display = '');
   }
-
-  // Expose globally so page scripts can access
   window.__currentUser = currentUser;
 }
 
-// ── Routing ────────────────────────────────────────────────
+// ── Page registry ──────────────────────────────────────────
 const pages = {
   dashboard:        'pages/dashboard.html',
+  // แผนงาน
+  'strategic-plan': 'pages/strategic-plan.html',
+  'annual-plan':    'pages/annual-plan.html',
+  kpi:              'pages/kpi.html',
+  // โครงการ
+  'propose-project':'pages/propose-project.html',
   projects:         'pages/projects.html',
-  'budget-estimate':'pages/budget-estimate.html',
-  'allocation-list':'pages/allocation-list.html',
-  'budget-received':'pages/budget-received.html',
-  'budget-allocate':'pages/budget-allocate.html',
-  budget:           'pages/budget.html',
+  activities:       'pages/activities.html',
+  // งบประมาณ
   disbursement:     'pages/disbursement.html',
+  budget:           'pages/budget.html',
+  repay:            'pages/repay.html',
+  'budget-received':'pages/budget-received.html',
+  // กล่องอนุมัติ
+  'approve-deputy': 'pages/approve-deputy.html',
+  'approve-director':'pages/approve-director.html',
+  'verify-docs':    'pages/verify-docs.html',
   approval:         'pages/approval.html',
+  'all-requests':   'pages/all-requests.html',
+  // รายงาน
   reports:          'pages/reports.html',
+  'project-summary':'pages/project-summary.html',
+  evaluation:       'pages/evaluation.html',
+  'project-report': 'pages/project-report.html',
+  history:          'pages/history.html',
+  calendar:         'pages/calendar.html',
+  // Admin
+  'audit-log':      'pages/audit-log.html',
+  users:            'pages/settings.html',
   settings:         'pages/settings.html'
 };
 
 const labels = {
-  dashboard:        'Dashboard',
-  projects:         'ทะเบียนโครงการ',
-  'budget-estimate':'ประมาณการรายจ่าย',
-  'allocation-list':'รายการจัดสรร',
-  'budget-received':'งปม.เข้า',
-  'budget-allocate':'จัดสรร งปม.',
-  budget:           'บัญชีคุมงบ',
-  disbursement:     'ขอเบิก',
-  approval:         'กล่องอนุมัติ',
-  reports:          'รายงาน',
+  dashboard:        'หน้าหลัก',
+  'strategic-plan': 'แผนกลยุทธ์',
+  'annual-plan':    'แผนปฏิบัติการ',
+  kpi:              'ติดตาม KPI',
+  'propose-project':'เสนอโครงการ',
+  projects:         'จัดการโครงการ',
+  activities:       'จัดการกิจกรรม',
+  disbursement:     'สร้างคำขอใหม่',
+  budget:           'ตัดงบประมาณ',
+  repay:            'คืนเงินยืม',
+  'budget-received':'ดูยอดคงเหลือ',
+  'approve-deputy': 'อนุมัติ (รอง ผอ.)',
+  'approve-director':'อนุมัติ (ผอ.)',
+  'verify-docs':    'ตรวจสอบเอกสาร',
+  approval:         'ตรวจสอบโครงการ',
+  'all-requests':   'คำขอทั้งหมด',
+  reports:          'สรุปภาพรวม',
+  'project-summary':'สรุปโครงการที่เสนอ',
+  evaluation:       'ประเมินผลโครงการ',
+  'project-report': 'รายงานโครงการ',
+  history:          'ประวัติดำเนินการ',
+  calendar:         'ปฏิทินกิจกรรม',
+  'audit-log':      'Audit Log',
+  users:            'จัดการผู้ใช้',
   settings:         'ตั้งค่าระบบ'
 };
 
 const contentDiv  = document.getElementById('app-content');
-const topbarTitle = document.getElementById('topbar-title');
 let _activePage   = null;
 const _pageCache  = {};
 
 function _injectPage(html) {
   contentDiv.innerHTML = html;
-  // innerHTML does NOT execute <script> tags — re-create them so they run
   contentDiv.querySelectorAll('script').forEach(old => {
     const s = document.createElement('script');
     [...old.attributes].forEach(a => s.setAttribute(a.name, a.value));
@@ -597,23 +712,22 @@ function loadPage(pageName) {
   const url = pages[pageName];
   if (!url) return;
   if (_activePage === pageName) return;
-
   _activePage = pageName;
 
-  document.querySelectorAll('.sb-item').forEach(item => {
+  document.querySelectorAll('.sb-item, .sb-solo').forEach(item => {
     item.classList.toggle('active', item.dataset.page === pageName);
   });
-  topbarTitle.textContent = labels[pageName] || pageName;
 
-  // Serve from cache instantly
-  if (_pageCache[pageName]) {
-    _injectPage(_pageCache[pageName]);
-    return;
-  }
+  const label = labels[pageName] || pageName;
+  document.getElementById('topbar-title').textContent = label;
+  document.title = label + ' · ระบบงานนโยบายและแผน v2.0';
+
+  window.__settingsTab = (pageName === 'users') ? 'users' : null;
+  if (_pageCache[pageName]) { _injectPage(_pageCache[pageName]); return; }
 
   contentDiv.innerHTML = `
-    <div style="padding:40px;text-align:center;color:var(--ink-400)">
-      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="animation:spin 1s linear infinite">
+    <div style="padding:60px;text-align:center;color:var(--ink-400)">
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="animation:spin 1s linear infinite">
         <path d="M21 12a9 9 0 1 1-6.219-8.56"/>
       </svg>
       <p style="margin-top:12px;font-size:13px">กำลังโหลด...</p>
@@ -625,15 +739,16 @@ function loadPage(pageName) {
     .catch(() => {
       _activePage = null;
       contentDiv.innerHTML = `
-        <div class="callout rose" style="max-width:500px;margin:40px auto">
-          <strong>ไม่สามารถโหลดหน้านี้ได้</strong><br>
-          <span style="font-size:12px;opacity:.7">${pageName} — ยังไม่ได้สร้างหน้านี้</span>
+        <div style="max-width:480px;margin:60px auto;background:white;border:1px solid var(--ink-100);border-radius:12px;padding:32px;text-align:center">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#d4a017" stroke-width="1.5" style="margin-bottom:12px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <p style="font-weight:700;font-size:16px;margin:0 0 6px">ยังไม่ได้สร้างหน้านี้</p>
+          <p style="font-size:13px;color:var(--ink-500);margin:0">${label} — อยู่ระหว่างพัฒนา</p>
         </div>`;
     });
 }
 
 // ── Navigation ─────────────────────────────────────────────
-document.querySelectorAll('.sb-item').forEach(item => {
+document.querySelectorAll('.sb-item, .sb-solo').forEach(item => {
   item.addEventListener('click', e => {
     e.preventDefault();
     closeSidebar();
@@ -641,58 +756,43 @@ document.querySelectorAll('.sb-item').forEach(item => {
   });
 });
 
+// ── Group collapse ─────────────────────────────────────────
+function toggleGroup(id) {
+  document.getElementById(id).classList.toggle('open');
+}
+
 // ── Mobile sidebar ──────────────────────────────────────────
 function toggleSidebar() {
-  document.querySelector('.sidebar').classList.toggle('open');
+  document.getElementById('sidebar').classList.toggle('open');
   document.getElementById('sidebarOverlay').classList.toggle('open');
 }
 function closeSidebar() {
-  document.querySelector('.sidebar').classList.remove('open');
+  document.getElementById('sidebar').classList.remove('open');
   document.getElementById('sidebarOverlay').classList.remove('open');
 }
 
-// ── DB Connection Status ────────────────────────────────────
+// ── DB Status ───────────────────────────────────────────────
 async function checkDbStatus() {
-  const el     = document.getElementById('dbStatus');
-  const textEl = document.getElementById('dbStatusText');
+  const el = document.getElementById('dbStatus');
+  const tx = document.getElementById('dbStatusText');
   const GAS_URL = window.__GAS_URL__;
-
-  if (!GAS_URL) {
-    el.className = 'db-status mock';
-    textEl.textContent = 'Demo (MockDB)';
-    return;
-  }
-
-  el.className = 'db-status loading';
-  textEl.textContent = 'กำลังตรวจสอบ...';
-
+  if (!GAS_URL) { el.className='db-status mock'; tx.textContent='Demo (MockDB)'; return; }
+  el.className='db-status loading'; tx.textContent='กำลังตรวจสอบ...';
   try {
     const ctrl = new AbortController();
     const tid  = setTimeout(() => ctrl.abort(), 9000);
     const resp = await fetch(`${GAS_URL}?action=ping`, { signal: ctrl.signal });
     clearTimeout(tid);
-    if (resp.ok) {
-      el.className = 'db-status online';
-      textEl.textContent = 'เชื่อมต่อ GAS แล้ว';
-    } else {
-      el.className = 'db-status error';
-      textEl.textContent = 'GAS: ' + resp.status;
-    }
+    if (resp.ok) { el.className='db-status online'; tx.textContent='เชื่อมต่อ GAS แล้ว'; }
+    else { el.className='db-status error'; tx.textContent='GAS: '+resp.status; }
   } catch (err) {
-    el.className = 'db-status error';
-    textEl.textContent = err.name === 'AbortError' ? 'GAS: หมดเวลา' : 'เชื่อมต่อไม่ได้';
+    el.className='db-status error';
+    tx.textContent = err.name==='AbortError' ? 'GAS: หมดเวลา' : 'เชื่อมต่อไม่ได้';
   }
 }
 
-// ── Spinner keyframe ───────────────────────────────────────
-const _styleEl = document.createElement('style');
-_styleEl.textContent = '@keyframes spin { to { transform: rotate(360deg); } }';
-document.head.appendChild(_styleEl);
-
-// ── Start ──────────────────────────────────────────────────
 checkDbStatus();
 loadPage('dashboard');
 </script>
-
 </body>
 </html>

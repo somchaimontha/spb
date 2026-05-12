@@ -1,0 +1,137 @@
+<style>
+.vd-toolbar { display:flex; align-items:center; gap:10px; margin-bottom:20px; }
+.vd-toolbar h2 { margin:0; font-size:18px; font-weight:700; flex:1; }
+
+.doc-card { background:white; border:1px solid var(--ink-100); border-radius:12px; margin-bottom:12px; overflow:hidden; transition:box-shadow .2s; }
+.doc-card:hover { box-shadow:0 4px 14px rgba(0,0,0,.07); }
+.doc-card-header { display:flex; align-items:center; gap:12px; padding:16px 20px; cursor:pointer; }
+.doc-icon { width:40px; height:40px; border-radius:9px; display:grid; place-items:center; flex-shrink:0; }
+.doc-icon.pdf { background:#fee2e2; color:#dc2626; }
+.doc-icon.img { background:#dbeafe; color:#2563eb; }
+.doc-icon.xls { background:#dcfce7; color:#16a34a; }
+.doc-info { flex:1; }
+.doc-title { font-weight:700; font-size:14px; }
+.doc-meta { font-size:12px; color:var(--ink-500); margin-top:2px; }
+.doc-actions { display:flex; gap:6px; align-items:center; }
+
+.doc-body { padding:16px 20px; border-top:1px solid var(--ink-50); display:none; }
+.doc-body.open { display:block; }
+
+.doc-preview {
+  background:var(--ink-50); border-radius:8px;
+  padding:20px; margin-bottom:14px; text-align:center;
+  font-size:13px; color:var(--ink-500);
+}
+
+.verify-checks { display:flex; flex-direction:column; gap:8px; margin-bottom:14px; }
+.verify-check { display:flex; align-items:center; gap:10px; font-size:13px; }
+.verify-check input { width:16px; height:16px; cursor:pointer; }
+.check-ok { color:var(--green-600); font-weight:600; }
+.check-warn { color:#b45309; font-weight:600; }
+</style>
+
+<div>
+  <div class="vd-toolbar">
+    <h2>ตรวจสอบเอกสาร</h2>
+    <select style="padding:7px 12px;border:1px solid var(--ink-200);border-radius:7px;font-size:13px;font-family:inherit">
+      <option>REQ-2569-001 — ปรับปรุงห้องเรียนอุ้มน้อย</option>
+      <option>REQ-2569-002 — อบรมครูพัฒนาสื่อ</option>
+    </select>
+  </div>
+
+  <div style="background:white;border:1px solid var(--ink-100);border-radius:12px;padding:16px 20px;margin-bottom:16px;display:flex;align-items:center;gap:14px">
+    <div>
+      <div style="font-weight:700;font-size:15px">คำขอเบิก REQ-2569-001</div>
+      <div style="font-size:13px;color:var(--ink-500);margin-top:2px">โครงการปรับปรุงห้องเรียนอุ้มน้อย · ฿250,000 · ผู้ยื่น: สุจิตรา ศิลป์</div>
+    </div>
+    <span class="tag amber" style="margin-left:auto">รอตรวจสอบ</span>
+  </div>
+
+  <div class="doc-card">
+    <div class="doc-card-header" onclick="this.nextElementSibling.classList.toggle('open')">
+      <div class="doc-icon pdf">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+      </div>
+      <div class="doc-info">
+        <div class="doc-title">ใบขออนุมัติโครงการ.pdf</div>
+        <div class="doc-meta">2.4 MB · อัปโหลด: 12 พ.ค. 2569</div>
+      </div>
+      <div class="doc-actions">
+        <button class="btn sm ghost">ดูเอกสาร</button>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--ink-400)" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+      </div>
+    </div>
+    <div class="doc-body">
+      <div class="doc-preview">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="1.5" style="margin-bottom:8px"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        <div>ใบขออนุมัติโครงการ.pdf</div>
+        <div style="font-size:11.5px;margin-top:4px">คลิก "ดูเอกสาร" เพื่อเปิดไฟล์</div>
+      </div>
+      <div class="verify-checks">
+        <div style="font-size:12px;font-weight:700;color:var(--ink-500);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">รายการตรวจสอบ</div>
+        <label class="verify-check"><input type="checkbox" checked> เอกสารครบถ้วนและชัดเจน</label>
+        <label class="verify-check"><input type="checkbox" checked> ลายมือชื่อผู้รับผิดชอบครบ</label>
+        <label class="verify-check"><input type="checkbox"> ตรวจสอบงบประมาณสอดคล้อง</label>
+        <label class="verify-check"><input type="checkbox"> อนุมัติจากหัวหน้างาน</label>
+      </div>
+      <div style="display:flex;justify-content:flex-end;gap:8px">
+        <button class="btn sm ghost" style="color:#dc2626">แจ้งแก้ไขเอกสาร</button>
+        <button class="btn sm primary">ยืนยันเอกสารถูกต้อง ✓</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc-card">
+    <div class="doc-card-header" onclick="this.nextElementSibling.classList.toggle('open')">
+      <div class="doc-icon img">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+      </div>
+      <div class="doc-info">
+        <div class="doc-title">ใบเสนอราคา_บริษัทABC.jpg</div>
+        <div class="doc-meta">1.1 MB · อัปโหลด: 12 พ.ค. 2569</div>
+      </div>
+      <div class="doc-actions">
+        <button class="btn sm ghost">ดูภาพ</button>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--ink-400)" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+      </div>
+    </div>
+    <div class="doc-body">
+      <div class="doc-preview" style="min-height:120px;display:flex;align-items:center;justify-content:center;flex-direction:column">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="1.5" style="margin-bottom:8px"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+        <div>ใบเสนอราคา_บริษัทABC.jpg</div>
+      </div>
+      <div style="display:flex;justify-content:flex-end;gap:8px">
+        <button class="btn sm ghost" style="color:#dc2626">แจ้งแก้ไข</button>
+        <button class="btn sm primary">ยืนยันถูกต้อง ✓</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc-card">
+    <div class="doc-card-header" onclick="this.nextElementSibling.classList.toggle('open')">
+      <div class="doc-icon xls">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+      </div>
+      <div class="doc-info">
+        <div class="doc-title">รายละเอียดงบประมาณ.xlsx</div>
+        <div class="doc-meta">0.5 MB · อัปโหลด: 12 พ.ค. 2569</div>
+      </div>
+      <div class="doc-actions">
+        <button class="btn sm ghost">ดาวน์โหลด</button>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--ink-400)" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+      </div>
+    </div>
+    <div class="doc-body">
+      <div style="font-size:13px;color:var(--ink-500);margin-bottom:12px">ไม่สามารถแสดงตัวอย่างได้ กรุณาดาวน์โหลดเพื่อตรวจสอบ</div>
+      <div style="display:flex;justify-content:flex-end;gap:8px">
+        <button class="btn sm ghost" style="color:#dc2626">แจ้งแก้ไข</button>
+        <button class="btn sm primary">ยืนยันถูกต้อง ✓</button>
+      </div>
+    </div>
+  </div>
+
+  <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:8px">
+    <button class="btn ghost" style="color:#dc2626">ส่งกลับแก้ไขเอกสาร</button>
+    <button class="btn primary">ผ่านการตรวจสอบ — ส่งรอง ผอ. อนุมัติ</button>
+  </div>
+</div>

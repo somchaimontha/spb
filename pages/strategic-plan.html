@@ -1,0 +1,257 @@
+<style>
+.strat-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 20px;
+}
+.strat-header h2 { margin:0; font-size:18px; font-weight:700; }
+.strat-header .actions { display:flex; gap:8px; }
+
+.strat-summary {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px;
+  margin-bottom: 20px;
+}
+.strat-stat {
+  background: white; border: 1px solid var(--ink-100);
+  border-radius: 10px; padding: 16px;
+  text-align: center;
+}
+.strat-stat .ss-num { font-size: 28px; font-weight: 800; color: var(--navy-700); }
+.strat-stat .ss-lbl { font-size: 12px; color: var(--ink-500); margin-top: 4px; }
+
+.strategy-card {
+  background: white; border: 1px solid var(--ink-100);
+  border-radius: 12px; margin-bottom: 14px; overflow: hidden;
+}
+.sc2-header {
+  display: flex; align-items: center; gap: 12px;
+  padding: 16px 20px; cursor: pointer;
+  border-bottom: 1px solid var(--ink-100);
+  transition: background .15s;
+}
+.sc2-header:hover { background: var(--ink-50); }
+.sc2-num {
+  width: 32px; height: 32px; border-radius: 8px;
+  background: var(--navy-700); color: white;
+  display: grid; place-items: center;
+  font-weight: 700; font-size: 14px; flex-shrink: 0;
+}
+.sc2-title { flex: 1; font-weight: 700; font-size: 14.5px; }
+.sc2-meta { display: flex; gap: 8px; align-items: center; }
+.sc2-chevron { transition: transform .2s; }
+.sc2-header.open .sc2-chevron { transform: rotate(180deg); }
+
+.sc2-body { padding: 16px 20px; display: none; }
+.sc2-body.open { display: block; }
+
+.kpi-table { width:100%; border-collapse:collapse; font-size:13px; }
+.kpi-table th {
+  padding: 9px 12px; text-align:left; font-weight:600;
+  font-size:11.5px; color:var(--ink-500);
+  background:var(--ink-50); border-bottom:1px solid var(--ink-100);
+}
+.kpi-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--ink-50);
+  vertical-align: middle;
+}
+.kpi-table tbody tr:last-child td { border-bottom: none; }
+
+.progress-bar {
+  height: 8px; background: var(--ink-100); border-radius: 4px;
+  overflow: hidden; min-width: 80px;
+}
+.progress-fill { height:100%; border-radius:4px; background: var(--navy-500); }
+
+.proj-link {
+  color: var(--navy-500); font-size:12px; cursor:pointer;
+}
+.proj-link:hover { text-decoration: underline; }
+
+@media (max-width:768px) { .strat-summary { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width:480px) { .strat-summary { grid-template-columns: 1fr; } }
+</style>
+
+<div>
+  <div class="strat-header">
+    <h2>แผนกลยุทธ์ ปีงบประมาณ 2569</h2>
+    <div class="actions">
+      <button class="btn sm">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+        ส่งออก PDF
+      </button>
+      <button class="btn sm primary">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+        เพิ่มกลยุทธ์
+      </button>
+    </div>
+  </div>
+
+  <!-- Summary stats -->
+  <div class="strat-summary">
+    <div class="strat-stat">
+      <div class="ss-num">4</div>
+      <div class="ss-lbl">กลยุทธ์ทั้งหมด</div>
+    </div>
+    <div class="strat-stat">
+      <div class="ss-num" style="color:#10b981">121</div>
+      <div class="ss-lbl">โครงการที่สอดคล้อง</div>
+    </div>
+    <div class="strat-stat">
+      <div class="ss-num" style="color:#f59e0b">68</div>
+      <div class="ss-lbl">กำลังดำเนินการ</div>
+    </div>
+    <div class="strat-stat">
+      <div class="ss-num" style="color:#22c55e">45</div>
+      <div class="ss-lbl">สำเร็จแล้ว</div>
+    </div>
+  </div>
+
+  <!-- Strategy 1 -->
+  <div class="strategy-card">
+    <div class="sc2-header open" onclick="toggleSC(this)">
+      <div class="sc2-num">1</div>
+      <div class="sc2-title">พัฒนาคุณภาพผู้เรียนให้มีทักษะในศตวรรษที่ 21</div>
+      <div class="sc2-meta">
+        <span class="tag navy" style="font-size:11px">32 โครงการ</span>
+        <span class="tag green" style="font-size:11px">สอดคล้อง 82%</span>
+      </div>
+      <svg class="sc2-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
+    </div>
+    <div class="sc2-body open">
+      <table class="kpi-table">
+        <thead>
+          <tr>
+            <th>ตัวชี้วัด (KPI)</th>
+            <th>เป้าหมาย</th>
+            <th>ผลการดำเนินงาน</th>
+            <th>ความก้าวหน้า</th>
+            <th>โครงการที่เกี่ยวข้อง</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>ผลสัมฤทธิ์การเรียนผ่านเกณฑ์</td>
+            <td>70%</td>
+            <td>65%</td>
+            <td>
+              <div class="progress-bar"><div class="progress-fill" style="width:65%;background:#3b82f6"></div></div>
+              <span style="font-size:11px;color:var(--ink-500)">65/70</span>
+            </td>
+            <td><span class="proj-link" onclick="loadPage('projects')">ดู 12 โครงการ →</span></td>
+          </tr>
+          <tr>
+            <td>นักเรียนมีทักษะดิจิทัล</td>
+            <td>80%</td>
+            <td>72%</td>
+            <td>
+              <div class="progress-bar"><div class="progress-fill" style="width:72%;background:#10b981"></div></div>
+              <span style="font-size:11px;color:var(--ink-500)">72/80</span>
+            </td>
+            <td><span class="proj-link" onclick="loadPage('projects')">ดู 8 โครงการ →</span></td>
+          </tr>
+          <tr>
+            <td>อัตราการออกกลางคัน</td>
+            <td>≤ 2%</td>
+            <td>1.8%</td>
+            <td>
+              <div class="progress-bar"><div class="progress-fill" style="width:90%;background:#22c55e"></div></div>
+              <span style="font-size:11px;color:var(--green-600)">บรรลุเป้าหมาย ✓</span>
+            </td>
+            <td><span class="proj-link" onclick="loadPage('projects')">ดู 5 โครงการ →</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Strategy 2 -->
+  <div class="strategy-card">
+    <div class="sc2-header" onclick="toggleSC(this)">
+      <div class="sc2-num">2</div>
+      <div class="sc2-title">พัฒนาครูและบุคลากรทางการศึกษา</div>
+      <div class="sc2-meta">
+        <span class="tag navy" style="font-size:11px">28 โครงการ</span>
+        <span class="tag amber" style="font-size:11px">สอดคล้อง 65%</span>
+      </div>
+      <svg class="sc2-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
+    </div>
+    <div class="sc2-body">
+      <table class="kpi-table">
+        <thead>
+          <tr><th>ตัวชี้วัด (KPI)</th><th>เป้าหมาย</th><th>ผลการดำเนินงาน</th><th>ความก้าวหน้า</th><th>โครงการ</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>ครูผ่านการอบรมพัฒนาตนเอง</td><td>100%</td><td>78%</td>
+            <td><div class="progress-bar"><div class="progress-fill" style="width:78%;background:#f59e0b"></div></div><span style="font-size:11px;color:var(--ink-500)">78/100</span></td>
+            <td><span class="proj-link">ดู 6 โครงการ →</span></td>
+          </tr>
+          <tr>
+            <td>ครูมีใบอนุญาตประกอบวิชาชีพ</td><td>100%</td><td>95%</td>
+            <td><div class="progress-bar"><div class="progress-fill" style="width:95%;background:#10b981"></div></div><span style="font-size:11px;color:var(--ink-500)">95/100</span></td>
+            <td><span class="proj-link">ดู 2 โครงการ →</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Strategy 3 -->
+  <div class="strategy-card">
+    <div class="sc2-header" onclick="toggleSC(this)">
+      <div class="sc2-num">3</div>
+      <div class="sc2-title">พัฒนาสภาพแวดล้อมและแหล่งเรียนรู้</div>
+      <div class="sc2-meta">
+        <span class="tag navy" style="font-size:11px">35 โครงการ</span>
+        <span class="tag green" style="font-size:11px">สอดคล้อง 78%</span>
+      </div>
+      <svg class="sc2-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
+    </div>
+    <div class="sc2-body">
+      <table class="kpi-table">
+        <thead><tr><th>ตัวชี้วัด (KPI)</th><th>เป้าหมาย</th><th>ผลการดำเนินงาน</th><th>ความก้าวหน้า</th><th>โครงการ</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>ห้องเรียนผ่านมาตรฐาน</td><td>90%</td><td>84%</td>
+            <td><div class="progress-bar"><div class="progress-fill" style="width:84%;background:#8b5cf6"></div></div><span style="font-size:11px;color:var(--ink-500)">84/90</span></td>
+            <td><span class="proj-link">ดู 15 โครงการ →</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Strategy 4 -->
+  <div class="strategy-card">
+    <div class="sc2-header" onclick="toggleSC(this)">
+      <div class="sc2-num">4</div>
+      <div class="sc2-title">พัฒนาระบบบริหารจัดการให้มีประสิทธิภาพ</div>
+      <div class="sc2-meta">
+        <span class="tag navy" style="font-size:11px">26 โครงการ</span>
+        <span class="tag green" style="font-size:11px">สอดคล้อง 90%</span>
+      </div>
+      <svg class="sc2-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
+    </div>
+    <div class="sc2-body">
+      <table class="kpi-table">
+        <thead><tr><th>ตัวชี้วัด (KPI)</th><th>เป้าหมาย</th><th>ผลการดำเนินงาน</th><th>ความก้าวหน้า</th><th>โครงการ</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>ระบบงบประมาณโปร่งใส</td><td>100%</td><td>100%</td>
+            <td><div class="progress-bar"><div class="progress-fill" style="width:100%;background:#22c55e"></div></div><span style="font-size:11px;color:var(--green-600)">บรรลุ ✓</span></td>
+            <td><span class="proj-link">ดู 8 โครงการ →</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<script>
+function toggleSC(header) {
+  header.classList.toggle('open');
+  const body = header.nextElementSibling;
+  body.classList.toggle('open');
+}
+</script>

@@ -1,0 +1,109 @@
+<style>
+.audit-toolbar { display:flex; align-items:center; gap:10px; margin-bottom:20px; flex-wrap:wrap; }
+.audit-toolbar h2 { margin:0; font-size:18px; font-weight:700; flex:1; }
+.audit-filter { display:flex; gap:8px; margin-bottom:16px; flex-wrap:wrap; }
+.audit-filter select, .audit-filter input {
+  padding:7px 12px; border:1px solid var(--ink-200);
+  border-radius:7px; font-family:inherit; font-size:13px; background:white; outline:none;
+}
+.audit-table { width:100%; border-collapse:collapse; font-size:12.5px; }
+.audit-table th {
+  padding:9px 12px; text-align:left; font-weight:600; font-size:11px;
+  color:var(--ink-500); background:#0f2044; color:rgba(255,255,255,.7);
+  text-transform:uppercase; letter-spacing:.06em;
+  border:none;
+}
+.audit-table td { padding:10px 12px; border-bottom:1px solid var(--ink-50); vertical-align:middle; }
+.audit-table tbody tr:hover td { background:var(--ink-50); }
+.audit-table .mono-sm { font-family:monospace; font-size:11.5px; color:var(--ink-400); }
+</style>
+
+<div>
+  <div class="audit-toolbar">
+    <h2>Audit Log — บันทึกการใช้งานระบบ</h2>
+    <button class="btn sm">ส่งออก CSV</button>
+  </div>
+
+  <div class="audit-filter">
+    <select><option>ทุก Action</option><option>LOGIN</option><option>CREATE</option><option>UPDATE</option><option>DELETE</option><option>APPROVE</option><option>REJECT</option></select>
+    <select><option>ผู้ใช้ทั้งหมด</option><option>admin@msr.ac.th</option><option>officer@msr.ac.th</option></select>
+    <input type="date" value="2026-05-12">
+    <input type="text" placeholder="ค้นหา Entity / ID..." style="flex:1;min-width:180px">
+  </div>
+
+  <div style="background:white;border:1px solid var(--ink-100);border-radius:12px;overflow:hidden">
+    <table class="audit-table">
+      <thead>
+        <tr>
+          <th>เวลา</th><th>ผู้ใช้</th><th>Action</th>
+          <th>Entity</th><th>Entity ID</th><th>รายละเอียด</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="mono-sm">2026-05-12 13:05:22</td>
+          <td style="font-weight:600">admin@msr.ac.th</td>
+          <td><span class="tag green" style="font-size:10px">LOGIN</span></td>
+          <td>SESSION</td>
+          <td class="mono-sm">sess_abc123</td>
+          <td style="color:var(--ink-500)">เข้าสู่ระบบสำเร็จ</td>
+        </tr>
+        <tr>
+          <td class="mono-sm">2026-05-12 10:45:10</td>
+          <td style="font-weight:600">officer@msr.ac.th</td>
+          <td><span class="tag navy" style="font-size:10px">APPROVE</span></td>
+          <td>REQUEST</td>
+          <td class="mono-sm">REQ-2569-001</td>
+          <td style="color:var(--ink-500)">อนุมัติคำขอเบิก ฿250,000</td>
+        </tr>
+        <tr>
+          <td class="mono-sm">2026-05-12 09:30:44</td>
+          <td style="font-weight:600">staff01@msr.ac.th</td>
+          <td><span class="tag gold" style="font-size:10px">CREATE</span></td>
+          <td>REQUEST</td>
+          <td class="mono-sm">REQ-2569-006</td>
+          <td style="color:var(--ink-500)">สร้างคำขอเบิก ป้ายประชาสัมพันธ์</td>
+        </tr>
+        <tr>
+          <td class="mono-sm">2026-05-11 16:00:05</td>
+          <td style="font-weight:600">officer@msr.ac.th</td>
+          <td><span class="tag" style="font-size:10px">UPDATE</span></td>
+          <td>PROJECT</td>
+          <td class="mono-sm">PROJ-69-003</td>
+          <td style="color:var(--ink-500)">เปลี่ยนสถานะ: ดำเนินการ → เสร็จสิ้น</td>
+        </tr>
+        <tr>
+          <td class="mono-sm">2026-05-09 11:15:33</td>
+          <td style="font-weight:600">deputy@msr.ac.th</td>
+          <td><span class="tag rose" style="font-size:10px">REJECT</span></td>
+          <td>REQUEST</td>
+          <td class="mono-sm">REQ-2569-004</td>
+          <td style="color:var(--ink-500)">ไม่อนุมัติ: เกินวงเงิน</td>
+        </tr>
+        <tr>
+          <td class="mono-sm">2026-05-08 14:20:18</td>
+          <td style="font-weight:600">staff02@msr.ac.th</td>
+          <td><span class="tag gold" style="font-size:10px">CREATE</span></td>
+          <td>PROJECT</td>
+          <td class="mono-sm">PROJ-69-121</td>
+          <td style="color:var(--ink-500)">เพิ่มโครงการใหม่: เครื่องขยายเสียง 2569</td>
+        </tr>
+        <tr>
+          <td class="mono-sm">2026-05-08 09:00:02</td>
+          <td style="font-weight:600">officer@msr.ac.th</td>
+          <td><span class="tag" style="font-size:10px">UPDATE</span></td>
+          <td>PROJECT</td>
+          <td class="mono-sm">PROJ-69-045</td>
+          <td style="color:var(--ink-500)">แก้ไขงบประมาณ: 15,000 → 18,000</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div style="margin-top:12px;display:flex;justify-content:space-between;align-items:center;font-size:12.5px;color:var(--ink-500)">
+    <span>แสดง 1–7 จาก 1,247 รายการ</span>
+    <div style="display:flex;gap:6px">
+      <button class="btn sm">← ก่อนหน้า</button>
+      <button class="btn sm primary">ถัดไป →</button>
+    </div>
+  </div>
+</div>

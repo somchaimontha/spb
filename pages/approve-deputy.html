@@ -1,0 +1,225 @@
+<style>
+.apv-toolbar {
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 20px; flex-wrap: wrap;
+}
+.apv-toolbar h2 { margin:0; font-size:18px; font-weight:700; flex:1; }
+
+.apv-tabs {
+  display: flex; gap: 4px; margin-bottom: 18px;
+  background: white; border: 1px solid var(--ink-100);
+  border-radius: 10px; padding: 4px;
+}
+.apv-tab {
+  flex: 1; padding: 8px 12px; text-align: center;
+  border-radius: 7px; cursor: pointer;
+  font-size: 13px; font-weight: 600;
+  color: var(--ink-500); transition: all .15s;
+  position: relative;
+}
+.apv-tab:hover { background: var(--ink-50); }
+.apv-tab.active { background: var(--navy-700); color: white; }
+.apv-tab .badge {
+  position: absolute; top: -4px; right: 4px;
+  background: #ef4444; color: white;
+  font-size: 9px; font-weight: 700;
+  padding: 1px 5px; border-radius: 10px;
+}
+
+.apv-card {
+  background: white; border: 1px solid var(--ink-100);
+  border-radius: 12px; margin-bottom: 12px; overflow: hidden;
+  transition: box-shadow .2s;
+}
+.apv-card:hover { box-shadow: 0 4px 14px rgba(0,0,0,.07); }
+.apv-card-header {
+  display: flex; align-items: center; gap: 14px;
+  padding: 16px 20px;
+}
+.apv-card-icon {
+  width: 42px; height: 42px; border-radius: 10px;
+  display: grid; place-items: center; flex-shrink: 0;
+  font-weight: 700; font-size: 16px;
+}
+.apv-card-icon.disbursement { background: #eff6ff; color: #1d4ed8; }
+.apv-card-icon.project      { background: #f0fdf4; color: #15803d; }
+
+.apv-card-info { flex: 1; min-width: 0; }
+.apv-card-info .ci-title {
+  font-weight: 700; font-size: 14.5px; color: var(--ink-900);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.apv-card-info .ci-meta { font-size: 12px; color: var(--ink-500); margin-top: 3px; }
+
+.apv-card-amount {
+  font-size: 18px; font-weight: 800; color: var(--navy-700);
+  white-space: nowrap;
+}
+.apv-card-actions {
+  display: flex; gap: 8px; align-items: center;
+}
+
+.apv-card-body {
+  padding: 0 20px 16px;
+  border-top: 1px solid var(--ink-50);
+  display: none;
+}
+.apv-card-body.open { display: block; padding-top: 16px; }
+
+.detail-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 12px; margin-bottom: 14px;
+}
+.detail-item { }
+.detail-item .di-label { font-size: 11.5px; color: var(--ink-400); font-weight: 600; text-transform: uppercase; letter-spacing: .05em; }
+.detail-item .di-val { font-size: 13.5px; color: var(--ink-900); font-weight: 600; margin-top: 2px; }
+
+.apv-comment {
+  width: 100%; padding: 9px 12px;
+  border: 1px solid var(--ink-200); border-radius: 7px;
+  font-family: inherit; font-size: 13px; resize: vertical;
+  margin-bottom: 12px;
+}
+
+.approve-btn { background: #16a34a; color: white; border-color: #16a34a; }
+.approve-btn:hover { background: #15803d; }
+.reject-btn { background: #dc2626; color: white; border-color: #dc2626; }
+.reject-btn:hover { background: #b91c1c; }
+
+@media (max-width:640px) { .detail-grid { grid-template-columns: repeat(2,1fr); } .apv-card-amount { display:none; } }
+</style>
+
+<div>
+  <div class="apv-toolbar">
+    <h2>กล่องอนุมัติ — รองผู้อำนวยการ</h2>
+    <div style="font-size:13px;color:var(--ink-500)">วันที่: 12 พ.ค. 2569</div>
+  </div>
+
+  <div class="apv-tabs">
+    <div class="apv-tab active">
+      รออนุมัติ
+      <span class="badge">12</span>
+    </div>
+    <div class="apv-tab">อนุมัติแล้ว</div>
+    <div class="apv-tab">ไม่อนุมัติ</div>
+    <div class="apv-tab">ทั้งหมด</div>
+  </div>
+
+  <!-- Request 1 -->
+  <div class="apv-card">
+    <div class="apv-card-header" onclick="toggleApvCard(this)">
+      <div class="apv-card-icon disbursement">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+      </div>
+      <div class="apv-card-info">
+        <div class="ci-title">คำขอเบิก — โครงการปรับปรุงห้องเรียนอุ้มน้อย</div>
+        <div class="ci-meta">ผู้ยื่น: สุจิตรา ศิลป์ · ยื่น: 12 พ.ค. 2569 · ประเภท: เงินบำรุงการศึกษา</div>
+      </div>
+      <div class="apv-card-amount">฿250,000</div>
+      <div class="apv-card-actions" onclick="event.stopPropagation()">
+        <span class="tag amber" style="font-size:11px">รอรอง ผอ.</span>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--ink-400)" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+      </div>
+    </div>
+    <div class="apv-card-body">
+      <div class="detail-grid">
+        <div class="detail-item">
+          <div class="di-label">โครงการ</div>
+          <div class="di-val">ปรับปรุงห้องเรียนอุ้มน้อย</div>
+        </div>
+        <div class="detail-item">
+          <div class="di-label">หมวดรายจ่าย</div>
+          <div class="di-val">ค่าวัสดุก่อสร้าง</div>
+        </div>
+        <div class="detail-item">
+          <div class="di-label">จำนวนเงิน</div>
+          <div class="di-val" style="color:var(--navy-700)">฿250,000</div>
+        </div>
+        <div class="detail-item">
+          <div class="di-label">ผู้รับผิดชอบ</div>
+          <div class="di-val">สุจิตรา ศิลป์</div>
+        </div>
+        <div class="detail-item">
+          <div class="di-label">วันที่ดำเนินการ</div>
+          <div class="di-val">15–20 พ.ค. 2569</div>
+        </div>
+        <div class="detail-item">
+          <div class="di-label">เอกสารแนบ</div>
+          <div class="di-val" style="color:var(--navy-500);cursor:pointer">3 ไฟล์ ดูเอกสาร →</div>
+        </div>
+      </div>
+      <textarea class="apv-comment" rows="2" placeholder="ความเห็น / เหตุผล (ถ้ามี)..."></textarea>
+      <div style="display:flex;justify-content:flex-end;gap:8px">
+        <button class="btn sm reject-btn" onclick="doAction(this,'reject')">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          ไม่อนุมัติ
+        </button>
+        <button class="btn sm approve-btn" onclick="doAction(this,'approve')">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+          อนุมัติ
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Request 2 -->
+  <div class="apv-card">
+    <div class="apv-card-header" onclick="toggleApvCard(this)">
+      <div class="apv-card-icon project">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>
+      </div>
+      <div class="apv-card-info">
+        <div class="ci-title">เสนอโครงการ — อบรมครูพัฒนาสื่อดิจิทัล 2569</div>
+        <div class="ci-meta">ผู้ยื่น: นิรมล รักดี · ยื่น: 10 พ.ค. 2569 · ประเภท: เงินอุดหนุน</div>
+      </div>
+      <div class="apv-card-amount">฿45,000</div>
+      <div class="apv-card-actions" onclick="event.stopPropagation()">
+        <span class="tag amber" style="font-size:11px">รอรอง ผอ.</span>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--ink-400)" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+      </div>
+    </div>
+    <div class="apv-card-body">
+      <div class="detail-grid">
+        <div class="detail-item"><div class="di-label">ปีงบประมาณ</div><div class="di-val">2569</div></div>
+        <div class="detail-item"><div class="di-label">กลยุทธ์</div><div class="di-val">กลยุทธ์ที่ 2</div></div>
+        <div class="detail-item"><div class="di-label">งบประมาณ</div><div class="di-val" style="color:var(--navy-700)">฿45,000</div></div>
+        <div class="detail-item"><div class="di-label">ผู้รับผิดชอบ</div><div class="di-val">นิรมล รักดี</div></div>
+        <div class="detail-item"><div class="di-label">ระยะเวลา</div><div class="di-val">ม.ค. – ก.พ. 2569</div></div>
+        <div class="detail-item"><div class="di-label">เอกสาร</div><div class="di-val" style="color:var(--navy-500);cursor:pointer">ดูโครงการ PDF →</div></div>
+      </div>
+      <textarea class="apv-comment" rows="2" placeholder="ความเห็น..."></textarea>
+      <div style="display:flex;justify-content:flex-end;gap:8px">
+        <button class="btn sm reject-btn" onclick="doAction(this,'reject')">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          ไม่อนุมัติ
+        </button>
+        <button class="btn sm approve-btn" onclick="doAction(this,'approve')">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+          อนุมัติ — ส่ง ผอ.
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Empty state hint -->
+  <div style="text-align:center;padding:20px;font-size:13px;color:var(--ink-400)">
+    แสดง 2 จาก 12 รายการที่รออนุมัติ
+  </div>
+</div>
+
+<script>
+function toggleApvCard(header) {
+  const body = header.parentElement.querySelector('.apv-card-body');
+  body.classList.toggle('open');
+}
+function doAction(btn, action) {
+  const card = btn.closest('.apv-card');
+  const title = card.querySelector('.ci-title').textContent;
+  const msg = action === 'approve' ? 'อนุมัติ' : 'ไม่อนุมัติ';
+  if (confirm(`${msg}: "${title}" ?`)) {
+    card.style.opacity = '.4';
+    card.style.pointerEvents = 'none';
+    setTimeout(() => card.remove(), 600);
+  }
+}
+</script>

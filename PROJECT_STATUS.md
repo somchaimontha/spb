@@ -1,97 +1,156 @@
-# PROJECT STATUS — ระบบงานแผนและงบประมาณ
+# PROJECT STATUS — ระบบงานนโยบายและแผน v2.0
 ### วิทยาลัยการอาชีพแม่สะเรียง · ปีงบประมาณ 2569
 
-> อัปเดตล่าสุด: พฤษภาคม 2569 · Branch: `main`
+> อัปเดตล่าสุด: 12 พฤษภาคม 2569 · Branch: `main` · Version: **2.0**
 
 ---
 
-## สถานะไฟล์ทั้งหมด
+## สถานะโปรเจกต์โดยรวม
 
-### Frontend (HTML/CSS/JS)
-
-| ไฟล์ | สถานะ | คำอธิบาย |
-|------|--------|----------|
-| `app.html` | ✅ พร้อม | Shell หลัก — sidebar, routing, session, api.js |
-| `signin.html` | ✅ พร้อม | หน้า login (MockDB mode) |
-| `styles.css` | ✅ พร้อม | Design tokens: navy/gold/paper, shared classes |
-| `js/api.js` | ✅ พร้อม | API client + MockDB (60 โครงการจริงปี 2569) |
-
-### Pages
-
-| ไฟล์ | สถานะ | ฟีเจอร์ที่มี |
-|------|--------|-------------|
-| `pages/dashboard.html` | ✅ พร้อม | KPI cards, progress bars, alerts |
-| `pages/projects.html` | ✅ พร้อม (ซับซ้อนที่สุด) | ตาราง dept-group, audit 3 ขั้น, execution rounds, 5 modals, running balance, cancel workflow |
-| `pages/settings.html` | ✅ พร้อม | 5 แท็บ: ทั่วไป, สถานะ/หมวด, ฝ่าย, ผู้มีอำนาจ, ผู้ใช้ |
-| `pages/budget.html` | ⚠️ โครงร่างเบื้องต้น | บัญชีคุมงบ — ยังไม่ครบ |
-| `pages/disbursement.html` | ⚠️ โครงร่างเบื้องต้น | ฟอร์มขอเบิก — ยังไม่ครบ |
-| `pages/approval.html` | ⚠️ โครงร่างเบื้องต้น | กล่องอนุมัติ — ยังไม่ครบ |
-| `pages/reports.html` | ⚠️ โครงร่างเบื้องต้น | รายงาน/Export — ยังไม่ครบ |
-
-### Google Apps Script Backend
-
-| ไฟล์ | สถานะ Git | พร้อม Deploy | หมายเหตุ |
-|------|-----------|-------------|---------|
-| `gas/Code.gs` | 🔒 ซ่อน (.gitignore) | ✅ พร้อม (แก้ ID ก่อน) | มี SHEET_ID + DRIVE_FOLDER_ID จริง |
-| `gas/Auth.gs` | ✅ tracked | ✅ พร้อม Deploy | Login, session, roles, audit |
-| `gas/Projects.gs` | ✅ tracked | ✅ พร้อม Deploy | CRUD, cancel, execution rounds, history |
-| `gas/Budget.gs` | ✅ tracked | ✅ พร้อม Deploy | KPIs, disbursements, allocations, CSV export |
-| `gas/Settings.gs` | ✅ tracked | ✅ พร้อม Deploy | Users, dynamic settings |
+| หัวข้อ | รายละเอียด |
+|--------|-----------|
+| **Version** | v2.0 (redesigned) |
+| **Backend** | Google Apps Script v3 (Deploy: 12 พ.ค. 2569 12:44) |
+| **Frontend** | GitHub Pages: `somchaimontha.github.io/spb/` |
+| **GAS URL** | `https://script.google.com/macros/s/AKfycbzqNFlei.../exec` |
+| **Google Sheet ID** | `1vMO4k2VdEbV85xqnDFbYjGbyyxQaoigKQ5ZPU1cxIr4` |
+| **Auth** | Email/Password + Google OAuth (GSI) เฉพาะ @msr.ac.th |
 
 ---
 
-## วิธี Deploy ไปยัง Google Apps Script
-
-### ขั้นตอน (ทำครั้งเดียว)
-
-1. เปิด [script.google.com](https://script.google.com) → **New project**
-2. ตั้งชื่อโปรเจกต์: `PlanWork MSC 2569`
-3. Copy โค้ดจากไฟล์ตามลำดับ:
+## โครงสร้างไฟล์ทั้งหมด
 
 ```
-gas/Code.gs      → วางในไฟล์ Code.gs หลัก (ไฟล์แรกที่มีอยู่)
-gas/Auth.gs      → สร้างไฟล์ใหม่ ชื่อ Auth.gs
-gas/Projects.gs  → สร้างไฟล์ใหม่ ชื่อ Projects.gs
-gas/Budget.gs    → สร้างไฟล์ใหม่ ชื่อ Budget.gs
-gas/Settings.gs  → สร้างไฟล์ใหม่ ชื่อ Settings.gs
-```
-
-4. **แก้ไข Code.gs** — อัปเดต CFG:
-
-```javascript
-const CFG = {
-  SHEET_ID:        '1vMO4k2VdEbV85xqnDFbYjGbyyxQaoigKQ5ZPU1cxIr4',  // ← Google Sheet ID จริง
-  DRIVE_FOLDER_ID: '1-WJkIK_9Xg-00SrNyd6VjeZe2bC5GGUK',              // ← Google Drive Folder ID จริง
-  SESSION_TTL_H:   8,
-  FISCAL_YEAR:     2569,
-  SALT:            'MSC_PLAN_2569'
-};
-```
-
-5. รัน `initSheets()` ครั้งแรกเพื่อสร้าง Sheet ทั้งหมด
-6. รัน `_seedAdminUser()` เพื่อสร้าง admin account เริ่มต้น
-7. **Deploy → New deployment → Web app**
-   - Execute as: **Me**
-   - Who has access: **Anyone** (หรือ domain เฉพาะถ้ามี Workspace)
-8. Copy URL → วางใน `app.html` เพิ่ม:
-
-```html
-<script>window.__GAS_URL__ = 'https://script.google.com/macros/s/AKfy.../exec';</script>
+planwork webapp/
+├── app.html              ← Shell หลัก v2.0 (sidebar collapsible, 24 routes)
+├── signin.html           ← Login: Email/Password + Google Sign-In
+├── styles.css            ← Design system (Sarabun + navy/gold/paper)
+├── index.html            ← Landing / redirect
+├── logo-msr.png
+│
+├── js/
+│   ├── api.js            ← API client + MockDB fallback
+│   ├── security.js       ← Session integrity guard (FNV-1a hash)
+│   └── tamper-guard.js   ← DevTools deterrent (ปิดด้วย devmode)
+│
+├── pages/                ← 27 หน้า (SPA)
+│   │
+│   ├── dashboard.html        ✅ 4 budget-type cards + chart + requests
+│   │
+│   ├── [แผนงาน]
+│   ├── strategic-plan.html   ✅ แผนกลยุทธ์ 4 กลยุทธ์ + KPI ต่อโครงการ
+│   ├── annual-plan.html      ✅ แผนปฏิบัติการ Gantt-style 12 เดือน
+│   ├── kpi.html              ✅ ติดตาม KPI พร้อม progress bar
+│   │
+│   ├── [โครงการ]
+│   ├── propose-project.html  ✅ เสนอโครงการ 5-step + month selector
+│   ├── projects.html         ✅ ทะเบียนโครงการ 121 รายการ (MockDB)
+│   ├── activities.html       ✅ จัดการกิจกรรม card grid
+│   │
+│   ├── [งบประมาณ]
+│   ├── disbursement.html     ✅ สร้างคำขอใหม่ (form)
+│   ├── budget.html           ✅ ตัดงบประมาณ / บัญชีคุมงบ
+│   ├── repay.html            ✅ คืนเงินยืม
+│   ├── budget-received.html  ✅ ดูยอดคงเหลือ
+│   │
+│   ├── [กล่องอนุมัติ]
+│   ├── approve-deputy.html   ✅ อนุมัติ รอง ผอ. (expand cards)
+│   ├── approve-director.html ✅ อนุมัติ ผอ.
+│   ├── verify-docs.html      ✅ ตรวจสอบเอกสาร (PDF/IMG/XLS preview)
+│   ├── approval.html         ✅ ตรวจสอบโครงการ
+│   ├── all-requests.html     ✅ คำขอทั้งหมด (table + filter)
+│   │
+│   ├── [รายงาน]
+│   ├── reports.html          ✅ สรุปภาพรวม
+│   ├── project-summary.html  ✅ สรุปโครงการที่เสนอ
+│   ├── evaluation.html       ✅ ประเมินผล CIPP Model (C/I/P/P)
+│   ├── project-report.html   ✅ รายงานโครงการ + ประวัติเบิกจ่าย
+│   ├── history.html          ✅ ประวัติดำเนินการ (timeline)
+│   ├── calendar.html         ✅ ปฏิทินกิจกรรม (grid)
+│   │
+│   ├── [ผู้ดูแลระบบ]
+│   ├── audit-log.html        ✅ Audit Log ทุก action
+│   └── settings.html         ✅ 7 แท็บ (รวม Telegram Bot + Security)
+│
+└── gas/                  ← Google Apps Script (ไม่ push ขึ้น git)
+    ├── Code.gs           🔒 (SHEET_ID + credentials)
+    ├── Auth.gs           ✅ Login, Google OAuth, session, roles
+    ├── Projects.gs       ✅ CRUD, cancel, execution rounds, history
+    ├── Budget.gs         ✅ KPIs, disbursements, allocations
+    └── Settings.gs       ✅ Users, dynamic settings
 ```
 
 ---
 
-## Sheet Schema (13 sheets ที่ initSheets() สร้าง)
+## หน้าใน Settings (7 แท็บ)
+
+| แท็บ | เนื้อหา |
+|------|--------|
+| ทั่วไป | ข้อมูลองค์กร, ปีงบประมาณ |
+| สถานะ & หมวด | ตั้งค่า tag status/category |
+| ฝ่าย/แผนก | รายชื่อฝ่ายและหัวหน้า |
+| ผู้มีอำนาจ | ลายมือชื่อ รอง ผอ. / ผอ. |
+| ผู้ใช้งาน | CRUD users, reset password |
+| การแจ้งเตือน | **Telegram Bot** (token + chat_id + test) + Email |
+| ความปลอดภัย | Developer Mode toggle + Login history |
+
+---
+
+## ระบบความปลอดภัย (3 ชั้น)
+
+| ชั้น | ไฟล์ | หน้าที่ |
+|------|------|--------|
+| **1. Tamper Guard** | `js/tamper-guard.js` | บล็อก F12, DevTools shortcuts, right-click, window-size detect, intercept localStorage.setItem |
+| **2. Session Integrity** | `js/security.js` | FNV-1a hash ผูก token+user_id+role+email → `plan_sig`; detect ถ้าแก้ไข |
+| **3. Server-side** | `gas/Auth.gs` | Token validate ทุก request, domain restrict @msr.ac.th |
+
+**Developer Mode:** Admin toggle ใน Settings → Security → ปิด tamper-guard ชั่วคราว (key: `plan_devmode=1`)
+
+---
+
+## Google OAuth (Google Sign-In)
+
+| รายละเอียด | ค่า |
+|------------|-----|
+| Client ID | `37039050545-i6pnj5mb5oradig0l35up4i3ahibm395.apps.googleusercontent.com` |
+| GCP Project | `spb-planwork` (msr.ac.th) |
+| Domain restrict | `payload.hd !== 'msr.ac.th'` (ใน Auth.gs) |
+| Library | Google Identity Services `accounts.google.com/gsi/client` |
+| Callback | `handleGoogleCredentialResponse(response)` ใน signin.html |
+
+---
+
+## MockDB (Offline Fallback)
+
+- Key: `localStorage → plan_mockdb_v5`
+- ข้อมูล: **121 โครงการจริง ปีงบประมาณ 2569** (ใน `js/api.js`)
+- ใช้ได้ทุกหน้า เมื่อ GAS ไม่ตอบสนอง
+- Session ใน MockDB: `plan_token`, `plan_user`, `plan_sig`, `plan_sig_ts`
+
+---
+
+## แหล่งเงิน 4 ประเภท (Budget Types)
+
+| key | ชื่อ | สี |
+|-----|------|-----|
+| `เงินอุดหนุน` | เงินอุดหนุน | #3b82f6 (blue) |
+| `กิจกรรมพัฒนาผู้เรียน` | กิจกรรมพัฒนาผู้เรียน | #10b981 (green) |
+| `เงินบำรุงการศึกษา` | เงินบำรุงการศึกษา | #f59e0b (amber) |
+| `รายได้สถานศึกษา` | รายได้สถานศึกษา | #8b5cf6 (purple) |
+
+---
+
+## GAS Sheet Schema (13 sheets)
 
 | Sheet | วัตถุประสงค์ |
 |-------|-------------|
-| USERS | บัญชีผู้ใช้ + role |
+| USERS | บัญชีผู้ใช้ + role + last_login |
 | SESSIONS | session token (TTL 8h) |
-| PROJECTS | ทะเบียนโครงการหลัก |
+| PROJECTS | ทะเบียนโครงการหลัก 121 รายการ |
 | PROJECT_HISTORY | ประวัติการแก้ไขทุก field |
 | PROJECT_CANCELLATIONS | บันทึกการยกเลิกโครงการ |
-| EXECUTION_ROUNDS | รอบการดำเนินงาน (running balance) |
-| DISBURSEMENTS | รายการเบิกจ่าย seq 001-099 |
+| EXECUTION_ROUNDS | รอบการดำเนินงาน running balance |
+| DISBURSEMENTS | รายการเบิกจ่าย |
 | BUDGET_ESTIMATES | ประมาณการรายจ่าย |
 | BUDGET_ALLOCATIONS | รายการจัดสรร |
 | BUDGET_RECEIVED | งบประมาณที่ได้รับ |
@@ -101,74 +160,38 @@ const CFG = {
 
 ---
 
-## แหล่งเงิน 4 ประเภทหลัก
-
-| key | ชื่อ | คอลัมน์ใน Sheet |
-|-----|------|----------------|
-| `b_learning_free` | งบเรียนฟรี | D (กิจกรรม) + E (อุดหนุน) |
-| `b_nonformal` | บกศ. (Non-Formal) | G |
-| `b_other` | งบรายจ่ายอื่น | H |
-| `b_central` | งบส่วนกลาง สอศ. | I |
-
----
-
 ## สิ่งที่ต้องพัฒนาต่อ (Next Steps)
 
-### Phase 2 — ฟีเจอร์ที่ยังขาด
+### Phase 3 — เชื่อม Backend จริง
 
-- [ ] **pages/budget.html** — บัญชีคุมงบ: heatmap หมวดงบ × แหล่งเงิน, drill-down รายการ
-- [ ] **pages/disbursement.html** — ฟอร์มขอเบิกพร้อมตรวจสอบงบ realtime
-- [ ] **pages/approval.html** — inbox อนุมัติ/ปฏิเสธ พร้อม badge จำนวนรอ
-- [ ] **pages/reports.html** — Export CSV/PDF: สรุปโครงการ, ใบสำคัญจ่าย, รายงานรายฝ่าย
+- [ ] เชื่อม GAS API กับหน้า strategic-plan, annual-plan, kpi
+- [ ] เชื่อม GAS API กับหน้า propose-project (บันทึก/ดึงข้อมูลโครงการ)
+- [ ] เชื่อม GAS API กับ approve-deputy/director (อนุมัติจริง อัปเดต Sheet)
+- [ ] Telegram Bot: เชื่อม webhook จริงกับ GAS (แจ้งเตือนอัตโนมัติ)
+- [ ] PDF export: สร้าง PDF ใบขออนุมัติโครงการ (7 หน้า) ผ่าน GAS/HTML
 
-### Phase 3 — ยกระดับ
+### Phase 4 — ยกระดับ
 
-- [ ] เชื่อม GAS URL จริง (เปลี่ยนจาก MockDB → Production)
-- [ ] Upload ไฟล์แนบไปยัง Google Drive
-- [ ] Print layout สำหรับใบเบิกจ่าย (ลายเซ็นจาก Settings)
-- [ ] แจ้งเตือน email เมื่อมีรายการรออนุมัติ
+- [ ] File upload เอกสารแนบไปยัง Google Drive
+- [ ] ลายเซ็นดิจิทัล (signature capture) สำหรับการอนุมัติ
+- [ ] ปฏิทิน: เชื่อม Google Calendar API
+- [ ] รายงาน: Export Excel จาก GAS (SpreadsheetApp)
+- [ ] แจ้งเตือน Email ผ่าน GAS MailApp
 
 ---
 
-## โครงสร้างไฟล์โปรเจกต์
+## วิธี Deploy GAS (ทบทวน)
 
 ```
-planwork webapp/
-├── app.html              ← Shell หลัก (SPA)
-├── signin.html           ← หน้า Login
-├── styles.css            ← Design system
-├── index.html            ← Landing/เอกสาร
-├── js/
-│   └── api.js            ← API client + MockDB
-├── pages/
-│   ├── dashboard.html    ✅
-│   ├── projects.html     ✅ (full-feature)
-│   ├── settings.html     ✅
-│   ├── budget.html       ⚠️
-│   ├── disbursement.html ⚠️
-│   ├── approval.html     ⚠️
-│   └── reports.html      ⚠️
-├── gas/                  ← Google Apps Script (deploy แยก)
-│   ├── Code.gs           🔒 (ไม่ push — มี credentials)
-│   ├── Auth.gs           ✅
-│   ├── Projects.gs       ✅
-│   ├── Budget.gs         ✅
-│   └── Settings.gs       ✅
-└── .gitignore            ← ป้องกัน uploads/ + Code.gs + credentials
+1. script.google.com → Project: PlanWork MSC 2569
+2. วาง Code.gs (ใส่ SHEET_ID + DRIVE_FOLDER_ID ที่ถูกต้อง)
+3. วาง Auth.gs, Projects.gs, Budget.gs, Settings.gs
+4. รัน initSheets() → _seedAdminUser()
+5. Deploy → Web App → Execute as: Me → Access: Anyone
+6. Copy URL → วางใน app.html window.__GAS_URL__
 ```
 
 ---
 
-## ความปลอดภัย Git
-
-| ประเภทไฟล์ | นโยบาย |
-|-----------|--------|
-| `uploads/*.xlsx, *.json` | 🔒 **ห้าม push** — ข้อมูลงบจริง |
-| `gas/Code.gs` | 🔒 **ห้าม push** — มี SHEET_ID + DRIVE_FOLDER_ID |
-| `*.env, config.js` | 🔒 **ห้าม push** — credentials |
-| `gas/Auth.gs` ถึง `Settings.gs` | ✅ push ได้ — ไม่มี secrets |
-| `pages/*.html, js/api.js` | ✅ push ได้ |
-
----
-
-*พัฒนาโดย งานแผนและงบประมาณ วก.แม่สะเรียง*
+*พัฒนาโดย งานแผนและงบประมาณ วิทยาลัยการอาชีพแม่สะเรียง*
+*v2.0 redesign: 12 พฤษภาคม 2569*

@@ -1,0 +1,123 @@
+<style>
+.pr-toolbar { display:flex; align-items:center; gap:10px; margin-bottom:20px; flex-wrap:wrap; }
+.pr-toolbar h2 { margin:0; font-size:18px; font-weight:700; flex:1; }
+</style>
+
+<div>
+  <div class="pr-toolbar">
+    <h2>รายงานโครงการ</h2>
+    <select style="padding:7px 12px;border:1px solid var(--ink-200);border-radius:7px;font-size:13px;font-family:inherit">
+      <option>-- เลือกโครงการ --</option>
+      <option>69-001 ปรับปรุงห้องเรียนอุ้มน้อย</option>
+      <option>69-002 อบรมครูพัฒนาสื่อดิจิทัล</option>
+      <option>69-003 กิจกรรมสนามกีฬา</option>
+    </select>
+    <button class="btn sm primary">โหลดข้อมูล</button>
+    <button class="btn sm">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+      ส่งออก PDF
+    </button>
+  </div>
+
+  <!-- Project info -->
+  <div style="background:white;border:1px solid var(--ink-100);border-radius:12px;padding:20px;margin-bottom:16px">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px">
+      <div>
+        <h3 style="margin:0 0 4px;font-size:17px;font-weight:700">โครงการปรับปรุงห้องเรียนอุ้มน้อย</h3>
+        <div style="font-size:13px;color:var(--ink-500)">รหัส: 69-001 · ปีงบประมาณ 2569 · กลยุทธ์ที่ 3</div>
+      </div>
+      <span class="tag navy" style="font-size:12px">กำลังดำเนินการ</span>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px">
+      <div>
+        <div style="font-size:11.5px;color:var(--ink-400);font-weight:700;text-transform:uppercase;letter-spacing:.05em">งบประมาณ</div>
+        <div style="font-size:18px;font-weight:800;color:var(--navy-700);margin-top:4px">฿250,000</div>
+      </div>
+      <div>
+        <div style="font-size:11.5px;color:var(--ink-400);font-weight:700;text-transform:uppercase;letter-spacing:.05em">เบิกใช้แล้ว</div>
+        <div style="font-size:18px;font-weight:800;color:#2563eb;margin-top:4px">฿98,500</div>
+      </div>
+      <div>
+        <div style="font-size:11.5px;color:var(--ink-400);font-weight:700;text-transform:uppercase;letter-spacing:.05em">คงเหลือ</div>
+        <div style="font-size:18px;font-weight:800;color:#16a34a;margin-top:4px">฿151,500</div>
+      </div>
+      <div>
+        <div style="font-size:11.5px;color:var(--ink-400);font-weight:700;text-transform:uppercase;letter-spacing:.05em">ความก้าวหน้า</div>
+        <div style="font-size:18px;font-weight:800;color:#f59e0b;margin-top:4px">39.4%</div>
+      </div>
+    </div>
+    <div style="margin-top:14px">
+      <div style="height:10px;background:var(--ink-100);border-radius:5px;overflow:hidden">
+        <div style="height:100%;width:39.4%;background:linear-gradient(90deg,#2563eb,#3b82f6);border-radius:5px"></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:11.5px;color:var(--ink-500);margin-top:4px">
+        <span>เริ่ม: 1 ต.ค. 2568</span><span>กำหนดสิ้นสุด: 30 ก.ย. 2569</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Disbursement history -->
+  <div style="background:white;border:1px solid var(--ink-100);border-radius:12px;overflow:hidden;margin-bottom:16px">
+    <div style="padding:16px 20px;border-bottom:1px solid var(--ink-100);font-weight:700;font-size:14.5px">ประวัติการเบิกจ่าย</div>
+    <table style="width:100%;border-collapse:collapse;font-size:13px">
+      <thead>
+        <tr style="background:var(--ink-50);border-bottom:1px solid var(--ink-100)">
+          <th style="padding:9px 16px;text-align:left;font-size:11.5px;color:var(--ink-500)">วันที่</th>
+          <th style="padding:9px 16px;text-align:left;font-size:11.5px;color:var(--ink-500)">รายการ</th>
+          <th style="padding:9px 16px;text-align:left;font-size:11.5px;color:var(--ink-500)">หมวด</th>
+          <th style="padding:9px 16px;text-align:right;font-size:11.5px;color:var(--ink-500)">จำนวนเงิน</th>
+          <th style="padding:9px 16px;text-align:center;font-size:11.5px;color:var(--ink-500)">สถานะ</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr style="border-bottom:1px solid var(--ink-50)">
+          <td style="padding:10px 16px;color:var(--ink-400);font-size:12px">3 พ.ย. 2568</td>
+          <td style="padding:10px 16px;font-weight:600">ค่าวัสดุก่อสร้างงวดที่ 1</td>
+          <td style="padding:10px 16px"><span style="font-size:12px;color:var(--ink-500)">ค่าวัสดุ</span></td>
+          <td style="padding:10px 16px;text-align:right;font-variant-numeric:tabular-nums">62,000</td>
+          <td style="padding:10px 16px;text-align:center"><span class="tag green" style="font-size:10.5px">จ่ายแล้ว</span></td>
+        </tr>
+        <tr style="border-bottom:1px solid var(--ink-50)">
+          <td style="padding:10px 16px;color:var(--ink-400);font-size:12px">15 ม.ค. 2569</td>
+          <td style="padding:10px 16px;font-weight:600">ค่าแรงช่างงวดที่ 1</td>
+          <td style="padding:10px 16px"><span style="font-size:12px;color:var(--ink-500)">ค่าใช้สอย</span></td>
+          <td style="padding:10px 16px;text-align:right;font-variant-numeric:tabular-nums">36,500</td>
+          <td style="padding:10px 16px;text-align:center"><span class="tag green" style="font-size:10.5px">จ่ายแล้ว</span></td>
+        </tr>
+        <tr>
+          <td style="padding:10px 16px;color:var(--ink-400);font-size:12px">12 พ.ค. 2569</td>
+          <td style="padding:10px 16px;font-weight:600">ค่าวัสดุงวดที่ 2</td>
+          <td style="padding:10px 16px"><span style="font-size:12px;color:var(--ink-500)">ค่าวัสดุ</span></td>
+          <td style="padding:10px 16px;text-align:right;font-variant-numeric:tabular-nums">250,000</td>
+          <td style="padding:10px 16px;text-align:center"><span class="tag amber" style="font-size:10.5px">รออนุมัติ</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Evaluation summary -->
+  <div style="background:white;border:1px solid var(--ink-100);border-radius:12px;padding:20px">
+    <h3 style="margin:0 0 14px;font-size:14.5px;font-weight:700">ผลการประเมิน (CIPP)</h3>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px">
+      <div style="text-align:center;padding:14px;background:#eff6ff;border-radius:8px">
+        <div style="font-size:24px;font-weight:800;color:#1d4ed8">80%</div>
+        <div style="font-size:12px;color:var(--ink-500);margin-top:2px">Context</div>
+      </div>
+      <div style="text-align:center;padding:14px;background:#f0fdf4;border-radius:8px">
+        <div style="font-size:24px;font-weight:800;color:#15803d">70%</div>
+        <div style="font-size:12px;color:var(--ink-500);margin-top:2px">Input</div>
+      </div>
+      <div style="text-align:center;padding:14px;background:#fefce8;border-radius:8px">
+        <div style="font-size:24px;font-weight:800;color:#b45309">90%</div>
+        <div style="font-size:12px;color:var(--ink-500);margin-top:2px">Process</div>
+      </div>
+      <div style="text-align:center;padding:14px;background:#fdf4ff;border-radius:8px">
+        <div style="font-size:24px;font-weight:800;color:#7c3aed">80%</div>
+        <div style="font-size:12px;color:var(--ink-500);margin-top:2px">Product</div>
+      </div>
+    </div>
+    <div style="margin-top:12px;text-align:center">
+      <button class="btn sm" onclick="loadPage('evaluation')">ดูผลการประเมินเต็ม →</button>
+    </div>
+  </div>
+</div>

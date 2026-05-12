@@ -1,0 +1,136 @@
+<style>
+.cal-toolbar { display:flex; align-items:center; gap:12px; margin-bottom:20px; }
+.cal-toolbar h2 { margin:0; font-size:18px; font-weight:700; flex:1; }
+.cal-nav { display:flex; align-items:center; gap:8px; }
+.cal-nav button { background:white; border:1px solid var(--ink-200); border-radius:7px; padding:6px 12px; cursor:pointer; font-size:13px; }
+.cal-nav .month-label { font-size:15px; font-weight:700; min-width:140px; text-align:center; }
+
+.cal-grid {
+  display:grid; grid-template-columns:repeat(7,1fr);
+  background:white; border:1px solid var(--ink-100);
+  border-radius:12px; overflow:hidden;
+}
+.cal-day-header {
+  padding:10px 8px; text-align:center;
+  font-size:12px; font-weight:700;
+  color:var(--ink-500); background:var(--ink-50);
+  border-bottom:1px solid var(--ink-100);
+  text-transform:uppercase; letter-spacing:.05em;
+}
+.cal-day-header.weekend { color:#dc2626; }
+
+.cal-cell {
+  border-right:1px solid var(--ink-100);
+  border-bottom:1px solid var(--ink-100);
+  min-height:100px; padding:6px;
+  position:relative;
+}
+.cal-cell:nth-child(7n) { border-right:none; }
+.cal-cell.other-month { background:var(--ink-50); }
+.cal-cell.today { background:#eff6ff; }
+.cal-day-num {
+  font-size:12.5px; font-weight:700;
+  color:var(--ink-700); margin-bottom:4px;
+  display:inline-flex; align-items:center; justify-content:center;
+  width:24px; height:24px; border-radius:50%;
+}
+.cal-cell.today .cal-day-num { background:#2563eb; color:white; }
+.cal-cell.weekend .cal-day-num { color:#dc2626; }
+
+.cal-event {
+  font-size:11px; font-weight:600;
+  padding:2px 6px; border-radius:3px;
+  margin-bottom:2px; cursor:pointer;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  transition:opacity .15s;
+}
+.cal-event:hover { opacity:.8; }
+.cal-event.blue   { background:#dbeafe; color:#1d4ed8; }
+.cal-event.green  { background:#dcfce7; color:#15803d; }
+.cal-event.amber  { background:#fef3c7; color:#92400e; }
+.cal-event.purple { background:#ede9fe; color:#5b21b6; }
+.cal-event.red    { background:#fee2e2; color:#b91c1c; }
+
+.cal-legend {
+  display:flex; gap:14px; margin-top:14px;
+  font-size:12px; color:var(--ink-600); flex-wrap:wrap;
+}
+.cal-legend-item { display:flex; align-items:center; gap:5px; }
+.cal-legend-dot { width:10px; height:10px; border-radius:2px; }
+</style>
+
+<div>
+  <div class="cal-toolbar">
+    <h2>ปฏิทินกิจกรรม</h2>
+    <div class="cal-nav">
+      <button>←</button>
+      <span class="month-label">พฤษภาคม 2569</span>
+      <button>→</button>
+    </div>
+    <button class="btn sm primary">+ เพิ่มกิจกรรม</button>
+  </div>
+
+  <div class="cal-grid">
+    <!-- Day headers -->
+    <div class="cal-day-header">อา<br><span style="font-size:9px;opacity:.6">SUN</span></div>
+    <div class="cal-day-header">จ<br><span style="font-size:9px;opacity:.6">MON</span></div>
+    <div class="cal-day-header">อ<br><span style="font-size:9px;opacity:.6">TUE</span></div>
+    <div class="cal-day-header">พ<br><span style="font-size:9px;opacity:.6">WED</span></div>
+    <div class="cal-day-header">พฤ<br><span style="font-size:9px;opacity:.6">THU</span></div>
+    <div class="cal-day-header">ศ<br><span style="font-size:9px;opacity:.6">FRI</span></div>
+    <div class="cal-day-header weekend">ส<br><span style="font-size:9px;opacity:.6">SAT</span></div>
+
+    <!-- Week 1 (Apr leftover) -->
+    <div class="cal-cell other-month"><div class="cal-day-num">27</div></div>
+    <div class="cal-cell other-month"><div class="cal-day-num">28</div></div>
+    <div class="cal-cell other-month"><div class="cal-day-num">29</div></div>
+    <div class="cal-cell other-month"><div class="cal-day-num">30</div></div>
+    <div class="cal-cell"><div class="cal-day-num">1</div><div class="cal-event blue">วันแรงงาน (หยุด)</div></div>
+    <div class="cal-cell"><div class="cal-day-num">2</div></div>
+    <div class="cal-cell weekend"><div class="cal-day-num">3</div></div>
+
+    <!-- Week 2 -->
+    <div class="cal-cell weekend"><div class="cal-day-num">4</div></div>
+    <div class="cal-cell"><div class="cal-day-num">5</div></div>
+    <div class="cal-cell"><div class="cal-day-num">6</div><div class="cal-event amber">ประชุมผู้ปกครอง</div></div>
+    <div class="cal-cell"><div class="cal-day-num">7</div></div>
+    <div class="cal-cell"><div class="cal-day-num">8</div></div>
+    <div class="cal-cell"><div class="cal-day-num">9</div></div>
+    <div class="cal-cell weekend"><div class="cal-day-num">10</div></div>
+
+    <!-- Week 3 -->
+    <div class="cal-cell weekend"><div class="cal-day-num">11</div></div>
+    <div class="cal-cell today"><div class="cal-day-num">12</div><div class="cal-event green">ส่งคำขอเบิก</div><div class="cal-event purple">ประชุมงานแผน</div></div>
+    <div class="cal-cell"><div class="cal-day-num">13</div></div>
+    <div class="cal-cell"><div class="cal-day-num">14</div><div class="cal-event blue">อบรมครู ICT</div></div>
+    <div class="cal-cell"><div class="cal-day-num">15</div><div class="cal-event blue">อบรมครู ICT</div></div>
+    <div class="cal-cell"><div class="cal-day-num">16</div></div>
+    <div class="cal-cell weekend"><div class="cal-day-num">17</div></div>
+
+    <!-- Week 4 -->
+    <div class="cal-cell weekend"><div class="cal-day-num">18</div></div>
+    <div class="cal-cell"><div class="cal-day-num">19</div></div>
+    <div class="cal-cell"><div class="cal-day-num">20</div><div class="cal-event red">ส่งรายงาน Q2</div></div>
+    <div class="cal-cell"><div class="cal-day-num">21</div></div>
+    <div class="cal-cell"><div class="cal-day-num">22</div></div>
+    <div class="cal-cell"><div class="cal-day-num">23</div></div>
+    <div class="cal-cell weekend"><div class="cal-day-num">24</div></div>
+
+    <!-- Week 5 -->
+    <div class="cal-cell weekend"><div class="cal-day-num">25</div></div>
+    <div class="cal-cell"><div class="cal-day-num">26</div><div class="cal-event amber">ประชุมคณะกรรมการ</div></div>
+    <div class="cal-cell"><div class="cal-day-num">27</div></div>
+    <div class="cal-cell"><div class="cal-day-num">28</div></div>
+    <div class="cal-cell"><div class="cal-day-num">29</div></div>
+    <div class="cal-cell"><div class="cal-day-num">30</div></div>
+    <div class="cal-cell weekend"><div class="cal-day-num">31</div></div>
+  </div>
+
+  <div class="cal-legend">
+    <div class="cal-legend-item"><div class="cal-legend-dot" style="background:#dbeafe"></div> กิจกรรม/อบรม</div>
+    <div class="cal-legend-item"><div class="cal-legend-dot" style="background:#dcfce7"></div> คำขอ/เบิกจ่าย</div>
+    <div class="cal-legend-item"><div class="cal-legend-dot" style="background:#fef3c7"></div> ประชุม</div>
+    <div class="cal-legend-item"><div class="cal-legend-dot" style="background:#ede9fe"></div> รายงาน</div>
+    <div class="cal-legend-item"><div class="cal-legend-dot" style="background:#fee2e2"></div> วันกำหนดส่ง</div>
+  </div>
+</div>

@@ -1,0 +1,100 @@
+<style>
+.repay-wrap { max-width: 720px; }
+.repay-card { background:white; border:1px solid var(--ink-100); border-radius:12px; margin-bottom:16px; overflow:hidden; }
+.repay-card .rc-head { padding:16px 20px; border-bottom:1px solid var(--ink-100); background:var(--ink-50); font-weight:700; font-size:14.5px; display:flex; align-items:center; gap:10px; }
+.repay-card .rc-body { padding:20px; }
+.form-group2 { display:flex; flex-direction:column; gap:5px; margin-bottom:14px; }
+.form-label2 { font-size:13px; font-weight:600; color:var(--ink-700); }
+.form-label2 .req { color:#ef4444; }
+.form-input2, .form-select2 { width:100%; padding:9px 12px; border:1px solid var(--ink-200); border-radius:7px; font-family:inherit; font-size:13.5px; outline:none; }
+.form-input2:focus, .form-select2:focus { border-color:var(--navy-500); box-shadow:0 0 0 3px rgba(39,81,143,.1); }
+.form-grid2 { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+</style>
+
+<div class="repay-wrap">
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px">
+    <h2 style="margin:0;font-size:18px;font-weight:700">คืนเงินยืม</h2>
+  </div>
+
+  <!-- Outstanding loans -->
+  <div class="repay-card">
+    <div class="rc-head">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg>
+      รายการยืมเงินที่ค้างชำระ
+    </div>
+    <div class="rc-body">
+      <table style="width:100%;border-collapse:collapse;font-size:13px">
+        <thead>
+          <tr style="background:var(--ink-50);border-bottom:1px solid var(--ink-100)">
+            <th style="padding:9px 12px;text-align:left;font-size:11.5px;color:var(--ink-500)">เลขที่ยืม</th>
+            <th style="padding:9px 12px;text-align:left;font-size:11.5px;color:var(--ink-500)">โครงการ</th>
+            <th style="padding:9px 12px;text-align:right;font-size:11.5px;color:var(--ink-500)">จำนวนยืม</th>
+            <th style="padding:9px 12px;text-align:right;font-size:11.5px;color:var(--ink-500)">ใช้จริง</th>
+            <th style="padding:9px 12px;text-align:right;font-size:11.5px;color:var(--ink-500)">ต้องคืน</th>
+            <th style="padding:9px 12px;text-align:left;font-size:11.5px;color:var(--ink-500)">วันครบกำหนด</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style="border-bottom:1px solid var(--ink-50)">
+            <td style="padding:10px 12px;font-family:monospace;font-size:12px;color:var(--ink-400)">LN-2569-004</td>
+            <td style="padding:10px 12px;font-weight:600">อบรมครูพัฒนาสื่อ</td>
+            <td style="padding:10px 12px;text-align:right">45,000</td>
+            <td style="padding:10px 12px;text-align:right">43,200</td>
+            <td style="padding:10px 12px;text-align:right;font-weight:700;color:#dc2626">1,800</td>
+            <td style="padding:10px 12px;font-size:12px;color:#dc2626">30 พ.ค. 2569 ⚠</td>
+          </tr>
+          <tr>
+            <td style="padding:10px 12px;font-family:monospace;font-size:12px;color:var(--ink-400)">LN-2569-007</td>
+            <td style="padding:10px 12px;font-weight:600">ทัศนศึกษานักเรียน</td>
+            <td style="padding:10px 12px;text-align:right">75,000</td>
+            <td style="padding:10px 12px;text-align:right">—</td>
+            <td style="padding:10px 12px;text-align:right;font-weight:700;color:#f59e0b">ยังไม่สรุป</td>
+            <td style="padding:10px 12px;font-size:12px;color:var(--ink-500)">30 มิ.ย. 2569</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Return form -->
+  <div class="repay-card">
+    <div class="rc-head">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+      แบบฟอร์มคืนเงินยืม
+    </div>
+    <div class="rc-body">
+      <div class="form-grid2">
+        <div class="form-group2">
+          <label class="form-label2">เลขที่ยืม<span class="req">*</span></label>
+          <select class="form-select2">
+            <option>-- เลือกรายการ --</option>
+            <option>LN-2569-004 — อบรมครูพัฒนาสื่อ (คืน ฿1,800)</option>
+            <option>LN-2569-007 — ทัศนศึกษานักเรียน</option>
+          </select>
+        </div>
+        <div class="form-group2">
+          <label class="form-label2">วันที่คืนเงิน<span class="req">*</span></label>
+          <input class="form-input2" type="date" value="2026-05-12">
+        </div>
+      </div>
+      <div class="form-grid2">
+        <div class="form-group2">
+          <label class="form-label2">จำนวนเงินที่ใช้จริง<span class="req">*</span></label>
+          <input class="form-input2" type="number" placeholder="0">
+        </div>
+        <div class="form-group2">
+          <label class="form-label2">จำนวนเงินที่คืน</label>
+          <input class="form-input2" type="number" placeholder="คำนวณอัตโนมัติ" readonly style="background:var(--ink-50)">
+        </div>
+      </div>
+      <div class="form-group2">
+        <label class="form-label2">หมายเหตุ</label>
+        <textarea class="form-input2" rows="2" placeholder="รายละเอียดเพิ่มเติม..." style="resize:vertical"></textarea>
+      </div>
+      <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:4px">
+        <button class="btn ghost">ยกเลิก</button>
+        <button class="btn primary">ส่งแบบฟอร์มคืนเงิน</button>
+      </div>
+    </div>
+  </div>
+</div>
