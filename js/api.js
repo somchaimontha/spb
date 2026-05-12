@@ -73,6 +73,11 @@ const API = (() => {
       if (r.ok) _saveSession(r.token, r.user);
       return r;
     },
+    async loginWithGoogle(idToken) {
+      const r = await _call('loginWithGoogle', { idToken });
+      if (r.ok) _saveSession(r.token, r.user);
+      return r;
+    },
     logout,
     getUser,
     isLoggedIn
