@@ -362,7 +362,15 @@
         <div class="rb-item"><div class="rb-label">ยอดสะสม (หลังรอบนี้)</div><div class="rb-val" id="rb-cum">฿0</div></div>
         <div class="rb-item"><div class="rb-label">คงเหลือหลังรอบนี้</div><div class="rb-val" id="rb-rem">฿0</div></div>
       </div>
-      <div class="form-row-2" style="margin-top:14px;">
+      <div class="form-row" style="margin-top:14px;">
+        <label>หมายเลขบันทึกข้อความ</label>
+        <input id="r-memo" class="form-input" placeholder="เลขที่บันทึกข้อความ เช่น บห.001/2569">
+      </div>
+      <div class="form-row">
+        <label>ผู้ดำเนินโครงการ</label>
+        <input id="r-operators" class="form-input" placeholder="ชื่อผู้ดำเนินโครงการ">
+      </div>
+      <div class="form-row-2">
         <div class="form-row">
           <label>เลขที่หนังสือพัสดุ</label>
           <input id="r-proc" class="form-input" placeholder="เลขครุภัณฑ์/พัสดุ">
@@ -520,7 +528,7 @@ window.ProjPage = (() => {
           }
           html += `<tr class="round-row">
             <td colspan="9" style="padding:6px 10px 8px 28px">
-              <button class="btn sm" style="font-size:11.5px" onclick="ProjPage.openAddRound('${p.project_id}','${p.project_name.replace(/'/g,"\\'")}',${p.total_budget},${_getCumulative(p.project_id)})">+ เพิ่มรอบการดำเนินงาน</button>
+              <button class="btn sm" style="font-size:11.5px" onclick="ProjPage.openAddRound('${p.project_id}','${p.project_name.replace(/'/g,"\\'")}',${p.total_budget},${_getCumulative(p.project_id)},'${(p.responsible_person||'').replace(/'/g,"\\'")}')">+ เพิ่มรอบการดำเนินงาน</button>
             </td>
           </tr>`;
         }
@@ -800,18 +808,20 @@ window.ProjPage = (() => {
   }
 
   // ── Rounds ────────────────────────────────────────────────
-  function openAddRound(projectId, projName, total, cumulative) {
+  function openAddRound(projectId, projName, total, cumulative, ownerName) {
     document.getElementById('modal-round-title').textContent = 'เพิ่มรอบการดำเนินงาน · ' + projName.substring(0,30) + (projName.length>30?'...':'');
     document.getElementById('r-project-id').value    = projectId;
     document.getElementById('r-project-total').value = total;
     document.getElementById('r-project-cum').value   = cumulative;
-    document.getElementById('r-used').value   = '';
-    document.getElementById('r-start').value  = '';
-    document.getElementById('r-end').value    = '';
-    document.getElementById('r-proc').value   = '';
-    document.getElementById('r-fin').value    = '';
-    document.getElementById('r-remark').value = '';
-    document.getElementById('r-status').value = 'active';
+    document.getElementById('r-used').value      = '';
+    document.getElementById('r-start').value     = '';
+    document.getElementById('r-end').value       = '';
+    document.getElementById('r-memo').value      = '';
+    document.getElementById('r-operators').value = ownerName || '';
+    document.getElementById('r-proc').value      = '';
+    document.getElementById('r-fin').value       = '';
+    document.getElementById('r-remark').value    = '';
+    document.getElementById('r-status').value    = 'active';
     updateRunningBalance();
     document.getElementById('modal-round').style.display='flex';
   }
@@ -836,6 +846,8 @@ window.ProjPage = (() => {
       budget_used:          used,
       exec_start_date:      document.getElementById('r-start').value,
       exec_end_date:        document.getElementById('r-end').value,
+      memo_number:          document.getElementById('r-memo').value.trim(),
+      operators:            document.getElementById('r-operators').value.trim(),
       procurement_batch_no: document.getElementById('r-proc').value,
       finance_disburse_no:  document.getElementById('r-fin').value,
       round_status:         document.getElementById('r-status').value,
